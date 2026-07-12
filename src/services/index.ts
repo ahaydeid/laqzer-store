@@ -3,7 +3,21 @@ import { IStoreService } from '@/core/interfaces/store.interface'
 import { MockStoreService } from './mock/store.service'
 import { SupabaseStoreService } from './supabase/store.service'
 
-const provider = process.env.NEXT_PUBLIC_SERVICE_PROVIDER || 'mock'
+type ProviderType = 'mock' | 'supabase'
+
+/**
+ * Service Providers Configuration
+ * 
+ * Controls which data source is used for each individual service.
+ * This supports your incremental workflow (feature-by-feature, page-by-page migration).
+ * Change 'mock' to 'supabase' for a service once its backend database/APIs are ready.
+ */
+export const SERVICE_PROVIDERS: {
+  store: ProviderType
+} = {
+  store: 'mock',
+}
+
 
 export interface AppServices {
   store: IStoreService
@@ -12,22 +26,16 @@ export interface AppServices {
 /**
  * Service Factory
  * 
- * Returns the active implementation of application services based on the environment configuration.
- * - In Client Components: Call `getServices()` (uses browser-safe clients).
- * - In Server Components / Actions: Call `getServices(supabaseClient)` passing the server client.
- * 
- * This enables rapid frontend prototyping with mock data and zero-effort migration
- * to Supabase or any custom API in the future.
+ * Returns active service implementations based on the SERVICE_PROVIDERS map.
+ * - In Client Components: Call `getServices()`
+ * - In Server Components / Actions: Call `getServices(supabaseClient)`
  */
 export function getServices(supabaseClient?: SupabaseClient): AppServices {
-  if (provider === 'supabase') {
-    return {
-      store: new SupabaseStoreService(supabaseClient),
-    }
-  }
-
-  // Default to mock services for prototyping
   return {
-    store: new MockStoreService(),
+    store:
+      SERVICE_PROVIDERS.store === 'supabase'
+        ? new SupabaseStoreService(supabaseClient)
+        : new MockStoreService(),
   }
 }
+
