@@ -49,7 +49,7 @@ export function StoreHighlights() {
               className="flex flex-col gap-4 rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/30"
             >
               {/* Icon Container */}
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-50 border border-zinc-100 dark:bg-zinc-900 dark:border-zinc-850">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-50 border border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800">
                 {item.icon}
               </div>
               
