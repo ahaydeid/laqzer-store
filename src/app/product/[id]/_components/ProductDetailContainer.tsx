@@ -115,25 +115,29 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               <div 
                 className="flex items-center gap-3 transition-transform duration-300 ease-out"
                 style={{ 
-                  // Dynamically centers the active thumbnail
-                  // Item width is 56px (w-14) + gap-3 is 12px = 68px per thumbnail item.
-                  transform: `translateX(calc(50% - 28px - ${activeImageIdx * 68}px))` 
+                  // Dynamically centers the active thumbnail from the middle copied segment
+                  // Item width is 56px (w-14) + gap-3 is 12px = 68px.
+                  // We add galleryImages.length to activeImageIdx to keep centering copies to left/right.
+                  transform: `translateX(calc(50% - 28px - ${(activeImageIdx + galleryImages.length) * 68}px))` 
                 }}
               >
-                {galleryImages.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImageIdx(idx)}
-                    className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all flex-shrink-0 ${
-                      activeImageIdx === idx 
-                        ? 'border-blue-500 ring-1 ring-blue-500/30 scale-105' 
-                        : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
-                    }`}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img} alt="" className="h-full w-full object-cover" />
-                  </button>
-                ))}
+                {[...galleryImages, ...galleryImages, ...galleryImages].map((img, idx) => {
+                  const actualIdx = idx % galleryImages.length
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImageIdx(actualIdx)}
+                      className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all flex-shrink-0 ${
+                        activeImageIdx === actualIdx 
+                          ? 'border-blue-500 ring-1 ring-blue-500/30 scale-105' 
+                          : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img} alt="" className="h-full w-full object-cover" />
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
