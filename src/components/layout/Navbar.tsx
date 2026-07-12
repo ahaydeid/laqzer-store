@@ -26,7 +26,7 @@ export function Navbar({ settings, categories }: NavbarProps) {
             <a href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
-                src="/img/logo.jpg" 
+                src="/img/logo-laqzer.jpg" 
                 alt="Logo" 
                 className="h-8 w-8 rounded-lg object-cover" 
               />
