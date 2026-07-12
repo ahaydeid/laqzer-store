@@ -15,15 +15,19 @@ interface ProductDetailContainerProps {
 export function ProductDetailContainer({ product, settings }: ProductDetailContainerProps) {
   const router = useRouter()
   const [activeImageIdx, setActiveImageIdx] = useState(0)
+  const [thumbnailStartIdx, setThumbnailStartIdx] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState('Basic')
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
 
-  // Generate simulated thumbnail gallery using Unsplash parameters
+  // Generate 6 distinct simulated images representing fashion/subscription mocks
   const galleryImages = [
     product.imageUrl,
-    product.imageUrl + '&sig=1',
-    product.imageUrl + '&sig=2',
+    'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1534215754734-18e55d13e346?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=600',
   ]
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price
@@ -32,11 +36,27 @@ export function ProductDetailContainer({ product, settings }: ProductDetailConta
     : 0
 
   const handlePrevImage = () => {
-    setActiveImageIdx((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1))
+    const nextIdx = activeImageIdx === 0 ? galleryImages.length - 1 : activeImageIdx - 1
+    setActiveImageIdx(nextIdx)
+    
+    // Auto-adjust sliding window of 3 visible items
+    if (nextIdx === galleryImages.length - 1) {
+      setThumbnailStartIdx(galleryImages.length - 3)
+    } else if (nextIdx < thumbnailStartIdx) {
+      setThumbnailStartIdx(nextIdx)
+    }
   }
 
   const handleNextImage = () => {
-    setActiveImageIdx((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1))
+    const nextIdx = activeImageIdx === galleryImages.length - 1 ? 0 : activeImageIdx + 1
+    setActiveImageIdx(nextIdx)
+    
+    // Auto-adjust sliding window of 3 visible items
+    if (nextIdx === 0) {
+      setThumbnailStartIdx(0)
+    } else if (nextIdx >= thumbnailStartIdx + 3) {
+      setThumbnailStartIdx(nextIdx - 2)
+    }
   }
 
   const getWhatsAppLink = (messageText: string) => {
@@ -106,20 +126,23 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             </button>
 
             <div className="flex items-center gap-3">
-              {galleryImages.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveImageIdx(idx)}
-                  className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all ${
-                    activeImageIdx === idx 
-                      ? 'border-blue-500 ring-1 ring-blue-500/30' 
-                      : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
-                  }`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img} alt="" className="h-full w-full object-cover" />
-                </button>
-              ))}
+              {galleryImages.slice(thumbnailStartIdx, thumbnailStartIdx + 3).map((img, idx) => {
+                const actualIdx = thumbnailStartIdx + idx
+                return (
+                  <button
+                    key={actualIdx}
+                    onClick={() => setActiveImageIdx(actualIdx)}
+                    className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all ${
+                      activeImageIdx === actualIdx 
+                        ? 'border-blue-500 ring-1 ring-blue-500/30' 
+                        : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img} alt="" className="h-full w-full object-cover" />
+                  </button>
+                )
+              })}
             </div>
 
             <button 
