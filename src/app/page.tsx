@@ -1,66 +1,54 @@
 import { getServices } from '@/services'
+import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
+import { HeroCarousel } from './_components/HeroCarousel'
+import { FlashSaleSection } from './_components/FlashSaleSection'
+import { CatalogContainer } from './_components/CatalogContainer'
+import { StoreHighlights } from './_components/StoreHighlights'
 
 /**
- * Root Diagnostic Page
+ * Main E-commerce Home Page (Server Component)
  * 
- * Verifies that the Service/Repository abstraction layer is correctly wired up
- * and loads data based on the NEXT_PUBLIC_SERVICE_PROVIDER setting.
+ * Fetches all necessary data on the server side using the Service Factory
+ * and renders a high-performance, SEO-friendly, cost-optimized homepage.
  */
 export default async function Home() {
-  // Since this is a server component, we retrieve services. 
-  // For Supabase, we would pass the server-side client, e.g.:
-  // const supabase = await createClient()
-  // const services = getServices(supabase)
   const services = getServices()
-  
-  let settings
-  try {
-    settings = await services.store.getSettings()
-  } catch (error: unknown) {
-    settings = {
-      name: 'Error Loading Settings',
-      description: error instanceof Error ? error.message : String(error),
-      currency: '-',
-      address: '-',
-      phone: '-',
-    }
-  }
+
+  // Load all initial store, category, and product data concurrently on the server
+  const [storeSettings, categories, flashSaleProducts, initialProducts] = await Promise.all([
+    services.store.getSettings(),
+    services.categories.getCategories(),
+    services.products.getFlashSaleProducts(),
+    services.products.getProducts(),
+  ])
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-8 bg-zinc-950 text-zinc-100 font-sans">
-      <main className="max-w-md w-full p-6 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-4">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-white">{settings.name}</h1>
-          <p className="text-sm text-zinc-400 mt-1">{settings.description}</p>
-        </div>
-        
-        <div className="border-t border-zinc-800 pt-4 space-y-2 text-sm text-zinc-300">
-          <div>
-            <span className="text-zinc-500 font-medium">Mata Uang: </span>
-            {settings.currency}
-          </div>
-          <div>
-            <span className="text-zinc-500 font-medium">Alamat: </span>
-            {settings.address}
-          </div>
-          <div>
-            <span className="text-zinc-500 font-medium">No. HP: </span>
-            {settings.phone}
-          </div>
-        </div>
+    <div className="flex min-h-screen flex-col bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans">
+      {/* Navigation bar */}
+      <Navbar settings={storeSettings} categories={categories} />
 
-        <div className="border-t border-zinc-800 pt-4 text-[11px] text-zinc-500 space-y-1">
-          <div>
-            <span className="font-semibold text-zinc-400">Mode Service: </span>
-            <code className="bg-zinc-800 px-1 py-0.5 rounded text-yellow-400">
-              {process.env.NEXT_PUBLIC_SERVICE_PROVIDER || 'mock'}
-            </code>
-          </div>
-          <p>
-            Ubah variabel <code>NEXT_PUBLIC_SERVICE_PROVIDER</code> di <code>.env.local</code> untuk beralih mode.
-          </p>
-        </div>
+      <main className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        {/* Hero Slider Promotion */}
+        <HeroCarousel />
+
+        {/* Flash Sale Banner */}
+        {flashSaleProducts.length > 0 && (
+          <FlashSaleSection products={flashSaleProducts} />
+        )}
+
+        {/* Interactive Product Catalog (Category filters & search results) */}
+        <CatalogContainer 
+          categories={categories} 
+          initialProducts={initialProducts} 
+        />
+
+        {/* Store Trust Value / Highlights */}
+        <StoreHighlights />
       </main>
+
+      {/* Footer layout */}
+      <Footer settings={storeSettings} />
     </div>
   )
 }
