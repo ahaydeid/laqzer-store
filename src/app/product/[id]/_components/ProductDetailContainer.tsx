@@ -27,7 +27,7 @@ export function ProductDetailContainer({ product, settings }: ProductDetailConta
 
   const [virtualIdx, setVirtualIdx] = useState(0) // start at index 0 (first copy)
   const [isTransitioning, setIsTransitioning] = useState(true)
-  const [selectedVariant, setSelectedVariant] = useState('Basic')
+  const [selectedVariant, setSelectedVariant] = useState('Hitam')
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
 
@@ -202,14 +202,6 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               {product.name}
             </h1>
 
-            {/* Stock Info */}
-            <div className="flex items-center gap-1.5 text-zinc-500 font-medium">
-              <FiCheckCircle className="h-3.5 w-3.5 text-emerald-500" />
-              <span className="text-xs">
-                Stok: {product.stock}
-              </span>
-            </div>
-
             {/* Rating Stats Box */}
             <div className="grid grid-cols-3 divide-x divide-zinc-100 dark:divide-zinc-900 border-y border-zinc-100 dark:border-zinc-900 py-3 text-center bg-transparent">
               <div className="flex flex-col gap-0.5">
@@ -251,20 +243,28 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               </div>
             </div>
 
+            {/* Stock Info */}
+            <div className="flex items-center gap-1.5 text-zinc-500 font-medium pt-1">
+              <FiCheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+              <span className="text-xs">
+                Stok: {product.stock}
+              </span>
+            </div>
+
             {/* Variant Selector */}
-            <div className="space-y-2 pt-2">
-              <span className="block text-sm font-bold text-zinc-900 dark:text-white">
+            <div className="space-y-2 pt-1">
+              <span className="block text-sm font-semibold text-zinc-900 dark:text-white">
                 Varian
               </span>
               <div className="flex items-center gap-3">
-                {['Basic', 'Premium'].map((v) => (
+                {['Hitam', 'Merah'].map((v) => (
                   <button
                     key={v}
                     onClick={() => setSelectedVariant(v)}
-                    className={`rounded-xl px-4 py-2 text-xs font-bold tracking-wide transition-all border outline-none ${
+                    className={`rounded-full px-4 py-2 text-xs font-medium tracking-wide transition-all border outline-none ${
                       selectedVariant === v
-                        ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-white dark:text-zinc-950 dark:border-white'
-                        : 'bg-white text-zinc-650 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
+                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 dark:border-white'
+                        : 'bg-white text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
                     }`}
                   >
                     {v}
