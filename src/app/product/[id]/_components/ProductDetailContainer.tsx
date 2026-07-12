@@ -130,14 +130,14 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             </button>
           </div>
 
-          {/* External Contact/Demo Buttons */}
-          <div className="flex-shrink-0 grid grid-cols-3 gap-3 pt-1">
+          {/* External Contact Buttons */}
+          <div className="flex-shrink-0 grid grid-cols-2 gap-3 pt-1">
             <button 
               onClick={handleChatWA}
               className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
             >
               <FiMessageSquare className="h-4 w-4" />
-              <span>Chat Ahadi</span>
+              <span>Chat Admin</span>
             </button>
 
             <button 
@@ -147,16 +147,6 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               <FaWhatsapp className="h-4 w-4 text-green-500" />
               <span>Chat lewat WA</span>
             </button>
-
-            <a 
-              href="https://demo.laqzer-store.my.id" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
-            >
-              <FiGlobe className="h-4 w-4 text-blue-500" />
-              <span>Demo</span>
-            </a>
           </div>
         </div>
 
@@ -168,11 +158,8 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               {product.name}
             </h1>
 
-            {/* Badges & Stock */}
+            {/* Stock Info */}
             <div className="flex items-center gap-3">
-              <span className="rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 px-3 py-1 text-xs font-semibold tracking-wide uppercase">
-                {product.category === 'shirt' ? 'Fashion' : 'Subscription'}
-              </span>
               <span className="text-xs text-zinc-500 font-medium">
                 Stok: {product.stock}
               </span>
