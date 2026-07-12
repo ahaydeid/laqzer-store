@@ -71,12 +71,12 @@ export function ProductSection({ products }: ProductSectionProps) {
           return (
             <div 
               key={product.id} 
-              className="group relative flex flex-col rounded-2xl border border-zinc-100 bg-white p-3 shadow-sm hover:shadow-md transition-all duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/40"
+              className="group relative flex flex-col rounded-2xl border border-zinc-150 bg-white overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/40"
             >
               {/* Product link wrapper */}
               <Link href={`/product/${product.id}`} className="flex flex-col flex-1">
                 {/* Product Image */}
-                <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-zinc-50 dark:bg-zinc-900">
+                <div className="relative aspect-square w-full overflow-hidden bg-zinc-50 dark:bg-zinc-900">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={product.imageUrl}
@@ -93,7 +93,7 @@ export function ProductSection({ products }: ProductSectionProps) {
                 </div>
 
                 {/* Product Metadata & Info */}
-                <div className="flex flex-1 flex-col pt-3 gap-2 justify-between">
+                <div className="flex flex-1 flex-col p-3.5 gap-2 justify-between">
                   <div className="space-y-1">
                     <h4 className="line-clamp-2 text-xs font-semibold leading-relaxed text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
                       {product.name}
@@ -131,7 +131,7 @@ export function ProductSection({ products }: ProductSectionProps) {
                   e.stopPropagation()
                   alert('Disukai!')
                 }}
-                className="absolute top-5 right-5 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-zinc-500 hover:text-red-500 shadow-sm transition-colors hover:scale-105 active:scale-95 z-10"
+                className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-zinc-500 hover:text-red-500 shadow-sm transition-colors hover:scale-105 active:scale-95 z-10"
               >
                 <FiHeart className="h-4 w-4" />
               </button>
