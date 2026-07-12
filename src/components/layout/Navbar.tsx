@@ -90,8 +90,8 @@ export function Navbar({ settings, categories }: NavbarProps) {
             {/* Cart Icon */}
             <button className="relative p-2 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
               <FiShoppingBag className="h-5 w-5" />
-              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-zinc-900 text-[10px] font-bold text-white dark:bg-white dark:text-zinc-950">
-                0
+              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
+                6
               </span>
             </button>
 
