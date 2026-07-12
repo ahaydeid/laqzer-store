@@ -13,7 +13,12 @@ export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  // Validate that the Supabase URL is a valid HTTP/HTTPS endpoint
+  // and the anon key is not the default environment placeholder.
+  const isUrlValid = supabaseUrl && (supabaseUrl.startsWith('http://') || supabaseUrl.startsWith('https://'))
+  const isKeyValid = supabaseAnonKey && supabaseAnonKey !== 'your-supabase-anon-key'
+
+  if (!isUrlValid || !isKeyValid) {
     return supabaseResponse
   }
 
