@@ -15,9 +15,12 @@ export function Footer({ settings }: FooterProps) {
         {/* Left column: Brand Info */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-white">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-zinc-900 font-bold text-lg">
-              {settings.name.charAt(0)}
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src="/img/logo-laqzer.jpg" 
+              alt="Logo" 
+              className="h-8 w-8 rounded-lg object-cover" 
+            />
             <span className="text-xl font-bold tracking-tight">{settings.name}</span>
           </div>
           <p className="text-sm leading-relaxed text-zinc-400">
