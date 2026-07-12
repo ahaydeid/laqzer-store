@@ -52,4 +52,22 @@ export class SupabaseProductService implements IProductService {
 
     throw new Error('SupabaseProductService.getProducts() is not implemented yet.')
   }
+
+  async getProductById(id: string): Promise<Product | null> {
+    const supabase = this.getClient()
+
+    // Example of fetching single product from Supabase
+    /*
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error) return null
+    return data
+    */
+
+    throw new Error('SupabaseProductService.getProductById() is not implemented yet.')
+  }
 }

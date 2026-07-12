@@ -179,4 +179,10 @@ export class MockProductService implements IProductService {
     }
     return MOCK_PRODUCTS.filter((p) => !p.isFlashSale && p.category === category)
   }
+
+  async getProductById(id: string): Promise<Product | null> {
+    await new Promise((resolve) => setTimeout(resolve, 200))
+    const product = MOCK_PRODUCTS.find((p) => p.id === id)
+    return product || null
+  }
 }

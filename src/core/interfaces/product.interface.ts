@@ -14,4 +14,9 @@ export interface IProductService {
    * Useful for the tabs filter on the home screen.
    */
   getProducts(category?: string): Promise<Product[]>
+
+  /**
+   * Fetches a single product by its unique identifier.
+   */
+  getProductById(id: string): Promise<Product | null>
 }
