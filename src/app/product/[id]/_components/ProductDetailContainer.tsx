@@ -120,9 +120,8 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           </div>
 
           {/* Gallery Thumbnail Carousel (Centered Sliding Track with Gradient Overlays) */}
-          <div className="flex-shrink-0 relative w-full max-w-[280px] sm:max-w-[320px] mx-auto overflow-hidden px-8">
-            {/* Left Gradient Overlay & Chevron Button */}
-            <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80 pointer-events-none z-10" />
+          <div className="flex-shrink-0 relative w-full max-w-[280px] sm:max-w-[320px] mx-auto px-8">
+            {/* Left Chevron Button */}
             <button
               onClick={handlePrevImage}
               disabled={virtualIdx === 0}
@@ -131,8 +130,12 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               <FiChevronLeft className="h-4 w-4" />
             </button>
 
-            {/* Sliding Track Viewport */}
-            <div className="overflow-hidden py-1">
+            {/* Sliding Track Viewport with boundary-aligned gradient overlays */}
+            <div className="relative overflow-hidden py-1">
+              {/* Left Gradient Overlay */}
+              <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white to-transparent dark:from-zinc-950 pointer-events-none z-10" />
+
+              {/* Translating Track */}
               <div 
                 className={`flex items-center gap-3 ${isTransitioning ? 'transition-transform duration-300 ease-out' : ''}`}
                 style={{ 
@@ -162,10 +165,12 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                   )
                 })}
               </div>
+
+              {/* Right Gradient Overlay */}
+              <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent dark:from-zinc-950 pointer-events-none z-10" />
             </div>
 
-            {/* Right Gradient Overlay & Chevron Button */}
-            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white via-white/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80 pointer-events-none z-10" />
+            {/* Right Chevron Button */}
             <button
               onClick={handleNextImage}
               className="absolute right-1 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white/90 text-zinc-650 hover:text-zinc-900 shadow-xs z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white"
@@ -274,7 +279,6 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                           : 'bg-white text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
                       }`}
                     >
-                      {v}
                     </button>
                   ))}
                 </div>
