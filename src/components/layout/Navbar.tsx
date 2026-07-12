@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FiSearch, FiShoppingBag, FiBell, FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
+import { FiSearch, FiShoppingBag, FiBell, FiChevronDown, FiMenu, FiX, FiUser } from 'react-icons/fi'
 import { StoreSettings } from '@/core/types/store'
 import { Category } from '@/core/types/category'
 
@@ -97,6 +97,11 @@ export function Navbar({ settings, categories }: NavbarProps) {
             {/* Notification Icon */}
             <button className="hidden sm:block p-2 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
               <FiBell className="h-5 w-5" />
+            </button>
+
+            {/* User Account Icon (Hardcoded Login Placeholder) */}
+            <button className="p-2 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
+              <FiUser className="h-5 w-5" />
             </button>
 
             {/* Mobile Menu button */}
