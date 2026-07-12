@@ -11,8 +11,8 @@ export class MockStoreService implements IStoreService {
     await new Promise((resolve) => setTimeout(resolve, 300));
     
     return {
-      name: 'Warung Serba Ada (Mock)',
-      description: 'Prototype Toko UMKM Digital Indonesia dengan biaya operasional Rp 0.',
+      name: 'Laqzer Indonesia',
+      description: 'Katalog fashion lokal premium buatan anak bangsa dengan harga bersahabat.',
       currency: 'IDR',
       address: 'Jl. Pemuda No. 12, Jakarta',
       phone: '081234567890',
