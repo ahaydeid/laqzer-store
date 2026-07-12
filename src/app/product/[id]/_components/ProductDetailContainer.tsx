@@ -25,7 +25,7 @@ export function ProductDetailContainer({ product, settings }: ProductDetailConta
     'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=600',
   ]
 
-  const [virtualIdx, setVirtualIdx] = useState(galleryImages.length) // start at middle copy (index 6)
+  const [virtualIdx, setVirtualIdx] = useState(0) // start at index 0 (first copy)
   const [isTransitioning, setIsTransitioning] = useState(true)
   const [selectedVariant, setSelectedVariant] = useState('Basic')
   const [quantity, setQuantity] = useState(1)
@@ -39,8 +39,10 @@ export function ProductDetailContainer({ product, settings }: ProductDetailConta
     : 0
 
   const handlePrevImage = () => {
-    setIsTransitioning(true)
-    setVirtualIdx((prev) => prev - 1)
+    if (virtualIdx > 0) {
+      setIsTransitioning(true)
+      setVirtualIdx((prev) => prev - 1)
+    }
   }
 
   const handleNextImage = () => {
@@ -48,16 +50,9 @@ export function ProductDetailContainer({ product, settings }: ProductDetailConta
     setVirtualIdx((prev) => prev + 1)
   }
 
-  // Handle seamless index wrap-around at the end of the sliding transition
+  // Handle seamless index wrap-around at the end of the sliding transition (right end only)
   useEffect(() => {
     const len = galleryImages.length
-    if (virtualIdx < len) {
-      const timer = setTimeout(() => {
-        setIsTransitioning(false)
-        setVirtualIdx(virtualIdx + len)
-      }, 300) // matches transition-transform duration
-      return () => clearTimeout(timer)
-    }
     if (virtualIdx >= len * 2) {
       const timer = setTimeout(() => {
         setIsTransitioning(false)
@@ -130,7 +125,8 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80 pointer-events-none z-10" />
             <button
               onClick={handlePrevImage}
-              className="absolute left-1 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white/90 text-zinc-650 hover:text-zinc-900 shadow-xs z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+              disabled={virtualIdx === 0}
+              className="absolute left-1 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white/90 text-zinc-650 hover:text-zinc-900 shadow-xs z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none"
             >
               <FiChevronLeft className="h-4 w-4" />
             </button>
