@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiGlobe, FiShoppingCart, FiCheckCircle } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
@@ -14,11 +14,7 @@ interface ProductDetailContainerProps {
 
 export function ProductDetailContainer({ product, settings }: ProductDetailContainerProps) {
   const router = useRouter()
-  const [activeImageIdx, setActiveImageIdx] = useState(0)
-  const [selectedVariant, setSelectedVariant] = useState('Basic')
-  const [quantity, setQuantity] = useState(1)
-  const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
-
+  
   // Generate 6 distinct simulated images representing fashion/subscription mocks
   const galleryImages = [
     product.imageUrl,
@@ -29,18 +25,47 @@ export function ProductDetailContainer({ product, settings }: ProductDetailConta
     'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=600',
   ]
 
+  const [virtualIdx, setVirtualIdx] = useState(galleryImages.length) // start at middle copy (index 6)
+  const [isTransitioning, setIsTransitioning] = useState(true)
+  const [selectedVariant, setSelectedVariant] = useState('Basic')
+  const [quantity, setQuantity] = useState(1)
+  const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
+
+  const activeImageIdx = (virtualIdx % galleryImages.length + galleryImages.length) % galleryImages.length
+
   const hasDiscount = product.originalPrice && product.originalPrice > product.price
   const discountPercentage = hasDiscount 
     ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
     : 0
 
   const handlePrevImage = () => {
-    setActiveImageIdx((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1))
+    setIsTransitioning(true)
+    setVirtualIdx((prev) => prev - 1)
   }
 
   const handleNextImage = () => {
-    setActiveImageIdx((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1))
+    setIsTransitioning(true)
+    setVirtualIdx((prev) => prev + 1)
   }
+
+  // Handle seamless index wrap-around at the end of the sliding transition
+  useEffect(() => {
+    const len = galleryImages.length
+    if (virtualIdx < len) {
+      const timer = setTimeout(() => {
+        setIsTransitioning(false)
+        setVirtualIdx(virtualIdx + len)
+      }, 300) // matches transition-transform duration
+      return () => clearTimeout(timer)
+    }
+    if (virtualIdx >= len * 2) {
+      const timer = setTimeout(() => {
+        setIsTransitioning(false)
+        setVirtualIdx(virtualIdx - len)
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [virtualIdx, galleryImages.length])
 
   const getWhatsAppLink = (messageText: string) => {
     const rawPhone = settings.phone || '081234567890'
@@ -113,12 +138,11 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             {/* Sliding Track Viewport */}
             <div className="overflow-hidden py-1">
               <div 
-                className="flex items-center gap-3 transition-transform duration-300 ease-out"
+                className={`flex items-center gap-3 ${isTransitioning ? 'transition-transform duration-300 ease-out' : ''}`}
                 style={{ 
-                  // Dynamically centers the active thumbnail from the middle copied segment
+                  // Dynamically centers the active thumbnail using the virtual index
                   // Item width is 56px (w-14) + gap-3 is 12px = 68px.
-                  // We add galleryImages.length to activeImageIdx to keep centering copies to left/right.
-                  transform: `translateX(calc(50% - 28px - ${(activeImageIdx + galleryImages.length) * 68}px))` 
+                  transform: `translateX(calc(50% - 28px - ${virtualIdx * 68}px))` 
                 }}
               >
                 {[...galleryImages, ...galleryImages, ...galleryImages].map((img, idx) => {
@@ -126,7 +150,10 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                   return (
                     <button
                       key={idx}
-                      onClick={() => setActiveImageIdx(actualIdx)}
+                      onClick={() => {
+                        setIsTransitioning(true)
+                        setVirtualIdx(idx)
+                      }}
                       className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all flex-shrink-0 ${
                         activeImageIdx === actualIdx 
                           ? 'border-blue-500 ring-1 ring-blue-500/30 scale-105' 
