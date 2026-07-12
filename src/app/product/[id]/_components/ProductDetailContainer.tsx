@@ -230,7 +230,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             </div>
 
             {/* Price display Section Wrapper */}
-            <div className="rounded-2xl bg-slate-100 dark:bg-zinc-900 p-4 space-y-1.5">
+            <div className="rounded-lg bg-slate-100/60 dark:bg-zinc-900 p-4 space-y-1.5">
               <span className="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                 Harga Produk
               </span>
@@ -251,10 +251,10 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               </div>
             </div>
 
-            {/* Variant Selector Section Wrapper */}
-            <div className="rounded-2xl border border-zinc-100 dark:border-zinc-900 bg-zinc-50/30 dark:bg-zinc-900/10 p-4 space-y-3">
-              <span className="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                Pilihan Varian
+            {/* Variant Selector */}
+            <div className="space-y-2 pt-2">
+              <span className="block text-sm font-bold text-zinc-900 dark:text-white">
+                Varian
               </span>
               <div className="flex items-center gap-3">
                 {['Basic', 'Premium'].map((v) => (
