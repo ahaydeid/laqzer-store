@@ -96,7 +96,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
         className="flex items-center gap-2 text-zinc-500 hover:text-zinc-800 dark:hover:text-white transition-colors"
       >
         <FiArrowLeft className="h-4 w-4" />
-        <span className="text-xs font-bold tracking-tight">Detail Produk</span>
+        <span className="text-xs font-medium cursor-pointer tracking-tight">Kembali</span>
       </button>
 
       {/* Main product presentation grid (constrained to 1 screen height on desktop) */}
@@ -198,7 +198,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
         <div className="h-full flex flex-col justify-between py-1 gap-6 min-h-0">
           <div className="flex-1 min-h-0 overflow-y-auto pr-1 scrollbar-thin space-y-4">
             {/* Title */}
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-zinc-950 dark:text-white leading-tight">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white leading-tight">
               {product.name}
             </h1>
 
@@ -230,12 +230,12 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             </div>
 
             {/* Price display */}
-            <div className="flex items-baseline gap-3 pt-2">
-              <span className="text-2xl font-extrabold text-red-500 dark:text-rose-500">
+            <div className="flex items-center gap-3 pt-2">
+              <span className="text-2xl font-semibold text-red-500 dark:text-rose-500">
                 Rp{product.price.toLocaleString('id-ID')}
               </span>
               {hasDiscount && (
-                <span className="text-sm text-zinc-400 line-through">
+                <span className="text-base text-zinc-400 line-through">
                   Rp{product.originalPrice!.toLocaleString('id-ID')}
                 </span>
               )}
