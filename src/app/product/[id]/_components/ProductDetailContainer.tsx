@@ -66,23 +66,23 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
   }
 
   return (
-    <div className="w-full space-y-8 font-sans">
+    <div className="w-full space-y-6 font-sans">
       {/* Back Button Navigation */}
       <button 
         onClick={() => router.push('/')}
-        className="flex items-center gap-2 group text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white transition-colors"
+        className="flex items-center gap-2 text-zinc-500 hover:text-zinc-800 dark:hover:text-white transition-colors"
       >
-        <FiArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
-        <span className="text-sm font-bold tracking-tight">Detail Produk</span>
+        <FiArrowLeft className="h-4 w-4" />
+        <span className="text-xs font-bold tracking-tight">Detail Produk</span>
       </button>
 
-      {/* Main product presentation grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+      {/* Main product presentation grid (constrained to 1 screen height on desktop) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 md:h-[calc(100vh-180px)] md:max-h-[560px] md:min-h-[460px]">
         
         {/* Left Column: Image Gallery & External CTAs */}
-        <div className="space-y-6">
+        <div className="h-full flex flex-col justify-between gap-4 min-h-0">
           {/* Main Display Image */}
-          <div className="relative aspect-square w-full rounded-2xl overflow-hidden border border-zinc-200 bg-zinc-50 dark:border-zinc-800/80 dark:bg-zinc-900/40 shadow-sm">
+          <div className="relative flex-1 min-h-0 w-full rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-800">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src={galleryImages[activeImageIdx]} 
@@ -90,19 +90,19 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               className="h-full w-full object-cover transition-all duration-300"
             />
             {hasDiscount && (
-              <span className="absolute top-4 left-4 rounded-lg bg-red-500 px-2.5 py-1 text-xs font-bold text-white uppercase tracking-wider shadow-sm">
+              <span className="absolute top-4 left-4 rounded-lg bg-red-500 px-2.5 py-1 text-xs font-bold text-white uppercase tracking-wider">
                 -{discountPercentage}%
               </span>
             )}
           </div>
 
           {/* Gallery Thumbnail Carousel */}
-          <div className="flex items-center justify-center gap-4 px-2">
+          <div className="flex-shrink-0 flex items-center justify-center gap-4 px-2">
             <button 
               onClick={handlePrevImage}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600 shadow-sm transition-all"
+              className="flex items-center justify-center text-zinc-400 hover:text-zinc-800 dark:hover:text-white transition-colors p-1"
             >
-              <FiChevronLeft className="h-4 w-4" />
+              <FiChevronLeft className="h-5 w-5" />
             </button>
 
             <div className="flex items-center gap-3">
@@ -110,10 +110,10 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                 <button
                   key={idx}
                   onClick={() => setActiveImageIdx(idx)}
-                  className={`relative aspect-square w-16 rounded-lg overflow-hidden bg-zinc-50 border-2 transition-all ${
+                  className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all ${
                     activeImageIdx === idx 
-                      ? 'border-zinc-950 dark:border-white scale-105 shadow-sm' 
-                      : 'border-zinc-200/60 hover:border-zinc-300 dark:border-zinc-800/80 dark:hover:border-zinc-700'
+                      ? 'border-blue-500 ring-1 ring-blue-500/30' 
+                      : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
                   }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -124,25 +124,25 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
 
             <button 
               onClick={handleNextImage}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600 shadow-sm transition-all"
+              className="flex items-center justify-center text-zinc-400 hover:text-zinc-800 dark:hover:text-white transition-colors p-1"
             >
-              <FiChevronRight className="h-4 w-4" />
+              <FiChevronRight className="h-5 w-5" />
             </button>
           </div>
 
           {/* External Contact/Demo Buttons */}
-          <div className="grid grid-cols-3 gap-3 pt-2">
+          <div className="flex-shrink-0 grid grid-cols-3 gap-3 pt-1">
             <button 
               onClick={handleChatWA}
-              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-3 px-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-white transition-all shadow-sm"
+              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
             >
               <FiMessageSquare className="h-4 w-4" />
-              <span>Chat Admin</span>
+              <span>Chat Ahadi</span>
             </button>
 
             <button 
               onClick={handleChatWA}
-              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-3 px-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-white transition-all shadow-sm"
+              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
             >
               <FaWhatsapp className="h-4 w-4 text-green-500" />
               <span>Chat lewat WA</span>
@@ -152,7 +152,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               href="https://demo.laqzer-store.my.id" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-3 px-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-white transition-all shadow-sm"
+              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
             >
               <FiGlobe className="h-4 w-4 text-blue-500" />
               <span>Demo</span>
@@ -161,8 +161,8 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
         </div>
 
         {/* Right Column: Metadata, Pricing & Variant Actions */}
-        <div className="flex flex-col justify-between py-1 gap-6">
-          <div className="space-y-4">
+        <div className="h-full flex flex-col justify-between py-1 gap-6 min-h-0">
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1 scrollbar-thin space-y-4">
             {/* Title */}
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-zinc-950 dark:text-white leading-tight">
               {product.name}
@@ -179,7 +179,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             </div>
 
             {/* Rating Stats Box */}
-            <div className="grid grid-cols-3 divide-x divide-zinc-200 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl bg-zinc-50/55 dark:bg-zinc-900/20 py-4 px-2 text-center shadow-sm">
+            <div className="grid grid-cols-3 divide-x divide-zinc-100 dark:divide-zinc-900 border-y border-zinc-100 dark:border-zinc-900 py-3 text-center bg-transparent">
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center justify-center gap-1 text-sm font-bold text-zinc-900 dark:text-white">
                   <FiStar className="h-4 w-4 text-yellow-500 fill-current" />
@@ -219,10 +219,10 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                   <button
                     key={v}
                     onClick={() => setSelectedVariant(v)}
-                    className={`rounded-xl px-5 py-2.5 text-xs font-bold tracking-wide transition-all border outline-none ${
+                    className={`rounded-xl px-4 py-2 text-xs font-bold tracking-wide transition-all border outline-none ${
                       selectedVariant === v
-                        ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-white dark:text-zinc-950 dark:border-white shadow-sm'
-                        : 'bg-white text-zinc-700 border-zinc-200 hover:border-zinc-300 dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
+                        ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-white dark:text-zinc-950 dark:border-white'
+                        : 'bg-white text-zinc-650 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
                     }`}
                   >
                     {v}
@@ -232,47 +232,25 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             </div>
           </div>
 
-          {/* Bottom Row Actions: Quantity and Checkout Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 border-t border-zinc-100 dark:border-zinc-900 pt-6">
-            {/* Quantity Counter */}
-            <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-zinc-950">
-              <button 
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="px-4 py-3 text-sm font-semibold text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-950 dark:hover:text-white transition-colors"
-              >
-                -
-              </button>
-              <span className="px-4 text-sm font-bold text-zinc-900 dark:text-white min-w-[40px] text-center">
-                {quantity}
-              </span>
-              <button 
-                onClick={() => setQuantity((q) => q + 1)}
-                className="px-4 py-3 text-sm font-semibold text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-950 dark:hover:text-white transition-colors"
-              >
-                +
-              </button>
-            </div>
+          {/* Bottom Row Actions: Checkout Buttons */}
+          <div className="flex-shrink-0 grid grid-cols-2 gap-3 border-t border-zinc-100 dark:border-zinc-900 pt-5">
+            <button 
+              onClick={() => alert(`Sukses! ${product.name} (Varian: ${selectedVariant}) ditambahkan ke keranjang.`)}
+              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-3 px-4 text-xs font-extrabold tracking-wide hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 transition-all text-zinc-900 dark:text-white"
+            >
+              <FiShoppingCart className="h-4 w-4" />
+              <span>Masukkan Keranjang</span>
+            </button>
 
-            {/* Action Buttons */}
-            <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button 
-                onClick={() => alert(`Sukses! ${quantity}x ${product.name} (Varian: ${selectedVariant}) ditambahkan ke keranjang.`)}
-                className="flex items-center justify-center gap-2 rounded-xl border border-zinc-300 dark:border-zinc-700 py-3 px-4 text-xs font-extrabold tracking-wide hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all text-zinc-900 dark:text-white shadow-sm"
-              >
-                <FiShoppingCart className="h-4 w-4" />
-                <span>Masukkan Keranjang</span>
-              </button>
-
-              <button 
-                onClick={handleBuyNow}
-                className="flex items-center justify-center rounded-xl bg-zinc-950 dark:bg-white dark:text-zinc-950 text-white py-3 px-4 text-xs font-extrabold tracking-wide hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all shadow-md active:scale-[0.99]"
-              >
-                Beli Sekarang
-              </button>
-            </div>
+            <button 
+              onClick={handleBuyNow}
+              className="flex items-center justify-center rounded-xl bg-zinc-950 dark:bg-white dark:text-zinc-950 text-white py-3 px-4 text-xs font-extrabold tracking-wide hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all active:scale-[0.99]"
+            >
+              Beli Sekarang
+            </button>
           </div>
-
         </div>
+
       </div>
 
       {/* Tabs Section: Description & Reviews */}
