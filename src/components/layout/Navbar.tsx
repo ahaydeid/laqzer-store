@@ -24,9 +24,12 @@ export function Navbar({ settings, categories }: NavbarProps) {
           {/* Logo & Brand Name */}
           <div className="flex items-center gap-2">
             <a href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-950">
-                {settings.name.charAt(0)}
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="/img/logo.jpg" 
+                alt="Logo" 
+                className="h-8 w-8 rounded-lg object-cover" 
+              />
               <span>{settings.name}</span>
             </a>
           </div>
