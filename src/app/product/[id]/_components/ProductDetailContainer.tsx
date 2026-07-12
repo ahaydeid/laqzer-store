@@ -229,21 +229,26 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               </div>
             </div>
 
-            {/* Price display */}
-            <div className="flex items-center gap-3 pt-2">
-              <span className="text-2xl font-semibold text-red-500 dark:text-rose-500">
-                Rp{product.price.toLocaleString('id-ID')}
+            {/* Price display Section Wrapper */}
+            <div className="rounded-2xl bg-slate-100 dark:bg-zinc-900 p-4 space-y-1.5">
+              <span className="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                Harga Produk
               </span>
-              {hasDiscount && (
-                <>
-                  <span className="text-base text-zinc-400 line-through">
-                    Rp{product.originalPrice!.toLocaleString('id-ID')}
-                  </span>
-                  <span className="rounded-md bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 text-xs font-bold text-red-600 dark:text-red-400">
-                    -{discountPercentage}%
-                  </span>
-                </>
-              )}
+              <div className="flex items-center gap-3">
+                <span className="text-2xl font-semibold text-red-500 dark:text-rose-500">
+                  Rp{product.price.toLocaleString('id-ID')}
+                </span>
+                {hasDiscount && (
+                  <>
+                    <span className="text-base text-zinc-400 line-through">
+                      Rp{product.originalPrice!.toLocaleString('id-ID')}
+                    </span>
+                    <span className="rounded-md bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 text-xs font-bold text-red-600 dark:text-red-400">
+                      -{discountPercentage}%
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Variant Selector Section Wrapper */}
