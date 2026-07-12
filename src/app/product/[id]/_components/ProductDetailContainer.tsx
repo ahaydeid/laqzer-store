@@ -244,11 +244,16 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             </div>
 
             {/* Stock Info */}
-            <div className="flex items-center gap-1.5 text-zinc-500 font-medium pt-1">
-              <FiCheckCircle className="h-3.5 w-3.5 text-emerald-500" />
-              <span className="text-xs">
-                Stok: {product.stock}
+            <div className="space-y-1.5 pt-1">
+              <span className="block text-sm font-semibold text-zinc-900 dark:text-white">
+                Stok
               </span>
+              <div className="flex items-center gap-1.5 text-zinc-500 font-medium">
+                <FiCheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+                <span className="text-xs">
+                  {product.stock}
+                </span>
+              </div>
             </div>
 
             {/* Variant Selector */}
