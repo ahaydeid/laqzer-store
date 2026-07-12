@@ -2,7 +2,6 @@ import { getServices } from '@/services'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { HeroCarousel } from './_components/HeroCarousel'
-import { FlashSaleSection } from './_components/FlashSaleSection'
 import { CatalogContainer } from './_components/CatalogContainer'
 import { StoreHighlights } from './_components/StoreHighlights'
 
@@ -16,10 +15,9 @@ export default async function Home() {
   const services = getServices()
 
   // Load all initial store, category, and product data concurrently on the server
-  const [storeSettings, categories, flashSaleProducts, initialProducts] = await Promise.all([
+  const [storeSettings, categories, initialProducts] = await Promise.all([
     services.store.getSettings(),
     services.categories.getCategories(),
-    services.products.getFlashSaleProducts(),
     services.products.getProducts(),
   ])
 
@@ -31,11 +29,6 @@ export default async function Home() {
       <main className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 space-y-12">
         {/* Hero Slider Promotion */}
         <HeroCarousel />
-
-        {/* Flash Sale Banner */}
-        {flashSaleProducts.length > 0 && (
-          <FlashSaleSection products={flashSaleProducts} />
-        )}
 
         {/* Interactive Product Catalog (Category filters & search results) */}
         <CatalogContainer 
