@@ -279,6 +279,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                           : 'bg-white text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
                       }`}
                     >
+                      {v}
                     </button>
                   ))}
                 </div>
