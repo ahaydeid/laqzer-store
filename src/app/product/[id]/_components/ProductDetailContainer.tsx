@@ -243,38 +243,41 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               </div>
             </div>
 
-            {/* Stock Info */}
-            <div className="space-y-1.5 pt-1">
-              <span className="block text-sm font-semibold text-zinc-900 dark:text-white">
-                Stok
-              </span>
-              <div className="flex items-center gap-1.5 text-zinc-500 font-medium">
-                <FiCheckCircle className="h-3.5 w-3.5 text-emerald-500" />
-                <span className="text-xs">
-                  {product.stock}
+            {/* 2-Column Product Attributes Section */}
+            <div className="space-y-4 pt-3 border-t border-zinc-100 dark:border-zinc-900/50 mt-1">
+              {/* Stok Row */}
+              <div className="flex items-center gap-4">
+                <span className="w-20 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                  Stok
                 </span>
+                <div className="flex-1 flex items-center gap-1.5 text-zinc-800 dark:text-zinc-200 font-semibold">
+                  <FiCheckCircle className="h-4 w-4 text-emerald-500" />
+                  <span className="text-sm">
+                    {product.stock}
+                  </span>
+                </div>
               </div>
-            </div>
 
-            {/* Variant Selector */}
-            <div className="space-y-2 pt-1">
-              <span className="block text-sm font-semibold text-zinc-900 dark:text-white">
-                Varian
-              </span>
-              <div className="flex items-center gap-3">
-                {['Hitam', 'Merah'].map((v) => (
-                  <button
-                    key={v}
-                    onClick={() => setSelectedVariant(v)}
-                    className={`rounded-full px-4 py-2 text-xs font-medium tracking-wide transition-all border outline-none ${
-                      selectedVariant === v
-                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 dark:border-white'
-                        : 'bg-white text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
-                    }`}
-                  >
-                    {v}
-                  </button>
-                ))}
+              {/* Varian Row */}
+              <div className="flex items-center gap-4">
+                <span className="w-20 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                  Varian
+                </span>
+                <div className="flex-1 flex items-center gap-2.5 flex-wrap">
+                  {['Hitam', 'Merah'].map((v) => (
+                    <button
+                      key={v}
+                      onClick={() => setSelectedVariant(v)}
+                      className={`rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide transition-all border outline-none ${
+                        selectedVariant === v
+                          ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-zinc-900 dark:border-white'
+                          : 'bg-white text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
+                      }`}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
