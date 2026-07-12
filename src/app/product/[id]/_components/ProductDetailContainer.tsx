@@ -2,9 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiGlobe, FiShoppingCart } from 'react-icons/fi'
+import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiGlobe, FiShoppingCart, FiCheckCircle } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
-import { CheckCircle } from '@/components/CheckCircle'
 import { Product } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
 
@@ -161,7 +160,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
 
             {/* Stock Info */}
             <div className="flex items-center gap-1.5 text-zinc-500 font-medium">
-              <CheckCircle size="sm" />
+              <FiCheckCircle className="h-3.5 w-3.5 text-emerald-500" />
               <span className="text-xs">
                 Stok: {product.stock}
               </span>
