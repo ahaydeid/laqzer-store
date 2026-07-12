@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FiSearch, FiShoppingBag, FiBell, FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
+import { FiSearch, FiShoppingCart, FiBell, FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import { FaRegUserCircle } from 'react-icons/fa'
 import { StoreSettings } from '@/core/types/store'
 import { Category } from '@/core/types/category'
@@ -89,8 +89,8 @@ export function Navbar({ settings, categories }: NavbarProps) {
           <div className="flex items-center gap-4">
             {/* Cart Icon */}
             <button className="relative p-2 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
-              <FiShoppingBag className="h-5 w-5" />
-              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
+              <FiShoppingCart className="h-5 w-5" />
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
                 6
               </span>
             </button>
