@@ -17,20 +17,6 @@ export function Navbar({ settings, categories }: NavbarProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
-      {/* Top Banner (Contact info & Promo) */}
-      <div className="w-full bg-zinc-900 px-4 py-1.5 text-center text-xs font-medium text-zinc-300 sm:px-6">
-        <span>Hubungi CS WhatsApp kami: </span>
-        <a 
-          href={`https://wa.me/${settings.phone}`} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-white underline hover:text-green-400 transition-colors"
-        >
-          {settings.phone}
-        </a>
-        <span className="mx-2">|</span>
-        <span>📍 {settings.address}</span>
-      </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
