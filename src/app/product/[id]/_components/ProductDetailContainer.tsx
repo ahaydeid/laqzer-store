@@ -15,7 +15,6 @@ interface ProductDetailContainerProps {
 export function ProductDetailContainer({ product, settings }: ProductDetailContainerProps) {
   const router = useRouter()
   const [activeImageIdx, setActiveImageIdx] = useState(0)
-  const [thumbnailStartIdx, setThumbnailStartIdx] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState('Basic')
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
@@ -36,27 +35,11 @@ export function ProductDetailContainer({ product, settings }: ProductDetailConta
     : 0
 
   const handlePrevImage = () => {
-    const nextIdx = activeImageIdx === 0 ? galleryImages.length - 1 : activeImageIdx - 1
-    setActiveImageIdx(nextIdx)
-    
-    // Auto-adjust sliding window of 3 visible items
-    if (nextIdx === galleryImages.length - 1) {
-      setThumbnailStartIdx(galleryImages.length - 3)
-    } else if (nextIdx < thumbnailStartIdx) {
-      setThumbnailStartIdx(nextIdx)
-    }
+    setActiveImageIdx((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1))
   }
 
   const handleNextImage = () => {
-    const nextIdx = activeImageIdx === galleryImages.length - 1 ? 0 : activeImageIdx + 1
-    setActiveImageIdx(nextIdx)
-    
-    // Auto-adjust sliding window of 3 visible items
-    if (nextIdx === 0) {
-      setThumbnailStartIdx(0)
-    } else if (nextIdx >= thumbnailStartIdx + 3) {
-      setThumbnailStartIdx(nextIdx - 2)
-    }
+    setActiveImageIdx((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1))
   }
 
   const getWhatsAppLink = (messageText: string) => {
@@ -116,40 +99,51 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             )}
           </div>
 
-          {/* Gallery Thumbnail Carousel */}
-          <div className="flex-shrink-0 flex items-center justify-center gap-4 px-2">
-            <button 
+          {/* Gallery Thumbnail Carousel (Centered Sliding Track with Gradient Overlays) */}
+          <div className="flex-shrink-0 relative w-full max-w-[280px] sm:max-w-[320px] mx-auto overflow-hidden px-8">
+            {/* Left Gradient Overlay & Chevron Button */}
+            <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80 pointer-events-none z-10" />
+            <button
               onClick={handlePrevImage}
-              className="flex items-center justify-center text-zinc-400 hover:text-zinc-800 dark:hover:text-white transition-colors p-1"
+              className="absolute left-1 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white/90 text-zinc-650 hover:text-zinc-900 shadow-xs z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white"
             >
-              <FiChevronLeft className="h-5 w-5" />
+              <FiChevronLeft className="h-4 w-4" />
             </button>
 
-            <div className="flex items-center gap-3">
-              {galleryImages.slice(thumbnailStartIdx, thumbnailStartIdx + 3).map((img, idx) => {
-                const actualIdx = thumbnailStartIdx + idx
-                return (
+            {/* Sliding Track Viewport */}
+            <div className="overflow-hidden py-1">
+              <div 
+                className="flex items-center gap-3 transition-transform duration-300 ease-out"
+                style={{ 
+                  // Dynamically centers the active thumbnail
+                  // Item width is 56px (w-14) + gap-3 is 12px = 68px per thumbnail item.
+                  transform: `translateX(calc(50% - 28px - ${activeImageIdx * 68}px))` 
+                }}
+              >
+                {galleryImages.map((img, idx) => (
                   <button
-                    key={actualIdx}
-                    onClick={() => setActiveImageIdx(actualIdx)}
-                    className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all ${
-                      activeImageIdx === actualIdx 
-                        ? 'border-blue-500 ring-1 ring-blue-500/30' 
+                    key={idx}
+                    onClick={() => setActiveImageIdx(idx)}
+                    className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all flex-shrink-0 ${
+                      activeImageIdx === idx 
+                        ? 'border-blue-500 ring-1 ring-blue-500/30 scale-105' 
                         : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
                     }`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={img} alt="" className="h-full w-full object-cover" />
                   </button>
-                )
-              })}
+                ))}
+              </div>
             </div>
 
-            <button 
+            {/* Right Gradient Overlay & Chevron Button */}
+            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white via-white/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80 pointer-events-none z-10" />
+            <button
               onClick={handleNextImage}
-              className="flex items-center justify-center text-zinc-400 hover:text-zinc-800 dark:hover:text-white transition-colors p-1"
+              className="absolute right-1 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white/90 text-zinc-650 hover:text-zinc-900 shadow-xs z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white"
             >
-              <FiChevronRight className="h-5 w-5" />
+              <FiChevronRight className="h-4 w-4" />
             </button>
           </div>
 
