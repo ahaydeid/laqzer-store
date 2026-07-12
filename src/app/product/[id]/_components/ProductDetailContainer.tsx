@@ -235,9 +235,14 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                 Rp{product.price.toLocaleString('id-ID')}
               </span>
               {hasDiscount && (
-                <span className="text-base text-zinc-400 line-through">
-                  Rp{product.originalPrice!.toLocaleString('id-ID')}
-                </span>
+                <>
+                  <span className="text-base text-zinc-400 line-through">
+                    Rp{product.originalPrice!.toLocaleString('id-ID')}
+                  </span>
+                  <span className="rounded-md bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 text-xs font-bold text-red-600 dark:text-red-400">
+                    -{discountPercentage}%
+                  </span>
+                </>
               )}
             </div>
 
