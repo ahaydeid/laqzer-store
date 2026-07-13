@@ -7,6 +7,7 @@ import { FiMessageSquare, FiVolume2, FiChevronLeft } from "react-icons/fi";
 import { SidebarMenu } from "./components/SidebarMenu";
 import { SuaraNotifikasiTab } from "./components/SuaraNotifikasiTab";
 import { PesanTab } from "./components/PesanTab";
+import { playSwalSound } from "@/utils/sound";
 
 
 
@@ -16,6 +17,7 @@ export default function SettingsPage() {
   const [isMobile, setIsMobile] = useState(false);
 
   const showSuccessBanner = (title: string, text: string) => {
+    playSwalSound("success");
     Swal.fire({
       title: title,
       text: text,

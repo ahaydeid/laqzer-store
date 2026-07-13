@@ -92,6 +92,20 @@ export const SuaraNotifikasiTab: React.FC<SuaraNotifikasiTabProps> = ({
   const [notifStok, setNotifStok] = useState(() => localStorage.getItem("notif_stok") !== "false");
   const [notifReview, setNotifReview] = useState(() => localStorage.getItem("notif_review") !== "false");
 
+  const playPreviewSound = (id: string) => {
+    if (!soundMode) return;
+    let file = "";
+    if (id === "order" || id === "chat") file = "notif.mp3";
+    else if (id === "bayar") file = "paymentacc.mp3";
+    else if (id === "stok") file = "error.mp3";
+    else if (id === "review") file = "present.mp3";
+
+    if (file) {
+      const audio = new Audio(`/sound/${file}`);
+      audio.play().catch(err => console.log("Failed to play preview sound:", err));
+    }
+  };
+
   const [savedSettings, setSavedSettings] = useState({
     soundMode: localStorage.getItem("setting_sound_mode") !== "hening",
     notifOrder: localStorage.getItem("notif_order") !== "false",
@@ -183,7 +197,12 @@ export const SuaraNotifikasiTab: React.FC<SuaraNotifikasiTabProps> = ({
                 <div className="pr-2 py-1 flex items-center">
                   <Switch
                     checked={item.state}
-                    onChange={item.setter}
+                    onChange={(val) => {
+                      item.setter(val);
+                      if (val) {
+                        playPreviewSound(item.id);
+                      }
+                    }}
                   />
                 </div>
               </div>

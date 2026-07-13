@@ -3,6 +3,7 @@
 import { FiEdit3, FiTrash2, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { Product } from '@/core/types/product'
 import Swal from 'sweetalert2'
+import { playSwalSound } from '@/utils/sound'
 import { ActionButton } from '@/components/ui/ActionButton'
 import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from '@/components/ui/Table'
 
@@ -13,6 +14,7 @@ interface ProductTableProps {
 
 export function ProductTable({ products, onDelete }: ProductTableProps) {
   const handleDeleteClick = (id: string, name: string) => {
+    playSwalSound("confirm");
     Swal.fire({
       title: 'Hapus Produk?',
       text: `Apakah Anda yakin ingin menghapus produk "${name}"?`,
@@ -27,6 +29,7 @@ export function ProductTable({ products, onDelete }: ProductTableProps) {
         if (onDelete) {
           onDelete(id)
         } else {
+          playSwalSound("success");
           Swal.fire({
             title: 'Berhasil!',
             text: `Produk "${name}" berhasil dihapus! (Simulasi)`,
