@@ -6,18 +6,9 @@ import { FiMessageSquare, FiVolume2, FiChevronLeft } from "react-icons/fi";
 
 import { SidebarMenu } from "./components/SidebarMenu";
 import { SuaraNotifikasiTab } from "./components/SuaraNotifikasiTab";
+import { PesanTab } from "./components/PesanTab";
 
-// Placeholder tab component
-const PlaceholderTab: React.FC<{ title: string }> = ({ title }) => (
-  <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
-    <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-      <FiMessageSquare className="w-5 h-5 text-zinc-400" />
-    </div>
-    <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-      Pengaturan <span className="text-zinc-700 dark:text-zinc-200 font-semibold">{title}</span> segera hadir
-    </p>
-  </div>
-);
+
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("pesan");
@@ -100,7 +91,9 @@ export default function SettingsPage() {
         <div className={`flex-1 w-full ${showMobileDetail ? "block" : "hidden"} md:block`}>
           <div className="bg-white dark:bg-zinc-900 p-5 md:p-6">
             {activeTab === "pesan" && (
-              <PlaceholderTab title="Pesan" />
+              <PesanTab
+                onShowSuccessAlert={showSuccessBanner}
+              />
             )}
 
             {activeTab === "notifikasi" && (
