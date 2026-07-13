@@ -62,29 +62,25 @@ export const PesanTab: React.FC<PesanTabProps> = ({ onShowSuccessAlert }) => {
     <form onSubmit={handleSave} className="space-y-6">
       <div className="space-y-6 divide-y divide-zinc-100 dark:divide-zinc-800/60">
         {/* Section 1: Template Balasan */}
-        <div className="pt-0 space-y-4">
-          <label className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">
+        <div className="pt-0 space-y-2.5">
+          <label className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block mb-1">
             Template Balasan Pesan
           </label>
           
-          <div className="flex items-center justify-between gap-4 py-2">
-            <div className="space-y-1">
-              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-                Aktifkan Balasan Otomatis
-              </span>
-            </div>
-            <div className="pr-2 py-1 flex items-center">
-              <Switch
-                checked={replyActive}
-                onChange={setReplyActive}
-              />
-            </div>
+          <div className="flex items-center gap-3 py-1">
+            <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+              Balas Pesan Otomatis
+            </span>
+            <Switch
+              checked={replyActive}
+              onChange={setReplyActive}
+            />
           </div>
 
           {replyActive && (
-            <div className="space-y-2 pt-2 animate-in fade-in slide-in-from-top-1 duration-200">
-              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 block">
-                Isi Template Pesan
+            <div className="space-y-2 pt-1 animate-in fade-in slide-in-from-top-1 duration-200">
+              <span className="text-sm font-medium text-zinc-500 dark:text-zinc-200 block">
+                Isi Pesan
               </span>
               <textarea
                 value={replyText}
