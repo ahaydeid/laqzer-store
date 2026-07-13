@@ -251,12 +251,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
                   {item.label}
                 </span>
                 {item.id === "pesan" && unreadCount > 0 && !isCollapsed && (
-                  <span className="ml-2 bg-rose-500 text-white text-[11px] font-bold h-5 w-5 rounded-full shrink-0 flex items-center justify-center z-20">
+                  <span className="ml-auto bg-rose-500 text-white text-[11px] font-bold h-5 w-5 rounded-full shrink-0 flex items-center justify-center z-20">
                     {unreadCount}
                   </span>
                 )}
                 {item.id === "pesanan" && unreadOrderCount > 0 && !isCollapsed && (
-                  <span className="ml-2 bg-rose-500 text-white text-[11px] font-bold h-5 w-5 rounded-full shrink-0 flex items-center justify-center z-20">
+                  <span className="ml-auto bg-rose-500 text-white text-[11px] font-bold h-5 w-5 rounded-full shrink-0 flex items-center justify-center z-20">
                     {unreadOrderCount}
                   </span>
                 )}
