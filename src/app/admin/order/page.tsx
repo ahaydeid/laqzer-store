@@ -153,7 +153,7 @@ export default function OrderPage() {
                     : "border-transparent text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-800/20"}`}
               >
                 {tab}
-                {tab === "Dikirim" && ` (${count})`}
+                {["Belum Dibayar", "Sedang Diproses", "Dikirim"].includes(tab) && ` (${count})`}
               </button>
             );
           })}
