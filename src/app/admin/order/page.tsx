@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiSearch, FiX, FiShoppingBag, FiEye } from "react-icons/fi";
+import { FiSearch, FiX, FiShoppingBag, FiEye, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from "@/components/ui/Table";
 import { Modal } from "@/components/ui/Modal";
 import { ActionButton } from "@/components/ui/ActionButton";
@@ -104,6 +104,7 @@ export default function OrderPage() {
   const [statusFilter, setStatusFilter] = useState("Semua");
   const [isFocused, setIsFocused] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     document.title = "Kelola Pesanan | Laqzer Admin";
@@ -111,6 +112,7 @@ export default function OrderPage() {
 
   const handleClearSearch = () => {
     setSearchValue("");
+    setCurrentPage(1);
   };
 
   const getTabCount = (tab: string) => {
@@ -127,6 +129,10 @@ export default function OrderPage() {
       statusFilter === "Semua" || order.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const displayedOrders = filteredOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="space-y-6">
@@ -166,7 +172,7 @@ export default function OrderPage() {
             return (
               <button
                 key={tab}
-                onClick={() => setStatusFilter(tab)}
+                onClick={() => { setStatusFilter(tab); setCurrentPage(1); }}
                 className={`px-4 py-2 text-xs whitespace-nowrap cursor-pointer transition-all duration-200 outline-none border-b-2 ${getTabClass()}`}
               >
                 {tab}
@@ -184,7 +190,7 @@ export default function OrderPage() {
           <input
             type="text"
             value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            onChange={(e) => { setSearchValue(e.target.value); setCurrentPage(1); }}
             placeholder={isFocused ? "Cari ID Pesanan atau Nama..." : "Cari"}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
@@ -220,13 +226,13 @@ export default function OrderPage() {
           </tr>
         </TableHead>
         <TableBody>
-          {filteredOrders.length > 0 ? (
-            filteredOrders.map((order, index) => (
+          {displayedOrders.length > 0 ? (
+            displayedOrders.map((order, index) => (
               <TableRow
                 key={order.id}
               >
                 <TableCell className="text-center text-zinc-400 dark:text-zinc-500 w-12 font-medium">
-                  {index + 1}
+                  {(currentPage - 1) * itemsPerPage + index + 1}
                 </TableCell>
                 <TableCell className="text-zinc-800 dark:text-zinc-200">
                   {order.id}
@@ -286,6 +292,26 @@ export default function OrderPage() {
           )}
         </TableBody>
       </Table>
+
+      {/* Pagination Controls (Outside Table Card) */}
+      <div className="flex items-center justify-end gap-2 pr-1">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="flex h-8 w-8 items-center justify-center rounded border border-zinc-200/80 bg-white text-zinc-600 hover:bg-zinc-50 active:scale-95 transition-all dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400 dark:hover:bg-zinc-800/80 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+          title="Sebelumnya"
+        >
+          <FiChevronLeft className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages || totalPages <= 1}
+          className="flex h-8 w-8 items-center justify-center rounded border border-zinc-200/80 bg-white text-zinc-600 hover:bg-zinc-50 active:scale-95 transition-all dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400 dark:hover:bg-zinc-800/80 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+          title="Selanjutnya"
+        >
+          <FiChevronRight className="h-4 w-4" />
+        </button>
+      </div>
 
       {/* Order Detail Modal */}
       <Modal
