@@ -54,7 +54,7 @@ function ChatContent() {
 
   return (
     <div className="-mx-6 -my-6 md:-mx-8 md:-my-8 h-screen p-4 overflow-hidden">
-      <div className="h-full md:grid md:grid-cols-[360px_1fr] overflow-hidden bg-white dark:bg-zinc-900/40">
+      <div className="h-full md:grid md:grid-cols-[380px_1fr] overflow-hidden bg-white dark:bg-zinc-900/40">
       {/* Left Column: Chat List */}
       <div className="flex flex-col md:h-full md:overflow-hidden md:border-r md:border-zinc-200 dark:md:border-zinc-800 bg-white dark:bg-zinc-900">
         <div className="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 px-4 pt-4 pb-3 mb-2 relative shrink-0">
@@ -95,7 +95,7 @@ function ChatContent() {
                 }`}
               >
                 <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img 
                       src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(chat.name)}`} 
@@ -105,17 +105,17 @@ function ChatContent() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1">
-                      <p className="font-semibold text-xs truncate text-zinc-900 dark:text-zinc-50">{chat.name}</p>
+                      <p className="font-semibold text-sm truncate text-zinc-900 dark:text-zinc-50">{chat.name}</p>
                     </div>
-                    <p className="text-zinc-500 dark:text-zinc-400 text-xs truncate mt-0.5">{chat.lastMessage}</p>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-[13px] truncate mt-0.5">{chat.lastMessage}</p>
                   </div>
                 </div>
                 <div className="flex flex-col items-end justify-center text-right shrink-0 ml-2">
-                  <span className="text-[10px] text-zinc-400">
+                  <span className="text-xs text-zinc-400">
                     {chat.time}
                   </span>
                   {showUnread && (
-                    <span className="bg-emerald-500 text-white text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center mt-1">
+                    <span className="bg-emerald-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center mt-1">
                       {chat.unreadCount}
                     </span>
                   )}
