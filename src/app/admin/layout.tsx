@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { FiGrid, FiShoppingBag, FiHome, FiMenu, FiX } from 'react-icons/fi'
+import { FiGrid, FiShoppingBag, FiMenu, FiX, FiExternalLink, FiSettings } from 'react-icons/fi'
 import Sidebar from './products/_components/Sidebar'
 
 interface SidebarItemProps {
@@ -12,21 +12,34 @@ interface SidebarItemProps {
   label: string
   active: boolean
   onClick?: () => void
+  target?: string
 }
 
-function SidebarItem({ href, icon: Icon, label, active, onClick }: SidebarItemProps) {
+function SidebarItem({ href, icon: Icon, label, active, onClick, target }: SidebarItemProps) {
+  const isExternal = target === '_blank';
   return (
     <Link
       href={href}
       onClick={onClick}
+      target={target}
+      rel={isExternal ? 'noopener noreferrer' : undefined}
       className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
         active
           ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-sm'
           : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100'
       }`}
     >
-      <Icon className="h-5 w-5 flex-shrink-0" />
-      <span>{label}</span>
+      {isExternal ? (
+        <div className="flex items-center gap-1.5">
+          <span>{label}</span>
+          <Icon className="h-4 w-4 flex-shrink-0 opacity-80" />
+        </div>
+      ) : (
+        <div className="flex items-center gap-3">
+          <Icon className="h-5 w-5 flex-shrink-0" />
+          <span>{label}</span>
+        </div>
+      )}
     </Link>
   )
 }
@@ -50,6 +63,7 @@ export default function AdminLayout({
   const navItems = [
     { href: '/admin', icon: FiGrid, label: 'Dashboard' },
     { href: '/admin/products', icon: FiShoppingBag, label: 'Kelola Produk' },
+    { href: '/admin/settings', icon: FiSettings, label: 'Pengaturan' },
   ]
 
   return (
@@ -102,9 +116,10 @@ export default function AdminLayout({
                 </span>
                 <SidebarItem
                   href="/"
-                  icon={FiHome}
+                  icon={FiExternalLink}
                   label="Lihat Toko"
                   active={false}
+                  target="_blank"
                   onClick={() => setMobileMenuOpen(false)}
                 />
               </div>

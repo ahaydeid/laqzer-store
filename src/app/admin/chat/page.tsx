@@ -1,11 +1,19 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FiMessageSquare, FiSearch } from "react-icons/fi";
 import { ChatItem, initialChats, ChatDetailPanel } from "./ChatComponents";
 
 export default function ChatPage() {
+  return (
+    <Suspense fallback={<div className="flex h-full items-center justify-center text-zinc-400 text-xs py-8">Memuat obrolan...</div>}>
+      <ChatContent />
+    </Suspense>
+  );
+}
+
+function ChatContent() {
   const [searchMode, setSearchMode] = useState(false);
   const [query, setQuery] = useState("");
   const [chatList, setChatList] = useState<ChatItem[]>(initialChats);

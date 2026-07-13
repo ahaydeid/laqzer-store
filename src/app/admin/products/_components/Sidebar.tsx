@@ -12,7 +12,8 @@ import {
   HiOutlineShoppingBag,
   HiOutlineChatBubbleLeft,
   HiOutlineClipboardDocumentList,
-  HiOutlineMegaphone
+  HiOutlineMegaphone,
+  HiOutlineArrowTopRightOnSquare,
 } from "react-icons/hi2";
 
 interface SidebarProps {
@@ -34,18 +35,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
           ? "pesanan"
           : pathname.startsWith("/admin/campaign")
             ? "campaign"
-            : "";
+            : pathname.startsWith("/admin/settings")
+              ? "pengaturan"
+              : "";
 
   const config = {
-    bgDarkClass: "bg-zinc-950 dark:bg-zinc-900 border-zinc-800",
-    sidebarTextClass: "text-zinc-400 hover:text-zinc-100",
-    sidebarTextActiveColorClass: "text-zinc-950 dark:text-zinc-50 font-bold",
+    bgDarkClass: "bg-sky-800 dark:bg-zinc-900",
+    sidebarTextClass: "text-sky-100 group-hover:text-white dark:text-zinc-400 dark:group-hover:text-zinc-100 transition-colors duration-200",
+    sidebarTextActiveColorClass: "text-sky-950 dark:text-sky-400 font-bold",
     sidebarTextActiveBgClass: "bg-zinc-50 dark:bg-zinc-950",
-    sidebarBorderClass: "border-zinc-800/60",
-    sidebarProfileHoverClass: "hover:bg-zinc-900/60 dark:hover:bg-zinc-800/60",
+    sidebarBorderClass: "border-sky-800/30 dark:border-zinc-800",
+    sidebarProfileHoverClass: "hover:bg-sky-800/60 dark:hover:bg-zinc-800/60",
     sidebarBrandTextClass: "text-white font-bold",
-    sidebarSubtextClass: "text-zinc-500",
-    sidebarHoverLineClass: "bg-zinc-700 dark:bg-zinc-300",
+    sidebarSubtextClass: "text-sky-200 dark:text-zinc-500",
+    sidebarHoverLineClass: "bg-white/15 dark:bg-zinc-800",
   };
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -110,7 +113,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
     { type: "item", id: "pesanan", label: "Pesanan", href: "/admin/order", icon: HiOutlineClipboardDocumentList },
     { type: "item", id: "campaign", label: "Campaign", href: "/admin/campaign", icon: HiOutlineMegaphone },
     { type: "item", id: "products", label: "Produk", href: "/admin/products", icon: HiOutlineShoppingBag },
-    { type: "header", label: "Master Data" },
+    { type: "header", label: "Konfigurasi" },
+    { type: "item", id: "pengaturan", label: "Pengaturan", href: "/admin/settings", icon: HiOutlineCog6Tooth },
   ];
 
   const handleItemClick = (item: { href?: string }) => {
@@ -118,7 +122,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
       router.push(item.href);
     }
   };
-
   const getCapsuleClass = (isActive: boolean) => {
     const base = `absolute inset-y-0 right-0 rounded-l-full ${config.sidebarTextActiveBgClass} pointer-events-none z-0`;
     if (isActive) {
@@ -135,6 +138,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
     const transition = isActive ? "opacity-100" : "opacity-0";
     return `${base} ${transition}`;
   };
+
 
   const getIconClass = (itemId: string, isActive: boolean) => {
     const base = "h-4.5 w-4.5 shrink-0";
@@ -184,7 +188,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
 
           <h1 className={`text-xl font-bold leading-none truncate transition-all duration-300 ${isCollapsed ? "opacity-0 w-0 pointer-events-none" : "opacity-100 w-auto"}`}>
             <span className={config.sidebarBrandTextClass}>
-              Laqzer <span className="text-zinc-400">Admin</span>
+              Laqzer <span className="text-white/60 dark:text-zinc-500">Admin</span>
             </span>
           </h1>
         </div>
@@ -197,7 +201,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
             return (
               <div
                 key={`header-${idx}`}
-                className={`px-5 text-[10px] font-bold text-zinc-500 uppercase tracking-widest select-none transition-all duration-300 whitespace-nowrap overflow-hidden
+                className={`px-5 text-[10px] font-bold text-white/50 dark:text-zinc-500 uppercase tracking-widest select-none transition-all duration-300 whitespace-nowrap overflow-hidden
                   ${isCollapsed ? "max-w-0 opacity-0 py-0 h-0" : "max-w-48 opacity-100 pt-3.5 pb-1"}`}
               >
                 {item.label}
@@ -254,7 +258,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
 
               {/* Hover line indicator (only for inactive item) */}
               <div
-                className={`absolute bottom-0 right-0 h-[1.5px] ${config.sidebarHoverLineClass} transition-all duration-300
+                className={`absolute bottom-0 right-0 h-px ${config.sidebarHoverLineClass} transition-all duration-300
                   ${isActive ? "opacity-0" : "opacity-0 group-hover:opacity-100"}
                   ${isCollapsed ? 'left-3' : 'left-8'}`}
               />
@@ -265,19 +269,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
 
       {/* Lihat Toko (Separated, Above Footer) */}
       <div className="relative w-full group pb-2 shrink-0">
-        <button
-          onClick={() => router.push("/")}
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
           className={`w-full flex items-center outline-none text-sm cursor-pointer justify-start py-3 pr-5 text-left relative z-10
             ${isCollapsed ? 'pl-[23px]' : 'pl-8'} ${config.sidebarTextClass}`}
           title={isCollapsed ? "Lihat Toko" : undefined}
         >
-          <HiOutlineHome className={getIconClass("lihat-toko", false)} />
-          <span className={getSpanClass(false)}>
-            Lihat Toko
-          </span>
-        </button>
+          {isCollapsed ? (
+            <HiOutlineArrowTopRightOnSquare className={getIconClass("lihat-toko", false)} />
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <span className="whitespace-nowrap overflow-hidden font-medium text-sm">
+                Lihat Toko
+              </span>
+              <HiOutlineArrowTopRightOnSquare className="h-4 w-4 shrink-0 opacity-80" />
+            </div>
+          )}
+        </a>
         <div
-          className={`absolute bottom-2 right-0 h-[1.5px] ${config.sidebarHoverLineClass} transition-all duration-300 opacity-0 group-hover:opacity-100
+          className={`absolute bottom-2 right-0 h-px ${config.sidebarHoverLineClass} transition-all duration-300 opacity-0 group-hover:opacity-100
             ${isCollapsed ? 'left-3' : 'left-8'}`}
         />
       </div>
