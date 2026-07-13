@@ -254,7 +254,7 @@ export default function OrderPage() {
                       onClick={() => setSelectedOrder(order)}
                       title="Detail Pesanan"
                     >
-                      <FiEye className="h-4 w-4 text-white" />
+                      <FiEye className="h-4 w-4" />
                     </ActionButton>
                   </div>
                 </TableCell>
