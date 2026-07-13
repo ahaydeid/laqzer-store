@@ -120,14 +120,14 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           </div>
 
           {/* Gallery Thumbnail Carousel (Centered Sliding Track with Gradient Overlays) */}
-          <div className="flex-shrink-0 relative w-full max-w-[280px] sm:max-w-[320px] mx-auto px-8">
+          <div className="flex-shrink-0 relative w-full max-w-[280px] sm:max-w-[380px] mx-auto px-8">
             {/* Left Chevron Button */}
             <button
               onClick={handlePrevImage}
               disabled={virtualIdx === 0}
-              className="absolute left-1 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white/90 text-zinc-600 hover:text-zinc-900 shadow-xs z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none"
+              className="absolute left-1 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-zinc-100 bg-white/90 text-zinc-600 hover:text-zinc-900 z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none"
             >
-              <FiChevronLeft className="h-4 w-4" />
+              <FiChevronLeft className="h-6 w-6" />
             </button>
 
             {/* Sliding Track Viewport with boundary-aligned gradient overlays */}
@@ -155,7 +155,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                       }}
                       className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all flex-shrink-0 ${
                         activeImageIdx === actualIdx 
-                          ? 'border-blue-500 ring-1 ring-blue-500/30 scale-105' 
+                          ? 'border-sky-500 ring-1 ring-sky-500/30 scale-110' 
                           : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
                       }`}
                     >
@@ -173,9 +173,9 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             {/* Right Chevron Button */}
             <button
               onClick={handleNextImage}
-              className="absolute right-1 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white/90 text-zinc-600 hover:text-zinc-900 shadow-xs z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+              className="absolute right-1 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-zinc-100 bg-white/90 text-zinc-600 hover:text-zinc-900 shadow-xs z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white"
             >
-              <FiChevronRight className="h-4 w-4" />
+              <FiChevronRight className="h-6 w-6" />
             </button>
           </div>
 
@@ -183,7 +183,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           <div className="flex-shrink-0 grid grid-cols-2 gap-3 pt-1">
             <button 
               onClick={handleChatWA}
-              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
+              className="flex items-center justify-center gap-2 border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
             >
               <FiMessageSquare className="h-4 w-4" />
               <span>Chat Admin</span>
@@ -191,7 +191,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
 
             <button 
               onClick={handleChatWA}
-              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
+              className="flex items-center justify-center gap-2 border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
             >
               <FaWhatsapp className="h-4 w-4 text-green-500" />
               <span>Chat lewat WA</span>
@@ -291,7 +291,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           <div className="flex-shrink-0 grid grid-cols-2 gap-3 border-t border-zinc-100 dark:border-zinc-900 pt-5">
             <button 
               onClick={() => alert(`Sukses! ${product.name} (Varian: ${selectedVariant}) ditambahkan ke keranjang.`)}
-              className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 py-3 px-4 text-xs font-extrabold tracking-wide hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 transition-all text-zinc-900 dark:text-white"
+              className="flex items-center justify-center gap-2 rounded border border-zinc-200 py-3 px-4 text-xs font-semibold tracking-wide hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 transition-all text-zinc-900 dark:text-white"
             >
               <FiShoppingCart className="h-4 w-4" />
               <span>Masukkan Keranjang</span>
@@ -299,7 +299,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
 
             <button 
               onClick={handleBuyNow}
-              className="flex items-center justify-center rounded-xl bg-zinc-950 dark:bg-white dark:text-zinc-950 text-white py-3 px-4 text-xs font-extrabold tracking-wide hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all active:scale-[0.99]"
+              className="flex items-center justify-center rounded bg-zinc-950 dark:bg-white dark:text-zinc-950 text-white py-3 px-4 text-xs font-semibold tracking-wide hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all active:scale-[0.99]"
             >
               Beli Sekarang
             </button>

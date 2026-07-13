@@ -107,7 +107,7 @@ export default function ChatPage() {
                     {chat.time}
                   </span>
                   {showUnread && (
-                    <span className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center mt-1">
+                    <span className="bg-emerald-500 text-white text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center mt-1">
                       {chat.unreadCount}
                     </span>
                   )}

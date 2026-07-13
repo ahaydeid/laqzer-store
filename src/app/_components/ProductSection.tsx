@@ -71,7 +71,7 @@ export function ProductSection({ products }: ProductSectionProps) {
           return (
             <div 
               key={product.id} 
-              className="group relative flex flex-col rounded-xl border border-zinc-100 bg-white overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/40"
+              className="group relative flex flex-col rounded-xl border border-zinc-100 bg-white overflow-hidden hover:shadow-md transition-all duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/40"
             >
               {/* Product link wrapper */}
               <Link href={`/product/${product.id}`} className="flex flex-col flex-1">

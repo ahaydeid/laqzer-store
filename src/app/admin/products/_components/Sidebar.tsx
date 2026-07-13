@@ -10,7 +10,9 @@ import {
   HiOutlineChevronDown, 
   HiOutlineBars3,
   HiOutlineShoppingBag,
-  HiOutlineChatBubbleLeft
+  HiOutlineChatBubbleLeft,
+  HiOutlineClipboardDocumentList,
+  HiOutlineMegaphone
 } from "react-icons/hi2";
 
 interface SidebarProps {
@@ -28,7 +30,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
       ? "products" 
       : pathname.startsWith("/admin/chat")
         ? "pesan"
-        : "";
+        : pathname.startsWith("/admin/order")
+          ? "pesanan"
+          : pathname.startsWith("/admin/campaign")
+            ? "campaign"
+            : "";
 
   const config = {
     bgDarkClass: "bg-zinc-950 dark:bg-zinc-900 border-zinc-800",
@@ -101,7 +107,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
     { type: "item", id: "beranda", label: "Dashboard", href: "/admin", icon: HiOutlineHome },
     { type: "header", label: "Operasional" },
     { type: "item", id: "pesan", label: "Pesan", href: "/admin/chat", icon: HiOutlineChatBubbleLeft },
-    { type: "item", id: "products", label: "Kelola Produk", href: "/admin/products", icon: HiOutlineShoppingBag },
+    { type: "item", id: "pesanan", label: "Pesanan", href: "/admin/order", icon: HiOutlineClipboardDocumentList },
+    { type: "item", id: "campaign", label: "Campaign", href: "/admin/campaign", icon: HiOutlineMegaphone },
+    { type: "item", id: "products", label: "Produk", href: "/admin/products", icon: HiOutlineShoppingBag },
     { type: "header", label: "Master Data" },
   ];
 

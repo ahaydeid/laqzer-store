@@ -19,7 +19,7 @@ export interface Message {
 }
 
 export const initialChats: ChatItem[] = [
-  { id: "1", name: "Budi Santoso", lastMessage: "Oke min langsung saya order ya. Makasih!", time: "09:30", unreadCount: 2, verified: false },
+  { id: "1", name: "Farhan Maulana", lastMessage: "Oke min langsung saya order ya. Makasih!", time: "09:30", unreadCount: 2, verified: false },
   { id: "2", name: "Siti Rahma", lastMessage: "Sudah saya bayar ya kak, tolong diproses", time: "Kemarin", unreadCount: 0, verified: true },
   { id: "3", name: "Andi Wijaya", lastMessage: "Bisa kirim pakai Grab Sameday?", time: "08:15", unreadCount: 0, verified: false },
   { id: "4", name: "Dewi Kusuma", lastMessage: "Ukuran M masih ada kak?", time: "07:55", unreadCount: 3, verified: false },
@@ -37,7 +37,7 @@ export const initialChats: ChatItem[] = [
 export const initialMessages: Record<string, Message[]> = {
   "1": [
     { id: "m1", sender: "customer", text: "Halo min, apakah produk Essentials Men's Oxford ready?", time: "09:28" },
-    { id: "m2", sender: "admin", text: "Halo Kak Budi! Ready kak, silakan diorder ya.", time: "09:29" },
+    { id: "m2", sender: "admin", text: "Halo Kak Farhan! Ready kak, silakan diorder ya.", time: "09:29" },
     { id: "m3", sender: "customer", text: "Oke min langsung saya order ya. Makasih!", time: "09:30" }
   ],
   "2": [

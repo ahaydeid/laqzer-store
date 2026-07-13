@@ -95,7 +95,7 @@ export default async function AdminDashboardPage() {
         {/* Kolom Kiri: Total Pendapatan & Ringkasan Transaksi — 40% */}
         <div className="lg:col-span-2 flex flex-col gap-4">
           {/* Card 1: Total Pendapatan */}
-          <div className="bg-zinc-950 dark:bg-zinc-900 p-5 rounded border border-zinc-900 dark:border-zinc-800 text-white shadow-xs flex flex-col justify-between hover:shadow-md transition-all duration-300 relative overflow-hidden">
+          <div className="bg-zinc-900 dark:bg-zinc-900 p-5 rounded-xl border border-zinc-900 dark:border-zinc-800 text-white shadow-xs flex flex-col justify-between hover:shadow-md transition-all duration-300 relative overflow-hidden">
             <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
 
             <div className="flex items-center justify-between mb-4 relative z-10">
@@ -116,11 +116,11 @@ export default async function AdminDashboardPage() {
               <div className="w-full">
                 <div className="grid grid-cols-2 text-xs gap-y-3">
                   <span className="text-zinc-400">Pesanan Selesai:</span>
-                  <span className="font-bold text-zinc-700 dark:text-zinc-300 text-right">78 Transaksi</span>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 text-right">78 Transaksi</span>
                   <span className="text-zinc-400">Pesanan Diproses:</span>
-                  <span className="font-bold text-zinc-700 dark:text-zinc-300 text-right">5 Transaksi</span>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 text-right">5 Transaksi</span>
                   <span className="text-zinc-400">Pengunjung Unik:</span>
-                  <span className="font-bold text-sky-600 dark:text-sky-400 text-right text-sm">1.248 Pengunjung</span>
+                  <span className="font-semibold text-sky-600 dark:text-sky-400 text-right">1.248 Pengunjung</span>
                 </div>
               </div>
             </div>
@@ -170,7 +170,7 @@ export default async function AdminDashboardPage() {
       {/* Recent Orders History */}
       <div className="space-y-2 pt-4">
         <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Pesanan Terbaru</span>
-        <div className="bg-white/80 dark:bg-zinc-900/40 p-5 rounded border border-zinc-200/80 dark:border-zinc-800 shadow-xs overflow-hidden">
+        <div className="bg-white/80 dark:bg-zinc-900/40 p-5 rounded border border-zinc-100 dark:border-zinc-800 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
@@ -190,7 +190,7 @@ export default async function AdminDashboardPage() {
                   <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 179.000</td>
                   <td className="py-3 text-zinc-500">Transfer Bank Mandiri</td>
                   <td className="py-3">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-500 text-white dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30">
                       Selesai
                     </span>
                   </td>
@@ -204,7 +204,7 @@ export default async function AdminDashboardPage() {
                   <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 198.000</td>
                   <td className="py-3 text-zinc-500">GoPay</td>
                   <td className="py-3">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/30">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-500 text-white dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/30">
                       Diproses
                     </span>
                   </td>
@@ -218,7 +218,7 @@ export default async function AdminDashboardPage() {
                   <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 650.000</td>
                   <td className="py-3 text-zinc-500">ShopeePay</td>
                   <td className="py-3">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-500 text-white dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30">
                       Selesai
                     </span>
                   </td>

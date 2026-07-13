@@ -11,13 +11,13 @@ const HIGHLIGHTS = [
     id: 2,
     icon: <FiShield className="h-6 w-6 text-zinc-950 dark:text-white" />,
     title: 'Bayar di Tempat (COD)',
-    desc: 'Nikmati kemudahan bertransaksi langsung di depan pintu rumah Anda secara aman.',
+    desc: 'Nikmati kemudahan bertransaksi langsung di depan pintu rumah Kamu secara aman.',
   },
   {
     id: 3,
     icon: <FiCheckCircle className="h-6 w-6 text-zinc-950 dark:text-white" />,
     title: 'Kualitas Premium',
-    desc: 'Semua barang melewati kendali mutu ketat untuk memastikan standar kepuasan Anda.',
+    desc: 'Semua barang melewati kendali mutu ketat untuk memastikan standar kepuasan Kamu.',
   },
   {
     id: 4,
@@ -37,7 +37,7 @@ export function StoreHighlights() {
             Mengapa Memilih Kami?
           </h3>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Komitmen kami untuk memberikan pengalaman belanja digital terbaik dan terpercaya bagi Anda.
+            Komitmen kami untuk memberikan pengalaman belanja digital terbaik dan terpercaya bagi Kamu.
           </p>
         </div>
 
@@ -46,7 +46,7 @@ export function StoreHighlights() {
           {HIGHLIGHTS.map((item) => (
             <div 
               key={item.id} 
-              className="flex flex-col gap-4 rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/30"
+              className="flex flex-col gap-4 rounded-2xl border border-zinc-100 bg-white p-6 hover:shadow-md transition-shadow duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/30"
             >
               {/* Icon Container */}
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-50 border border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800">
