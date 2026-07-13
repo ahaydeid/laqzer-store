@@ -39,10 +39,11 @@ export function CategorySection({ categories, activeCategory, onSelectCategory }
 
   return (
     <section className="w-full py-8">
-      <div className="flex flex-col gap-6">
-        <h3 className="text-lg font-bold tracking-tight text-zinc-950 dark:text-white">
-          Kategori Pilihan
-        </h3>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6">
+          <h3 className="text-lg font-bold tracking-tight text-zinc-950 dark:text-white">
+            Kategori Pilihan
+          </h3>
         
         {/* Horizontal scrollable categories grid */}
         <div className="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
@@ -82,6 +83,7 @@ export function CategorySection({ categories, activeCategory, onSelectCategory }
               </span>
             </button>
           ))}
+        </div>
         </div>
       </div>
     </section>

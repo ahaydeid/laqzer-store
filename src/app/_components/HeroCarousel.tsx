@@ -21,7 +21,7 @@ const SLIDES: Slide[] = [
     subtitle: 'Redefine Your Everyday Style',
     buttonText: 'Belanja Sekarang',
     imageUrl: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=800',
-    bgClass: 'bg-zinc-100 dark:bg-zinc-900',
+    bgClass: 'bg-slate-50 dark:bg-zinc-900',
   },
   {
     id: 2,
@@ -30,7 +30,7 @@ const SLIDES: Slide[] = [
     subtitle: 'Dibuat dengan bangga oleh pengrajin UMKM terpilih',
     buttonText: 'Lihat Koleksi',
     imageUrl: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=800',
-    bgClass: 'bg-zinc-200 dark:bg-zinc-900/50',
+    bgClass: 'bg-slate-50 dark:bg-zinc-900/50',
   },
 ]
 
@@ -53,43 +53,45 @@ export function HeroCarousel() {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-zinc-50 dark:bg-zinc-900/40">
+    <div className="relative overflow-hidden bg-zinc-50 dark:bg-zinc-900/40">
       <div 
         className="flex transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
         {SLIDES.map((slide) => (
-          <div key={slide.id} className="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-2 min-h-[420px] items-center p-8 sm:p-12 lg:p-16 gap-8">
-            {/* Left Column: Promo text */}
-            <div className="space-y-6 flex flex-col justify-center text-left">
-              <span className="inline-block text-xs sm:text-sm font-semibold tracking-wider text-zinc-500 uppercase">
-                {slide.tag}
-              </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-950 dark:text-white leading-[1.15] whitespace-pre-line animate-fade-in-up">
-                {slide.title}
-              </h2>
-              <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base lg:text-lg">
-                {slide.subtitle}
-              </p>
-              <div>
-                <a
-                  href="#catalog"
-                  className="inline-flex h-11 items-center justify-center rounded-full bg-zinc-950 px-6 text-sm font-medium text-white hover:bg-zinc-800 transition-all dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
-                >
-                  {slide.buttonText}
-                </a>
+          <div key={slide.id} className={`w-full flex-shrink-0 ${slide.bgClass || ''}`}>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 min-h-[420px] items-center py-8 sm:py-12 lg:py-16 gap-8">
+              {/* Left Column: Promo text */}
+              <div className="space-y-6 flex flex-col justify-center text-left">
+                <span className="inline-block text-xs sm:text-sm font-semibold tracking-wider text-zinc-500 uppercase">
+                  {slide.tag}
+                </span>
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-950 dark:text-white leading-[1.15] whitespace-pre-line animate-fade-in-up">
+                  {slide.title}
+                </h2>
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base lg:text-lg">
+                  {slide.subtitle}
+                </p>
+                <div>
+                  <a
+                    href="#catalog"
+                    className="inline-flex h-11 items-center justify-center rounded-full bg-zinc-950 px-6 text-sm font-medium text-white hover:bg-zinc-800 transition-all dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
+                  >
+                    {slide.buttonText}
+                  </a>
+                </div>
               </div>
-            </div>
 
-            {/* Right Column: Visual Showcase */}
-            <div className="relative h-64 md:h-full w-full rounded-2xl overflow-hidden shadow-lg shadow-zinc-200/50 dark:shadow-none">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={slide.imageUrl}
-                alt="Showcase"
-                className="absolute inset-0 h-full w-full object-cover transform hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              {/* Right Column: Visual Showcase */}
+              <div className="relative h-64 md:h-full w-full rounded-2xl overflow-hidden shadow-lg shadow-zinc-200/50 dark:shadow-none">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={slide.imageUrl}
+                  alt="Showcase"
+                  className="absolute inset-0 h-full w-full object-cover transform hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              </div>
             </div>
           </div>
         ))}

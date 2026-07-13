@@ -36,11 +36,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { id } = await params
   const services = getServices()
 
-  // Fetch product data, store settings, and categories concurrently
-  const [product, storeSettings, categories] = await Promise.all([
+  // Fetch product data, store settings, categories, and all products concurrently
+  const [product, storeSettings, categories, allProducts] = await Promise.all([
     services.products.getProductById(id),
     services.store.getSettings(),
     services.categories.getCategories(),
+    services.products.getProducts(),
   ])
 
   // If the product does not exist, trigger the 404 page
@@ -54,9 +55,15 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       <Navbar settings={storeSettings} categories={categories} />
 
       {/* Main product detail workspace */}
-      <main className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8">
-        <ProductDetailContainer product={product} settings={storeSettings} />
-      </main>
+      <div className="flex-1 w-full bg-white dark:bg-zinc-950">
+        <main className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 pb-16">
+          <ProductDetailContainer
+            product={product}
+            settings={storeSettings}
+            relatedProducts={allProducts.filter((p) => p.id !== product!.id).slice(0, 8)}
+          />
+        </main>
+      </div>
 
       {/* Footer layout */}
       <Footer settings={storeSettings} />

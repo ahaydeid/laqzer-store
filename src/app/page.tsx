@@ -26,10 +26,10 @@ export default async function Home() {
       {/* Navigation bar */}
       <Navbar settings={storeSettings} categories={categories} />
 
-      <main className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-        {/* Hero Slider Promotion */}
-        <HeroCarousel />
+      {/* Hero Slider Promotion (Full Width) */}
+      <HeroCarousel />
 
+      <main className="flex-1 w-full">
         {/* Interactive Product Catalog (Category filters & search results) */}
         <CatalogContainer 
           categories={categories} 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiGlobe, FiShoppingCart, FiCheckCircle } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 import { Product } from '@/core/types/product'
@@ -10,9 +11,10 @@ import { StoreSettings } from '@/core/types/store'
 interface ProductDetailContainerProps {
   product: Product
   settings: StoreSettings
+  relatedProducts?: Product[]
 }
 
-export function ProductDetailContainer({ product, settings }: ProductDetailContainerProps) {
+export function ProductDetailContainer({ product, settings, relatedProducts = [] }: ProductDetailContainerProps) {
   const router = useRouter()
   
   // Generate 6 distinct simulated images representing fashion/subscription mocks
@@ -112,11 +114,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               alt={product.name} 
               className="h-full w-full object-cover transition-all duration-300"
             />
-            {hasDiscount && (
-              <span className="absolute top-4 left-4 rounded-lg bg-red-500 px-2.5 py-1 text-xs font-bold text-white uppercase tracking-wider">
-                -{discountPercentage}%
-              </span>
-            )}
+
           </div>
 
           {/* Gallery Thumbnail Carousel (Centered Sliding Track with Gradient Overlays) */}
@@ -313,7 +311,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
         <div className="flex items-center gap-6 border-b border-zinc-100 dark:border-zinc-900 pb-3">
           <button 
             onClick={() => setActiveTab('desc')}
-            className={`pb-2 text-sm font-bold tracking-tight border-b-2 transition-all outline-none ${
+            className={`pb-2 text-sm font-semibold cursor-pointer tracking-tight border-b-2 transition-all outline-none ${
               activeTab === 'desc' 
                 ? 'border-zinc-950 text-zinc-950 dark:border-white dark:text-white' 
                 : 'border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
@@ -323,7 +321,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           </button>
           <button 
             onClick={() => setActiveTab('reviews')}
-            className={`pb-2 text-sm font-bold tracking-tight border-b-2 transition-all outline-none ${
+            className={`pb-2 text-sm font-semibold cursor-pointer tracking-tight border-b-2 transition-all outline-none ${
               activeTab === 'reviews' 
                 ? 'border-zinc-950 text-zinc-950 dark:border-white dark:text-white' 
                 : 'border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
@@ -333,46 +331,111 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           </button>
         </div>
 
-        {activeTab === 'desc' ? (
-          <div className="prose dark:prose-invert max-w-none text-zinc-600 dark:text-zinc-300 text-sm leading-relaxed whitespace-pre-line space-y-4">
-            <h3 className="text-zinc-900 dark:text-white font-extrabold text-base">
-              {product.name} - Premium Local Quality Product
-            </h3>
-            <p>{product.description}</p>
-            
-            <h4 className="text-zinc-900 dark:text-white font-bold text-sm pt-2">Kenapa Harus Membeli di Toko Kami:</h4>
-            <ul className="list-disc pl-5 space-y-1 text-xs">
-              <li>Layanan Pelanggan responsif dan terpercaya via WhatsApp</li>
-              <li>Jaminan kualitas barang lokal premium buatan anak bangsa</li>
-              <li>Sistem pengiriman bebas biaya & dukungan pembayaran COD</li>
-              <li>Garansi retur gratis jika produk tidak sesuai deskripsi</li>
-            </ul>
-          </div>
-        ) : (
-          <div className="py-4 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-6 bg-zinc-50/50 dark:bg-zinc-900/10 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-900/60 max-w-md">
-              <div className="text-center">
-                <span className="text-4xl font-extrabold text-zinc-950 dark:text-white">
-                  0.0
-                </span>
-                <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mt-1">
-                  dari 5
-                </span>
-              </div>
-              <div className="flex-1 space-y-1.5">
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <FiStar key={s} className="h-4 w-4 text-zinc-200 dark:text-zinc-800" />
-                  ))}
+        <div className="bg-slate-100/60 dark:bg-zinc-900 rounded-lg dark:border-zinc-800 px-6 pt-6 pb-10">
+          {activeTab === 'desc' ? (
+            <div className="prose dark:prose-invert max-w-none text-zinc-600 dark:text-zinc-300 text-sm leading-relaxed whitespace-pre-line space-y-4">
+              <h3 className="text-zinc-900 dark:text-white font-extrabold text-base">
+                {product.name} - Premium Local Quality Product
+              </h3>
+              <p>{product.description}</p>
+              
+              <h4 className="text-zinc-900 dark:text-white font-bold text-sm pt-2">Kenapa Harus Membeli di Toko Kami:</h4>
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                <li>Layanan Pelanggan responsif dan terpercaya via WhatsApp</li>
+                <li>Jaminan kualitas barang lokal premium buatan anak bangsa</li>
+                <li>Sistem pengiriman bebas biaya & dukungan pembayaran COD</li>
+                <li>Garansi retur gratis jika produk tidak sesuai deskripsi</li>
+              </ul>
+            </div>
+          ) : (
+            <div className="py-4 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-6 bg-zinc-50/50 dark:bg-zinc-900/10 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-900/60 max-w-md">
+                <div className="text-center">
+                  <span className="text-4xl font-extrabold text-zinc-950 dark:text-white">
+                    0.0
+                  </span>
+                  <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mt-1">
+                    dari 5
+                  </span>
                 </div>
-                <p className="text-xs text-zinc-500 font-medium">
-                  Belum ada ulasan tertulis untuk produk ini.
-                </p>
+                <div className="flex-1 space-y-1.5">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <FiStar key={s} className="h-4 w-4 text-zinc-200 dark:text-zinc-800" />
+                    ))}
+                  </div>
+                  <p className="text-xs text-zinc-500 font-medium">
+                    Belum ada ulasan tertulis untuk produk ini.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
+
+      {/* Related Products Section */}
+      {relatedProducts.length > 0 && (
+        <div className="mt-12 space-y-6">
+          <h3 className="text-xl font-extrabold tracking-tight text-zinc-950 dark:text-white">
+            Produk Lainnya
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+            {relatedProducts.map((p) => {
+              const pHasDiscount = p.originalPrice && p.originalPrice > p.price
+              const pDiscountPct = pHasDiscount
+                ? Math.round(((p.originalPrice! - p.price) / p.originalPrice!) * 100)
+                : 0
+              return (
+                <Link
+                  key={p.id}
+                  href={`/product/${p.id}`}
+                  className="group flex flex-col rounded-xl bg-white overflow-hidden hover:shadow-md transition-all duration-300 border border-zinc-100 dark:border-zinc-800/60 dark:bg-zinc-900/40"
+                >
+                  {/* Image */}
+                  <div className="relative aspect-square w-full overflow-hidden bg-zinc-50 dark:bg-zinc-900">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={p.imageUrl}
+                      alt={p.name}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    {pHasDiscount && (
+                      <span className="absolute top-0 left-0 rounded-br-lg bg-red-500 px-2.5 py-1 text-xs font-semibold text-white uppercase tracking-wider">
+                        -{pDiscountPct}%
+                      </span>
+                    )}
+                  </div>
+                  {/* Info */}
+                  <div className="flex flex-col p-3.5 gap-1.5">
+                    <h4 className="line-clamp-2 text-xs font-semibold leading-relaxed text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
+                      {p.name}
+                    </h4>
+                    <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
+                      <div className="flex items-center gap-0.5 text-yellow-500">
+                        <FiStar className="h-3 w-3 fill-current" />
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{p.rating}</span>
+                      </div>
+                      <span className="text-zinc-300 dark:text-zinc-700">|</span>
+                      <span>{p.soldCount.toLocaleString('id-ID')}+ Terjual</span>
+                    </div>
+                    <div className="flex flex-wrap items-baseline gap-1.5 pt-0.5">
+                      <span className="text-sm font-bold text-zinc-900 dark:text-white">
+                        Rp{p.price.toLocaleString('id-ID')}
+                      </span>
+                      {pHasDiscount && (
+                        <span className="text-xs text-zinc-400 line-through">
+                          Rp{p.originalPrice!.toLocaleString('id-ID')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
     </div>
   )

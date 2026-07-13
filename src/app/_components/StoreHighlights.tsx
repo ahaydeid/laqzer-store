@@ -30,6 +30,7 @@ const HIGHLIGHTS = [
 export function StoreHighlights() {
   return (
     <section className="w-full py-12 border-t border-zinc-100 dark:border-zinc-900">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="space-y-8">
         {/* Header Section */}
         <div className="text-center max-w-lg mx-auto space-y-2">
@@ -65,6 +66,7 @@ export function StoreHighlights() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </section>
   )

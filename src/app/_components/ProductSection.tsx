@@ -35,7 +35,8 @@ export function ProductSection({ products }: ProductSectionProps) {
   const filteredProducts = getFilteredProducts()
 
   return (
-    <section id="catalog" className="w-full py-8 space-y-6">
+    <section id="catalog" className="w-full bg-slate-50 dark:bg-zinc-900/30 py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
       {/* Section Header & Tabs */}
       <div className="flex flex-col gap-4">
         <h3 className="text-xl font-extrabold tracking-tight text-zinc-950 dark:text-white">
@@ -71,7 +72,7 @@ export function ProductSection({ products }: ProductSectionProps) {
           return (
             <div 
               key={product.id} 
-              className="group relative flex flex-col rounded-xl border border-zinc-100 bg-white overflow-hidden hover:shadow-md transition-all duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/40"
+              className="group relative flex flex-col rounded-xl bg-white overflow-hidden hover:shadow-md transition-all duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/40"
             >
               {/* Product link wrapper */}
               <Link href={`/product/${product.id}`} className="flex flex-col flex-1">
@@ -86,7 +87,7 @@ export function ProductSection({ products }: ProductSectionProps) {
 
                   {/* Slashed discount badge */}
                   {hasDiscount && (
-                    <span className="absolute top-2 left-2 rounded-lg bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+                    <span className="absolute top-0 left-0 rounded-br-lg bg-red-500 px-2.5 py-1 text-xs font-semibold text-white uppercase tracking-wider">
                       -{discountPercentage}%
                     </span>
                   )}
@@ -116,7 +117,7 @@ export function ProductSection({ products }: ProductSectionProps) {
                       Rp{product.price.toLocaleString('id-ID')}
                     </span>
                     {hasDiscount && (
-                      <span className="text-[10px] text-zinc-400 line-through">
+                      <span className="text-xs text-zinc-400 line-through">
                         Rp{product.originalPrice!.toLocaleString('id-ID')}
                       </span>
                     )}
@@ -138,6 +139,7 @@ export function ProductSection({ products }: ProductSectionProps) {
             </div>
           )
         })}
+      </div>
       </div>
     </section>
   )
