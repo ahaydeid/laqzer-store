@@ -143,13 +143,23 @@ export default function OrderPage() {
           {["Semua", "Belum Dibayar", "Sedang Diproses", "Dikirim", "Selesai", "Dibatalkan"].map((tab) => {
             const isActive = statusFilter === tab;
             const count = getTabCount(tab);
+            const getActiveTabClass = () => {
+              if (tab === "Selesai") {
+                return "border-emerald-500 bg-emerald-100/70 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-950/20 dark:text-emerald-400";
+              }
+              if (tab === "Dibatalkan") {
+                return "border-rose-500 bg-rose-100/70 text-rose-700 dark:border-rose-400 dark:bg-rose-950/20 dark:text-rose-400";
+              }
+              return "border-sky-500 bg-sky-100/70 text-sky-700 dark:border-sky-400 dark:bg-sky-950/20 dark:text-sky-400";
+            };
+
             return (
               <button
                 key={tab}
                 onClick={() => setStatusFilter(tab)}
                 className={`px-4 py-2 text-xs whitespace-nowrap cursor-pointer transition-all duration-200 outline-none border-b-2
                   ${isActive 
-                    ? "border-sky-500 bg-sky-100/70 text-sky-700 dark:border-sky-400 dark:bg-sky-950/20 dark:text-sky-400" 
+                    ? getActiveTabClass() 
                     : "border-transparent text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-800/20"}`}
               >
                 {tab}
