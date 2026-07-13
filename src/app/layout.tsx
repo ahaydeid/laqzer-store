@@ -1,22 +1,30 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { getServices } from "@/services";
+import { ChatWidget } from "@/components/layout/ChatWidget";
 
 export const metadata: Metadata = {
   title: "Laqzer Store - UMKM Digital",
   description: "Platform Toko Digital UMKM Indonesia Hemat Biaya",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const services = getServices();
+  const settings = await services.store.getSettings();
+
   return (
     <html
       lang="en"
       className="h-full antialiased"
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <ChatWidget settings={settings} />
+      </body>
     </html>
   );
 }

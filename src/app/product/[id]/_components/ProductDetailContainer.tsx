@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiGlobe, FiShoppingCart, FiCheckCircle } from 'react-icons/fi'
+import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 import { Product } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
@@ -253,8 +253,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                 <span className="w-20 text-sm font-medium text-zinc-500 dark:text-zinc-400">
                   Stok
                 </span>
-                <div className="flex-1 flex items-center gap-1.5 text-zinc-800 dark:text-zinc-200 font-semibold">
-                  <FiCheckCircle className="h-4 w-4 text-emerald-500" />
+                <div className="flex-1 flex items-center gap-1.5 text-emerald-500 dark:text-zinc-200 font-semibold">
                   <span className="text-sm">
                     {product.stock}
                   </span>

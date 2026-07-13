@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { FiSearch, FiShoppingCart, FiBell, FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import Link from 'next/link'
 import { FaRegUserCircle } from 'react-icons/fa'
@@ -16,6 +16,20 @@ export function Navbar({ settings, categories }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('Semua Kategori')
   const [showDropdown, setShowDropdown] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const profileRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
@@ -101,10 +115,40 @@ export function Navbar({ settings, categories }: NavbarProps) {
               <FiBell className="h-5 w-5" />
             </button>
 
-            {/* User Account Icon (Hardcoded Login Placeholder) */}
-            <button className="p-2 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
-              <FaRegUserCircle className="h-5 w-5" />
-            </button>
+            {/* User Account Icon with Dropdown */}
+            <div className="relative" ref={profileRef}>
+              <button
+                id="profile-toggle"
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="p-2 text-zinc-700 cursor-pointer hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors"
+              >
+                <FaRegUserCircle className="h-5 w-5" />
+              </button>
+
+              {isProfileOpen && (
+                <div className="absolute right-0 mt-2 z-20 w-44 rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden">
+                    <button
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors"
+                    >
+                      Profil Saya
+                    </button>
+                    <button
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors"
+                    >
+                      Pesanan Saya
+                    </button>
+                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
+                    <button
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                    >
+                      Keluar
+                    </button>
+                  </div>
+              )}
+            </div>
 
             {/* Mobile Menu button */}
             <button 
