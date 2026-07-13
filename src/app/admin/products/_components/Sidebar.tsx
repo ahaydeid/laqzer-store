@@ -74,6 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
   }, [isProfileOpen]);
 
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadOrderCount] = useState(2);
 
   useEffect(() => {
     const calcUnread = () => {
@@ -240,6 +241,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
                       {unreadCount}
                     </span>
                   )}
+                  {item.id === "pesanan" && unreadOrderCount > 0 && isCollapsed && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[11px] font-bold h-4 w-4 rounded-full flex items-center justify-center z-20 shrink-0">
+                      {unreadOrderCount}
+                    </span>
+                  )}
                 </div>
                 <span className={getSpanClass(isActive)}>
                   {item.label}
@@ -247,6 +253,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
                 {item.id === "pesan" && unreadCount > 0 && !isCollapsed && (
                   <span className="ml-2 bg-rose-500 text-white text-[11px] font-bold h-5 w-5 rounded-full shrink-0 flex items-center justify-center z-20">
                     {unreadCount}
+                  </span>
+                )}
+                {item.id === "pesanan" && unreadOrderCount > 0 && !isCollapsed && (
+                  <span className="ml-2 bg-rose-500 text-white text-[11px] font-bold h-5 w-5 rounded-full shrink-0 flex items-center justify-center z-20">
+                    {unreadOrderCount}
                   </span>
                 )}
               </button>
