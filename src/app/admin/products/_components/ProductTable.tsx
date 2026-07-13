@@ -2,6 +2,7 @@
 
 import { FiEdit3, FiTrash2, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { Product } from '@/core/types/product'
+import Swal from 'sweetalert2'
 import { ActionButton } from '@/components/ui/ActionButton'
 import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from '@/components/ui/Table'
 
@@ -12,13 +13,30 @@ interface ProductTableProps {
 
 export function ProductTable({ products, onDelete }: ProductTableProps) {
   const handleDeleteClick = (id: string, name: string) => {
-    if (confirm(`Apakah Anda yakin ingin menghapus produk "${name}"?`)) {
-      if (onDelete) {
-        onDelete(id)
-      } else {
-        alert(`Produk "${name}" berhasil dihapus! (Simulasi)`)
+    Swal.fire({
+      title: 'Hapus Produk?',
+      text: `Apakah Anda yakin ingin menghapus produk "${name}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#71717a',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (onDelete) {
+          onDelete(id)
+        } else {
+          Swal.fire({
+            title: 'Berhasil!',
+            text: `Produk "${name}" berhasil dihapus! (Simulasi)`,
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false,
+          })
+        }
       }
-    }
+    })
   }
 
   return (

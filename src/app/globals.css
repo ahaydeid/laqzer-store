@@ -103,3 +103,17 @@ body {
 .dark .thin-scroll:hover::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.15);
 }
+
+/* Responsive SweetAlert2 Popups */
+.swal2-popup {
+  width: 90% !important;
+  max-width: 420px !important;
+  border-radius: 16px !important;
+  font-family: inherit !important;
+}
+
+@media (min-width: 640px) {
+  .swal2-popup {
+    width: 32rem !important;
+  }
+}
