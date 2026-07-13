@@ -18,7 +18,14 @@ export function Button({
   type = 'button',
   ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center gap-1.5 font-semibold rounded-xl transition-all duration-150 outline-none active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none'
+  const hasRounded = className.split(' ').some(c => c.startsWith('rounded'))
+  let defaultRounded = 'rounded-xl'
+  if (size === 'xs' || size === 'sm') {
+    defaultRounded = 'rounded-lg'
+  }
+  const roundedClass = hasRounded ? '' : defaultRounded
+
+  const baseStyles = `inline-flex items-center justify-center gap-1.5 font-semibold ${roundedClass} transition-all duration-150 outline-none active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none`
 
   const variants = {
     primary: 'bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200',
@@ -29,8 +36,8 @@ export function Button({
   }
 
   const sizes = {
-    xs: 'px-2.5 py-1.5 text-[11px] rounded-lg',
-    sm: 'px-3 py-2 text-xs rounded-lg',
+    xs: 'px-2.5 py-1.5 text-[11px]',
+    sm: 'px-3 py-2 text-xs',
     md: 'px-4 py-2.5 text-sm',
     lg: 'px-5 py-3 text-sm',
   }
@@ -42,7 +49,7 @@ export function Button({
       <Link 
         href={href} 
         className={combinedClassName}
-        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement> as any)}
+        {...(props as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       >
         {children}
       </Link>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { FiSearch, FiShoppingCart, FiBell, FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
+import Link from 'next/link'
 import { FaRegUserCircle } from 'react-icons/fa'
 import { StoreSettings } from '@/core/types/store'
 import { Category } from '@/core/types/category'
@@ -24,7 +25,7 @@ export function Navbar({ settings, categories }: NavbarProps) {
           
           {/* Logo & Brand Name */}
           <div className="flex items-center gap-2">
-            <a href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+            <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src="/img/logo-laqzer.jpg" 
@@ -32,7 +33,7 @@ export function Navbar({ settings, categories }: NavbarProps) {
                 className="h-8 w-8 rounded-lg object-cover" 
               />
               <span>{settings.name}</span>
-            </a>
+            </Link>
           </div>
 
           {/* Search bar & Category Dropdown (Desktop) */}
