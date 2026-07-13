@@ -232,7 +232,7 @@ export default function OrderPage() {
                 <TableCell>{order.paymentMethod}</TableCell>
                 <TableCell>
                   <span
-                    className={`px-2.5 py-1 rounded-full text-[11px] font-medium ${
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-normal ${
                       order.status === "Selesai"
                         ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400"
                         : order.status === "Sedang Diproses"
@@ -301,7 +301,7 @@ export default function OrderPage() {
               <div className="flex justify-between">
                 <span className="text-zinc-400">Status:</span>
                 <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                  className={`px-2 py-0.5 rounded text-[10px] font-normal ${
                     selectedOrder.status === "Selesai"
                       ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400"
                       : selectedOrder.status === "Sedang Diproses"
