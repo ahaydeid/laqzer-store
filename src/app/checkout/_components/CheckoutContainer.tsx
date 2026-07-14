@@ -313,20 +313,14 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-y border-dashed border-zinc-200 dark:border-zinc-800 py-4">
               <div className="text-sm">
                 <span className="font-bold text-zinc-900 dark:text-white">Opsi Pengiriman:</span>
-                <span className="ml-2 font-medium text-zinc-800 dark:text-zinc-200">{selectedCourier.name} ({selectedCourier.service})</span>
+                <span className="ml-2 font-medium text-rose-500 dark:text-zinc-200">{selectedCourier.name} ({selectedCourier.service})</span>
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
-                  className="ml-4 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                  className="ml-4 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                 >
                   Ubah
                 </button>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
-                  Garansi tiba {deliveryEstimate.single}
-                </p>
-                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
-                  Voucher s/d Rp10.000 jika pesanan terlambat. <span className="cursor-help font-mono border border-zinc-300 dark:border-zinc-700 rounded-full px-1 py-0.5 text-[8px]">?</span>
-                </p>
               </div>
               <div className="text-right sm:text-right shrink-0">
                 <span className="text-sm font-bold text-zinc-900 dark:text-white">
@@ -437,9 +431,9 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
             {/* Submit Order Button */}
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-4 text-sm font-bold tracking-wide transition-all active:scale-[0.99] cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 bg-rose-500 hover:bg-emerald-700 text-white py-3 px-4 text-sm font-semibold tracking-wide transition-all active:scale-[0.99] cursor-pointer"
             >
-              <span>Buat Pesanan via WhatsApp</span>
+              <span>Buat Pesanan</span>
             </button>
           </div>
         </div>
