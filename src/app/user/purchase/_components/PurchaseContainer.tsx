@@ -415,7 +415,7 @@ export function PurchaseContainer() {
   return (
     <div className="space-y-6">
       {/* Title Header (Sesuai aturan-utama.md: tanpa sub-judul/deskripsi) */}
-      <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800 px-4 sm:px-0">
         <h2 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-white">
           Pesanan Saya
         </h2>
@@ -442,7 +442,7 @@ export function PurchaseContainer() {
       </div>
 
       {/* Search Bar (Expandable, seperti /admin/order) */}
-      <div className="flex items-center justify-start">
+      <div className="flex items-center justify-start px-4 sm:px-0">
         <div className="relative shrink-0">
           <FiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
           <input
@@ -472,7 +472,7 @@ export function PurchaseContainer() {
       {/* Orders List Container */}
       <div className="space-y-4">
         {filteredOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 px-4 bg-white dark:bg-zinc-950 rounded border border-zinc-200 dark:border-zinc-800 text-center">
+          <div className="flex flex-col items-center justify-center py-16 px-4 bg-white dark:bg-zinc-950 sm:rounded text-center mx-4 sm:mx-0">
             <FiTruck className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-3" />
             <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Belum ada pesanan</p>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm">
@@ -483,7 +483,7 @@ export function PurchaseContainer() {
           filteredOrders.map((order) => (
             <div
               key={order.id}
-              className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded p-5 space-y-4"
+              className="bg-white dark:bg-zinc-950 p-5 sm:rounded space-y-4"
             >
               {/* Card Header */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-900 pb-3">
