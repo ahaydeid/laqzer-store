@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FiSearch, FiTruck } from 'react-icons/fi'
+import { FiSearch, FiTruck, FiX } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 
 interface OrderItem {
@@ -165,6 +165,41 @@ export function PurchaseContainer() {
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS)
   const [activeTab, setActiveTab] = useState<TabType>('semua')
   const [searchQuery, setSearchQuery] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
+
+  const handleClearSearch = () => {
+    setSearchQuery('')
+  }
+
+  const getTabCount = (tabId: TabType) => {
+    if (tabId === 'semua') return orders.length
+    if (tabId === 'belum-bayar') return orders.filter((o) => o.status === 'Belum Dibayar').length
+    if (tabId === 'sedang-dikemas') return orders.filter((o) => o.status === 'Sedang Diproses').length
+    if (tabId === 'dikirim') return orders.filter((o) => o.status === 'Dikirim').length
+    if (tabId === 'selesai') return orders.filter((o) => o.status === 'Selesai').length
+    if (tabId === 'dibatalkan') return orders.filter((o) => o.status === 'Dibatalkan').length
+    return 0
+  }
+
+  const getTabClass = (tabId: TabType, isActive: boolean) => {
+    if (isActive) {
+      if (tabId === 'selesai') {
+        return 'border-emerald-500 bg-emerald-100/70 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-950/20 dark:text-emerald-400'
+      }
+      if (tabId === 'dibatalkan') {
+        return 'border-rose-500 bg-rose-100/70 text-rose-700 dark:border-rose-400 dark:bg-rose-950/20 dark:text-rose-400'
+      }
+      return 'border-sky-500 bg-sky-100/70 text-sky-700 dark:border-sky-400 dark:bg-sky-950/20 dark:text-sky-400'
+    } else {
+      if (tabId === 'selesai') {
+        return 'border-transparent text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50/30 dark:text-emerald-400 dark:hover:text-emerald-300 dark:hover:bg-emerald-950/10'
+      }
+      if (tabId === 'dibatalkan') {
+        return 'border-transparent text-rose-600 hover:text-rose-800 hover:bg-rose-50/30 dark:text-rose-400 dark:hover:text-rose-300 dark:hover:bg-rose-950/10'
+      }
+      return 'border-transparent text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-800/20'
+    }
+  }
 
   // Filter logic
   const filteredOrders = orders.filter((order) => {
@@ -386,38 +421,52 @@ export function PurchaseContainer() {
         </h2>
       </div>
 
-      {/* Tabs Menu (Gambar 2 Shopee Style) */}
-      <div className="flex border-b border-zinc-200 dark:border-zinc-800 overflow-x-auto whitespace-nowrap scrollbar-none bg-white dark:bg-zinc-950 rounded-sm">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 min-w-[100px] text-center py-3.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-                isActive
-                  ? 'border-rose-500 text-rose-500'
-                  : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white'
-              }`}
-            >
-              {tab.label}
-            </button>
-          )
-        })}
+      {/* Tab Filter (Rata Tengah X, seperti /admin/order) */}
+      <div className="flex justify-center border-b border-zinc-100 dark:border-zinc-800/80">
+        <div className="flex items-center gap-1 overflow-x-auto scrollbar-none -mb-px pb-1">
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.id
+            const count = getTabCount(tab.id)
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2 text-xs whitespace-nowrap cursor-pointer transition-all duration-200 outline-none border-b-2 ${getTabClass(tab.id, isActive)}`}
+              >
+                {tab.label}
+                {['belum-bayar', 'sedang-dikemas', 'dikirim'].includes(tab.id) && count > 0 && " (" + count + ")"}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      {/* Search Input Bar */}
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-          <FiSearch className="h-4 w-4 text-zinc-400" />
+      {/* Search Bar (Expandable, seperti /admin/order) */}
+      <div className="flex items-center justify-start">
+        <div className="relative shrink-0">
+          <FiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={isFocused ? "Cari No. Pesanan atau nama produk..." : "Cari"}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            className={`transition-all duration-300 ease-in-out rounded-full border border-zinc-200 bg-white py-2 pl-10 text-sm outline-none focus:border-sky-500 dark:border-zinc-800 dark:bg-zinc-900/50 ${
+              isFocused ? "w-64 sm:w-80 pr-10" : "w-32 pr-4"
+            }`}
+          />
+          {searchQuery && (
+            <button
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={handleClearSearch}
+              className="absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors flex items-center justify-center cursor-pointer"
+              title="Bersihkan Pencarian"
+            >
+              <FiX className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Kamu bisa cari berdasarkan No. Pesanan atau Nama Produk"
-          className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded pl-10 pr-4 py-3 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-rose-500 dark:focus:border-rose-500 transition-colors"
-        />
       </div>
 
       {/* Orders List Container */}
