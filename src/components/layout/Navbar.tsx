@@ -144,9 +144,8 @@ export function Navbar({ settings, categories }: NavbarProps) {
                               alt={item.name}
                               className="h-10 w-10 rounded object-cover bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shrink-0"
                             />
-                            <div className="flex-1 min-w-0 flex flex-col justify-between">
+                            <div className="flex-1 min-w-0 flex items-center">
                               <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 truncate block">{item.name}</span>
-                              <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block">Varian: {item.variant}</span>
                             </div>
                             <span className="text-xs font-bold text-rose-500 shrink-0 self-center">
                               Rp {item.price.toLocaleString('id-ID')}
