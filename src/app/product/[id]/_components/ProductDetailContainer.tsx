@@ -169,13 +169,13 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
         <span className="text-xs font-medium cursor-pointer tracking-tight">Kembali</span>
       </button>
 
-      {/* Main product presentation grid (constrained to 1 screen height on desktop) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 md:h-[calc(100vh-180px)] md:max-h-[560px] md:min-h-[460px]">
+      {/* Main product presentation grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start">
         
         {/* Left Column: Image Gallery & External CTAs */}
-        <div className="h-full flex flex-col justify-between gap-4 min-h-0">
+        <div className="flex flex-col gap-4">
           {/* Main Display Image */}
-          <div className="relative flex-1 min-h-0 w-full rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-800">
+          <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-800">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src={galleryImages[activeImageIdx]} 
@@ -308,8 +308,8 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
         </div>
 
         {/* Right Column: Metadata, Pricing & Variant Actions */}
-        <div className="h-full flex flex-col justify-between py-1 gap-6 min-h-0">
-          <div className="flex-1 min-h-0 overflow-y-auto pr-1 scrollbar-thin space-y-4">
+        <div className="flex flex-col gap-6">
+          <div className="space-y-4">
             {/* Title */}
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white leading-tight">
               {product.name}
@@ -395,7 +395,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           </div>
 
           {/* Bottom Row Actions: Checkout Buttons */}
-          <div className="flex-shrink-0 grid grid-cols-2 gap-3 border-t border-zinc-100 dark:border-zinc-900 pt-5">
+          <div className="grid grid-cols-2 gap-3 border-t border-zinc-100 dark:border-zinc-900 pt-5">
             <button 
               onClick={handleAddToCart}
               className="flex items-center justify-center gap-2 rounded border border-zinc-200 py-3 px-4 text-xs font-semibold tracking-wide hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 transition-all text-zinc-900 dark:text-white"
