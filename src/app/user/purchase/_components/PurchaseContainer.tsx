@@ -398,7 +398,7 @@ export function PurchaseContainer() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 text-xs whitespace-nowrap cursor-pointer transition-all duration-200 outline-none border-b-2 ${getTabClass(tab.id, isActive)}`}
+                className={`px-4 py-2 text-sm whitespace-nowrap cursor-pointer transition-all duration-200 outline-none border-b-2 ${getTabClass(tab.id, isActive)}`}
               >
                 {tab.label}
                 {['belum-bayar', 'sedang-dikemas', 'dikirim'].includes(tab.id) && count > 0 && " (" + count + ")"}
@@ -452,19 +452,18 @@ export function PurchaseContainer() {
               key={order.id}
               className="bg-white dark:bg-zinc-950 p-5 sm:rounded space-y-4"
             >
-              {/* Card Header */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-900 pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-zinc-900 dark:text-white">
+                  <span className="text-sm font-bold text-zinc-900 dark:text-white">
                     No. Pesanan: {order.id}
                   </span>
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">
+                  <span className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
                     ({order.date})
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs">
-                  <span className="font-extrabold uppercase text-rose-500 tracking-wide text-[11px]">
+                  <span className="font-bold uppercase text-rose-500 tracking-wide text-xs">
                     {order.status === 'Sedang Diproses' ? 'SEDANG DIKEMAS' : order.status}
                   </span>
                 </div>
@@ -482,18 +481,18 @@ export function PurchaseContainer() {
                     />
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                       <div>
-                        <h4 className="text-xs font-bold text-zinc-900 dark:text-white truncate">
+                        <h4 className="text-sm font-bold text-zinc-900 dark:text-white truncate">
                           {item.name}
                         </h4>
-                        <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block mt-0.5">
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 block mt-0.5">
                           Varian: {item.variant}
                         </span>
-                        <span className="text-[10px] text-zinc-600 dark:text-zinc-400 block mt-0.5 font-semibold">
+                        <span className="text-xs text-zinc-600 dark:text-zinc-400 block mt-0.5 font-semibold">
                           x{item.quantity}
                         </span>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs font-bold text-rose-500">
+                        <span className="text-sm font-bold text-rose-500">
                           Rp {item.price.toLocaleString('id-ID')}
                         </span>
                       </div>
@@ -507,8 +506,8 @@ export function PurchaseContainer() {
                 {/* Total Billing */}
                 <div className="flex items-center justify-end">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">Total Pesanan:</span>
-                    <span className="text-base font-black text-rose-500">
+                    <span className="text-sm text-zinc-500 dark:text-zinc-400">Total Pesanan:</span>
+                    <span className="text-lg font-black text-rose-500">
                       Rp {order.total.toLocaleString('id-ID')}
                     </span>
                   </div>
@@ -520,13 +519,13 @@ export function PurchaseContainer() {
                     <>
                       <button
                         onClick={() => handleCancelOrder(order.id)}
-                        className="rounded border border-zinc-200 dark:border-zinc-800 px-4 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
+                        className="rounded border border-zinc-200 dark:border-zinc-800 px-4 py-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
                       >
                         Batalkan Pesanan
                       </button>
                       <button
                         onClick={() => handlePayOrder(order.id)}
-                        className="rounded bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 text-xs font-bold transition-colors cursor-pointer"
+                        className="rounded bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 text-sm font-bold transition-colors cursor-pointer"
                       >
                         Bayar Sekarang
                       </button>
@@ -536,7 +535,7 @@ export function PurchaseContainer() {
                   {order.status === 'Sedang Diproses' && (
                     <button
                       onClick={handleContactSeller}
-                      className="rounded border border-zinc-200 dark:border-zinc-800 px-5 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
+                      className="rounded border border-zinc-200 dark:border-zinc-800 px-5 py-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
                     >
                       Hubungi Penjual
                     </button>
@@ -545,7 +544,7 @@ export function PurchaseContainer() {
                   {order.status === 'Dikirim' && (
                     <button
                       onClick={() => handleConfirmReceived(order.id)}
-                      className="rounded bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 text-xs font-bold transition-colors cursor-pointer"
+                      className="rounded bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 text-sm font-bold transition-colors cursor-pointer"
                     >
                       Pesanan Diterima
                     </button>
@@ -555,13 +554,13 @@ export function PurchaseContainer() {
                     <>
                       <button
                         onClick={handleRateProduct}
-                        className="rounded bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 text-xs font-bold transition-colors cursor-pointer"
+                        className="rounded bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 text-sm font-bold transition-colors cursor-pointer"
                       >
                         Nilai
                       </button>
                       <button
                         onClick={handleBuyAgain}
-                        className="rounded border border-zinc-200 dark:border-zinc-800 px-4 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
+                        className="rounded border border-zinc-200 dark:border-zinc-800 px-4 py-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
                       >
                         Beli Lagi
                       </button>
@@ -572,7 +571,7 @@ export function PurchaseContainer() {
                     <>
                       <button
                         onClick={handleBuyAgain}
-                        className="rounded bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 text-xs font-bold transition-colors cursor-pointer"
+                        className="rounded bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 text-sm font-bold transition-colors cursor-pointer"
                       >
                         Beli Lagi
                       </button>
@@ -585,7 +584,7 @@ export function PurchaseContainer() {
                             confirmButtonColor: '#18181b',
                           })
                         }
-                        className="rounded border border-zinc-200 dark:border-zinc-800 px-4 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
+                        className="rounded border border-zinc-200 dark:border-zinc-800 px-4 py-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
                       >
                         Rincian Pembatalan
                       </button>
