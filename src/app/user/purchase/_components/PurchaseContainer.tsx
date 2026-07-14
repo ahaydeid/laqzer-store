@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FiSearch, FiTruck, FiMessageSquare, FiStore } from 'react-icons/fi'
+import { FiSearch, FiTruck, FiMessageSquare, FiShoppingBag } from 'react-icons/fi'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
 
@@ -171,9 +171,7 @@ export function PurchaseContainer() {
   const filteredOrders = orders.filter((order) => {
     // 1. Tab Status Filter
     if (activeTab === 'belum-bayar' && order.status !== 'Belum Dibayar') return false
-    if (activeTab === 'sedang-dikemas' && order.status !== 'Sedang Proses' && order.status !== 'Sedang Diproses') {
-      if (order.status !== 'Sedang Diproses') return false
-    }
+    if (activeTab === 'sedang-dikemas' && order.status !== 'Sedang Diproses') return false
     if (activeTab === 'dikirim' && order.status !== 'Dikirim') return false
     if (activeTab === 'selesai' && order.status !== 'Selesai') return false
     if (activeTab === 'dibatalkan' && order.status !== 'Dibatalkan') return false
@@ -442,7 +440,7 @@ export function PurchaseContainer() {
               {/* Card Header */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-900 pb-3">
                 <div className="flex items-center gap-2">
-                  <FiStore className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
+                  <FiShoppingBag className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
                   <span className="text-xs font-bold text-zinc-900 dark:text-white">
                     {order.storeName}
                   </span>
