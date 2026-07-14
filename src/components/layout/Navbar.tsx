@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { FiSearch, FiShoppingCart, FiBell, FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import Link from 'next/link'
 import { FaRegUserCircle } from 'react-icons/fa'
@@ -20,6 +20,20 @@ export function Navbar({ settings, categories }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('Semua Kategori')
   const [showDropdown, setShowDropdown] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const profileRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
 
   return (
@@ -168,33 +182,48 @@ export function Navbar({ settings, categories }: NavbarProps) {
             </button>
 
             {/* User Account Icon with Dropdown */}
-            <div className="relative group">
-              <Link
-                href="/user/purchase"
+            <div 
+              className="relative group" 
+              ref={profileRef}
+              onMouseEnter={() => setIsProfileOpen(true)}
+              onMouseLeave={() => setIsProfileOpen(false)}
+            >
+              <button
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="p-2 text-zinc-700 cursor-pointer hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors block"
+                aria-label="Menu Profil"
               >
                 <FaRegUserCircle className="h-5 w-5" />
-              </Link>
+              </button>
 
               {/* Dropdown Menu */}
-              <div className="absolute right-0 top-full pt-2 w-44 z-50 pointer-events-none opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto group-hover:visible transition-all duration-200 ease-out origin-top-right transform">
+              <div 
+                className={`absolute right-0 top-full pt-2 w-44 z-50 transition-all duration-200 ease-out origin-top-right transform ${
+                  isProfileOpen 
+                    ? 'opacity-100 scale-100 pointer-events-auto visible' 
+                    : 'pointer-events-none opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto group-hover:visible'
+                }`}
+              >
                 <div className="absolute right-4 top-0 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-zinc-200 dark:border-b-zinc-800" />
                 <div className="absolute right-4 top-1 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white dark:border-b-zinc-950" />
                 
                 <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded mt-1.5 shadow-lg overflow-hidden">
                   <button
+                    onClick={() => setIsProfileOpen(false)}
                     className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors"
                   >
                     Profil Saya
                   </button>
                   <Link
                     href="/user/purchase"
+                    onClick={() => setIsProfileOpen(false)}
                     className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors"
                   >
                     Pesanan Saya
                   </Link>
                   <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
                   <button
+                    onClick={() => setIsProfileOpen(false)}
                     className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
                   >
                     Keluar
