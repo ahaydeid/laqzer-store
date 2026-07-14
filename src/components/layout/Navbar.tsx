@@ -198,12 +198,13 @@ export function Navbar({ settings, categories }: NavbarProps) {
                     >
                       Profil Saya
                     </button>
-                    <button
+                    <Link
+                      href="/user/purchase"
                       onClick={() => setIsProfileOpen(false)}
                       className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors"
                     >
                       Pesanan Saya
-                    </button>
+                    </Link>
                     <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
                     <button
                       onClick={() => setIsProfileOpen(false)}
