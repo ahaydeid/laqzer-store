@@ -170,7 +170,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
       </button>
 
       {/* Main product presentation grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
         
         {/* Left Column: Image Gallery & External CTAs */}
         <div className="flex flex-col gap-4">
@@ -308,8 +308,8 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
         </div>
 
         {/* Right Column: Metadata, Pricing & Variant Actions */}
-        <div className="flex flex-col gap-6">
-          <div className="space-y-4">
+        <div className="flex flex-col justify-between md:h-full gap-6">
+          <div className="space-y-6">
             {/* Title */}
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white leading-tight">
               {product.name}
