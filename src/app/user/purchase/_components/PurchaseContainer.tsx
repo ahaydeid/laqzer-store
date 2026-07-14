@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FiSearch, FiTruck, FiMessageSquare, FiShoppingBag } from 'react-icons/fi'
-import Link from 'next/link'
+import { FiSearch, FiTruck } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 
 interface OrderItem {
@@ -440,23 +439,12 @@ export function PurchaseContainer() {
               {/* Card Header */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-900 pb-3">
                 <div className="flex items-center gap-2">
-                  <FiShoppingBag className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
                   <span className="text-xs font-bold text-zinc-900 dark:text-white">
-                    {order.storeName}
+                    No. Pesanan: {order.id}
                   </span>
-                  <button
-                    onClick={handleContactSeller}
-                    className="flex items-center gap-1.5 rounded border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 text-[10px] font-bold text-zinc-750 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
-                  >
-                    <FiMessageSquare className="h-3 w-3 text-rose-500" />
-                    <span>Chat</span>
-                  </button>
-                  <Link
-                    href="/"
-                    className="rounded border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 text-[10px] font-bold text-zinc-750 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
-                  >
-                    Kunjungi Toko
-                  </Link>
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">
+                    ({order.date})
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs">
@@ -506,10 +494,7 @@ export function PurchaseContainer() {
               {/* Card Footer Divider */}
               <div className="border-t border-zinc-100 dark:border-zinc-900 pt-4 flex flex-col gap-4">
                 {/* Total Billing */}
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                    No. Pesanan: {order.id} • Tanggal: {order.date}
-                  </span>
+                <div className="flex items-center justify-end">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs text-zinc-500 dark:text-zinc-400">Total Pesanan:</span>
                     <span className="text-base font-black text-rose-500">
