@@ -119,7 +119,7 @@ export function Navbar({ settings, categories }: NavbarProps) {
               </Link>
               
               {/* Dropdown Menu */}
-              <div className="absolute right-0 top-full pt-2 w-96 hidden group-hover:block z-50 pointer-events-auto">
+              <div className="absolute right-0 top-full pt-2 w-96 z-50 pointer-events-none opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto group-hover:visible transition-all duration-200 ease-out origin-top-right transform">
                 <div className="absolute right-4 top-0 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-zinc-200 dark:border-b-zinc-800" />
                 <div className="absolute right-4 top-1 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white dark:border-b-zinc-950" />
                 
