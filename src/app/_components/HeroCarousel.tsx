@@ -100,15 +100,15 @@ export function HeroCarousel() {
       {/* Navigation Arrows */}
       <button 
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200/70 bg-white/80 hover:bg-white text-zinc-900 transition-all focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:bg-zinc-950 dark:text-white"
+        className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full hover:bg-white text-zinc-400 hover:text-zinc-700 transition-all focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:bg-zinc-950 dark:text-white"
       >
-        <FiChevronLeft className="h-5 w-5" />
+        <FiChevronLeft className="h-8 w-8" />
       </button>
       <button 
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200/70 bg-white/80 hover:bg-white text-zinc-900 transition-all focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:bg-zinc-950 dark:text-white"
+        className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full hover:bg-white text-zinc-400 hover:text-zinc-700 transition-all focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:bg-zinc-950 dark:text-white"
       >
-        <FiChevronRight className="h-5 w-5" />
+        <FiChevronRight className="h-8 w-8" />
       </button>
 
       {/* Slider indicators (dots) */}

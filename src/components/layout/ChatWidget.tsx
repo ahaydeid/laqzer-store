@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { StoreSettings } from '@/core/types/store'
-import { FiX, FiSend } from 'react-icons/fi'
+import { FiChevronDown, FiSend } from 'react-icons/fi'
 
 interface Message {
   id: string
@@ -75,18 +75,37 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-white dark:bg-zinc-950 dark:border-zinc-800">
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-semibold tracking-tight text-rose-500 dark:text-rose-400">
-              Chat
-            </span>
+        <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-white dark:bg-zinc-950 dark:border-zinc-800 shrink-0">
+          <div className="flex items-center gap-2.5">
+            {/* Operator Icon (Person wearing headset and mic) */}
+            {/* Operator Icon (Dicebear Avatar) */}
+            <div className="h-8 w-8 rounded-full overflow-hidden bg-rose-50 dark:bg-zinc-800 shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=minLaq" 
+                alt="minLaq" 
+                className="h-full w-full object-cover"
+              />
+            </div>
+            {/* Operator Name and Status */}
+            <div className="flex flex-col">
+              <span className="text-sm font-bold text-zinc-900 dark:text-zinc-50 leading-tight">
+                MinLaq
+              </span>
+              <div className="flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-none">
+                  online
+                </span>
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-3 text-zinc-400 dark:text-zinc-500">
             <button 
               onClick={() => setIsChatOpen(false)}
               className="hover:text-red-500 transition-colors"
             >
-              <FiX className="h-5 w-5" />
+              <FiChevronDown className="h-5 w-5" />
             </button>
           </div>
         </div>
