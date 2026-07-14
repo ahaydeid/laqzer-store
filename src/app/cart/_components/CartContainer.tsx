@@ -322,9 +322,9 @@ export function CartContainer() {
       </div>
 
       {/* Sticky Bottom Full-Width Checkout Bar (Shopee Pinned Style) */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 w-full bg-transparent">
+      <div className="fixed bottom-0 left-0 right-0 z-40 w-full bg-transparent pointer-events-none">
         <div className="mx-auto max-w-7xl px-0 md:px-6 lg:px-8">
-          <div className="bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 rounded-none md:rounded-t py-4 px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 rounded-none md:rounded-t py-4 px-6 flex flex-col sm:flex-row items-center justify-between gap-4 pointer-events-auto">
             
             {/* Left Actions */}
             <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-start">
