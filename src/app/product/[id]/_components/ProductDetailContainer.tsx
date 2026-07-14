@@ -247,42 +247,42 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
 
           {/* Share Section */}
           <div className="flex items-center gap-3 py-3 border-t border-zinc-100 dark:border-zinc-900 justify-center">
-            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Bagikan:</span>
-            <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Bagikan:</span>
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => handleShare('wa')}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors cursor-pointer dark:bg-green-950/20 dark:text-green-400"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors cursor-pointer dark:bg-green-950/20 dark:text-green-400"
                 title="Bagikan ke WhatsApp"
               >
-                <FaWhatsapp className="h-4.5 w-4.5" />
+                <FaWhatsapp className="h-5.5 w-5.5" />
               </button>
               <button
                 onClick={() => handleShare('fb')}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer dark:bg-blue-950/20 dark:text-blue-400"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer dark:bg-blue-950/20 dark:text-blue-400"
                 title="Bagikan ke Facebook"
               >
-                <FaFacebook className="h-4.5 w-4.5" />
+                <FaFacebook className="h-5.5 w-5.5" />
               </button>
               <button
                 onClick={() => handleShare('ig')}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-50 text-pink-600 hover:bg-pink-100 transition-colors cursor-pointer dark:bg-pink-950/20 dark:text-pink-400"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-pink-50 text-pink-600 hover:bg-pink-100 transition-colors cursor-pointer dark:bg-pink-950/20 dark:text-pink-400"
                 title="Bagikan ke Instagram"
               >
-                <FaInstagram className="h-4.5 w-4.5" />
+                <FaInstagram className="h-5.5 w-5.5" />
               </button>
               <button
                 onClick={() => handleShare('tiktok')}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-zinc-800 hover:bg-zinc-200 transition-colors cursor-pointer dark:bg-zinc-800/40 dark:text-zinc-200"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-800 hover:bg-zinc-200 transition-colors cursor-pointer dark:bg-zinc-800/40 dark:text-zinc-200"
                 title="Bagikan ke TikTok"
               >
-                <FaTiktok className="h-4 w-4" />
+                <FaTiktok className="h-5 w-5" />
               </button>
               <button
                 onClick={() => handleShare('link')}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer dark:bg-rose-950/20 dark:text-rose-400"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer dark:bg-rose-950/20 dark:text-rose-400"
                 title="Salin Tautan"
               >
-                <FaLink className="h-4 w-4" />
+                <FaLink className="h-5 w-5" />
               </button>
             </div>
           </div>
