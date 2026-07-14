@@ -149,7 +149,7 @@ const INITIAL_ORDERS: Order[] = [
   },
 ]
 
-type TabType = 'semua' | 'belum-bayar' | 'sedang-dikemas' | 'dikirim' | 'selesai' | 'dibatalkan' | 'pengembalian'
+type TabType = 'semua' | 'belum-bayar' | 'sedang-dikemas' | 'dikirim' | 'selesai' | 'dibatalkan'
 
 const TABS: { id: TabType; label: string }[] = [
   { id: 'semua', label: 'Semua' },
@@ -158,7 +158,6 @@ const TABS: { id: TabType; label: string }[] = [
   { id: 'dikirim', label: 'Dikirim' },
   { id: 'selesai', label: 'Selesai' },
   { id: 'dibatalkan', label: 'Dibatalkan' },
-  { id: 'pengembalian', label: 'Pengembalian' },
 ]
 
 export function PurchaseContainer() {
@@ -610,19 +609,6 @@ export function PurchaseContainer() {
                         className="rounded border border-zinc-200 dark:border-zinc-800 px-4 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
                       >
                         Beli Lagi
-                      </button>
-                      <button
-                        onClick={() =>
-                          Swal.fire({
-                            title: 'Ajukan Pengembalian',
-                            text: 'Formulir pengembalian barang/dana sedang disiapkan.',
-                            icon: 'info',
-                            confirmButtonColor: '#18181b',
-                          })
-                        }
-                        className="rounded border border-zinc-200 dark:border-zinc-800 px-4 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
-                      >
-                        Ajukan Pengembalian
                       </button>
                     </>
                   )}
