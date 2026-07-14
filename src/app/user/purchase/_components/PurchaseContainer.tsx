@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FiSearch, FiTruck, FiX } from 'react-icons/fi'
+import { FiSearch, FiShoppingBag, FiX } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 
 interface OrderItem {
@@ -208,7 +208,7 @@ export function PurchaseContainer() {
     if (activeTab === 'dikirim' && order.status !== 'Dikirim') return false
     if (activeTab === 'selesai' && order.status !== 'Selesai') return false
     if (activeTab === 'dibatalkan' && order.status !== 'Dibatalkan') return false
-    if (activeTab === 'pengembalian') return false // Mock: no returns yet
+
 
     // 2. Search Query Filter
     if (searchQuery.trim()) {
@@ -321,39 +321,7 @@ export function PurchaseContainer() {
     })
   }
 
-  const handleTrackShipping = (orderId: string) => {
-    const order = orders.find((o) => o.id === orderId)
-    Swal.fire({
-      title: 'Lacak Pengiriman',
-      html: `
-        <div class="text-left text-sm space-y-4 font-sans px-2">
-          <div class="flex gap-3">
-            <span class="text-emerald-500 font-bold shrink-0">14 Jul, 08:30</span>
-            <div>
-              <p class="font-semibold text-emerald-600">Paket sedang diantar kurir ke alamat</p>
-              <p class="text-xs text-zinc-500">${order?.shippingStatus || ''}</p>
-            </div>
-          </div>
-          <div class="flex gap-3 border-l-2 border-zinc-200 pl-4 py-2 ml-4">
-            <span class="text-zinc-500 shrink-0">13 Jul, 14:15</span>
-            <div>
-              <p class="font-medium text-zinc-700">Paket telah transit di hub Jakarta Selatan</p>
-              <p class="text-xs text-zinc-500">Pemberangkatan menuju hub terdekat pembeli.</p>
-            </div>
-          </div>
-          <div class="flex gap-3 border-l-2 border-zinc-200 pl-4 py-2 ml-4">
-            <span class="text-zinc-500 shrink-0">12 Jul, 10:00</span>
-            <div>
-              <p class="font-medium text-zinc-700">Paket diserahkan kurir logistik</p>
-              <p class="text-xs text-zinc-500">Penjemputan paket dari gudang penjual selesai.</p>
-            </div>
-          </div>
-        </div>
-      `,
-      confirmButtonColor: '#18181b',
-      confirmButtonText: 'Tutup',
-    })
-  }
+
 
   const handleRateProduct = () => {
     Swal.fire({
@@ -472,7 +440,7 @@ export function PurchaseContainer() {
       <div className="space-y-4">
         {filteredOrders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-4 bg-white dark:bg-zinc-950 sm:rounded text-center mx-4 sm:mx-0">
-            <FiTruck className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-3" />
+            <FiShoppingBag className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-3" />
             <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Belum ada pesanan</p>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm">
               Pesanan Anda yang cocok dengan filter atau kata kunci pencarian akan tampil di sini.
@@ -496,11 +464,6 @@ export function PurchaseContainer() {
                 </div>
 
                 <div className="flex items-center gap-2 text-xs">
-                  <FiTruck className="h-3.5 w-3.5 text-emerald-500" />
-                  <span className="text-zinc-600 dark:text-zinc-400 font-medium truncate max-w-[200px] sm:max-w-xs">
-                    {order.shippingStatus}
-                  </span>
-                  <span className="text-zinc-400 dark:text-zinc-650">|</span>
                   <span className="font-extrabold uppercase text-rose-500 tracking-wide text-[11px]">
                     {order.status === 'Sedang Diproses' ? 'SEDANG DIKEMAS' : order.status}
                   </span>
@@ -580,20 +543,12 @@ export function PurchaseContainer() {
                   )}
 
                   {order.status === 'Dikirim' && (
-                    <>
-                      <button
-                        onClick={() => handleTrackShipping(order.id)}
-                        className="rounded border border-zinc-200 dark:border-zinc-800 px-4 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
-                      >
-                        Lacak
-                      </button>
-                      <button
-                        onClick={() => handleConfirmReceived(order.id)}
-                        className="rounded bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 text-xs font-bold transition-colors cursor-pointer"
-                      >
-                        Pesanan Diterima
-                      </button>
-                    </>
+                    <button
+                      onClick={() => handleConfirmReceived(order.id)}
+                      className="rounded bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      Pesanan Diterima
+                    </button>
                   )}
 
                   {order.status === 'Selesai' && (
