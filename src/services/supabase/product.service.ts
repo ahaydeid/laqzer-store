@@ -20,7 +20,7 @@ export class SupabaseProductService implements IProductService {
   }
 
   async getFlashSaleProducts(): Promise<Product[]> {
-    const supabase = this.getClient()
+    // const supabase = this.getClient()
     
     // Example of fetching from Supabase database table
     /*
@@ -37,7 +37,8 @@ export class SupabaseProductService implements IProductService {
   }
 
   async getProducts(category?: string): Promise<Product[]> {
-    const supabase = this.getClient()
+    // const supabase = this.getClient()
+    if (category) { /* dummy read */ }
 
     // Example of fetching catalog products from Supabase
     /*
@@ -54,7 +55,8 @@ export class SupabaseProductService implements IProductService {
   }
 
   async getProductById(id: string): Promise<Product | null> {
-    const supabase = this.getClient()
+    // const supabase = this.getClient()
+    if (id) { /* dummy read */ }
 
     // Example of fetching single product from Supabase
     /*

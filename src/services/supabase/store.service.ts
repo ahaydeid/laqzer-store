@@ -21,7 +21,7 @@ export class SupabaseStoreService implements IStoreService {
   }
 
   async getSettings(): Promise<StoreSettings> {
-    const supabase = this.getClient()
+    // const supabase = this.getClient()
 
     // Example implementation structure (commented out until database schema is created):
     /*

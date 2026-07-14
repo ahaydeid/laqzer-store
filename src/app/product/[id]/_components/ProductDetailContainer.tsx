@@ -7,6 +7,8 @@ import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, Fi
 import { FaWhatsapp } from 'react-icons/fa'
 import { Product } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
+import { useCart } from '@/context/CartContext'
+import Swal from 'sweetalert2'
 
 interface ProductDetailContainerProps {
   product: Product
@@ -16,6 +18,7 @@ interface ProductDetailContainerProps {
 
 export function ProductDetailContainer({ product, settings, relatedProducts = [] }: ProductDetailContainerProps) {
   const router = useRouter()
+  const { addToCart } = useCart()
   
   // Generate 6 distinct simulated images representing fashion/subscription mocks
   const galleryImages = [
@@ -30,7 +33,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const [virtualIdx, setVirtualIdx] = useState(0) // start at index 0 (first copy)
   const [isTransitioning, setIsTransitioning] = useState(true)
   const [selectedVariant, setSelectedVariant] = useState('Hitam')
-  const [quantity, setQuantity] = useState(1)
+  const [quantity] = useState(1)
   const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
 
   const activeImageIdx = (virtualIdx % galleryImages.length + galleryImages.length) % galleryImages.length
@@ -88,6 +91,27 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
   const handleChatWA = () => {
     const text = `Halo ${settings.name}, saya ingin bertanya mengenai produk "${product.name}" (Varian: ${selectedVariant}). Apakah produk ini ready stok?`
     window.open(getWhatsAppLink(text), '_blank')
+  }
+
+  const handleAddToCart = async () => {
+    try {
+      await addToCart(product.id, selectedVariant, quantity)
+      Swal.fire({
+        title: 'Berhasil!',
+        text: `${product.name} (Varian: ${selectedVariant}) telah ditambahkan ke keranjang.`,
+        icon: 'success',
+        confirmButtonColor: '#18181b',
+        confirmButtonText: 'Oke',
+      })
+    } catch {
+      Swal.fire({
+        title: 'Gagal!',
+        text: 'Gagal menambahkan produk ke keranjang.',
+        icon: 'error',
+        confirmButtonColor: '#18181b',
+        confirmButtonText: 'Oke',
+      })
+    }
   }
 
   return (
@@ -287,7 +311,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           {/* Bottom Row Actions: Checkout Buttons */}
           <div className="flex-shrink-0 grid grid-cols-2 gap-3 border-t border-zinc-100 dark:border-zinc-900 pt-5">
             <button 
-              onClick={() => alert(`Sukses! ${product.name} (Varian: ${selectedVariant}) ditambahkan ke keranjang.`)}
+              onClick={handleAddToCart}
               className="flex items-center justify-center gap-2 rounded border border-zinc-200 py-3 px-4 text-xs font-semibold tracking-wide hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 transition-all text-zinc-900 dark:text-white"
             >
               <FiShoppingCart className="h-4 w-4" />

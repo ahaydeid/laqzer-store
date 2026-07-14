@@ -71,10 +71,10 @@ export function CategorySection({ categories, activeCategory, onSelectCategory }
               onClick={() => onSelectCategory(cat.id)}
               className={`group flex flex-col items-center gap-3 min-w-[80px] shrink-0 outline-none`}
             >
-              <div className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-300 border ${
+              <div className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-300 ${
                 activeCategory === cat.id
-                  ? 'bg-zinc-950 text-white border-zinc-950 dark:bg-white dark:text-zinc-950 dark:border-white shadow-md'
-                  : 'bg-zinc-50 text-zinc-700 border-zinc-100 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-800'
+                  ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 dark:border-white shadow-md'
+                  : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-800'
               }`}>
                 {renderIcon(cat.iconName)}
               </div>

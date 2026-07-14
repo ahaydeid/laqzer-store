@@ -20,7 +20,7 @@ export class SupabaseCategoryService implements ICategoryService {
   }
 
   async getCategories(): Promise<Category[]> {
-    const supabase = this.getClient()
+    // const supabase = this.getClient()
 
     // Example of fetching categories from Supabase
     /*

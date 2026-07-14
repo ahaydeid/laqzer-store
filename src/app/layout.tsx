@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { getServices } from "@/services";
 import { ChatWidget } from "@/components/layout/ChatWidget";
+import { CartProvider } from "@/context/CartContext";
 
 export const metadata: Metadata = {
   title: "Laqzer Store - UMKM Digital",
@@ -22,9 +23,12 @@ export default async function RootLayout({
       className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col">
-        {children}
-        <ChatWidget settings={settings} />
+        <CartProvider>
+          {children}
+          <ChatWidget settings={settings} />
+        </CartProvider>
       </body>
     </html>
   );
 }
+

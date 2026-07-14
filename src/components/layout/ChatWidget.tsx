@@ -175,7 +175,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
       {/* Floating Chat Widget Toggle Button */}
       <button
         onClick={() => setIsChatOpen(true)}
-        className={`fixed bottom-0 right-3 z-50 flex items-center gap-2.5 rounded-t-lg bg-white p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.25)] dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 active:scale-95 transition-all duration-300 group cursor-pointer origin-bottom-right transform ${
+        className={`fixed bottom-0 right-3 z-30 flex items-center gap-2.5 rounded-t-lg bg-white p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.25)] dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 active:scale-95 transition-all duration-300 group cursor-pointer origin-bottom-right transform ${
           isChatOpen 
             ? 'opacity-0 scale-90 translate-y-8 pointer-events-none' 
             : 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
