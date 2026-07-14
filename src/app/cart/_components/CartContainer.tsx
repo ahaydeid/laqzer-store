@@ -127,14 +127,7 @@ export function CartContainer() {
         <table className="hidden md:table w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-              <th className="py-4 px-6 w-12 text-center">
-                <input
-                  type="checkbox"
-                  checked={isAllChecked}
-                  onChange={(e) => toggleAllCheck(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-zinc-950 focus:ring-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
-                />
-              </th>
+              <th className="py-4 px-6 w-12 text-center" />
               <th className="py-4 px-4 w-1/3">Produk</th>
               <th className="py-4 px-4 w-40">Variasi</th>
               <th className="py-4 px-4 w-32">Harga Satuan</th>
@@ -156,7 +149,7 @@ export function CartContainer() {
                     type="checkbox"
                     checked={item.checked}
                     onChange={() => toggleCheckItem(item.id)}
-                    className="h-4 w-4 rounded border-zinc-300 text-zinc-950 focus:ring-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
+                    className="h-4 w-4 rounded border-zinc-300 text-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
                   />
                 </td>
                 <td className="py-5 px-4 align-middle">
@@ -219,13 +212,13 @@ export function CartContainer() {
                   </div>
                 </td>
                 {/* Total Harga Column with Red/Rose Accent */}
-                <td className="py-5 px-4 align-middle text-sm font-bold text-rose-500">
+                <td className="py-5 px-4 align-middle text-sm font-semibold text-rose-500">
                   Rp {(item.price * item.quantity).toLocaleString('id-ID')}
                 </td>
                 <td className="py-5 px-6 align-middle text-center">
                   <button
                     onClick={() => removeFromCart(item.id)}
-                    className="text-xs font-semibold text-zinc-600 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-455 transition-colors cursor-pointer"
+                    className="text-xs font-medium text-zinc-600 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-455 transition-colors cursor-pointer"
                   >
                     Hapus
                   </button>
@@ -250,7 +243,7 @@ export function CartContainer() {
                   type="checkbox"
                   checked={item.checked}
                   onChange={() => toggleCheckItem(item.id)}
-                  className="h-4.5 w-4.5 rounded border-zinc-300 text-zinc-950 focus:ring-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
+                  className="h-4.5 w-4.5 rounded border-zinc-300 text-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
                 />
               </div>
 
@@ -334,9 +327,9 @@ export function CartContainer() {
                   id="select-all-bottom"
                   checked={isAllChecked}
                   onChange={(e) => toggleAllCheck(e.target.checked)}
-                  className="h-4.5 w-4.5 rounded border-zinc-300 text-zinc-950 focus:ring-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
+                  className="h-4.5 w-4.5 rounded border-zinc-300 text-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
                 />
-                <label htmlFor="select-all-bottom" className="text-xs font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer">
+                <label htmlFor="select-all-bottom" className="text-xs font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer">
                   Pilih Semua ({items.length})
                 </label>
               </div>
@@ -344,7 +337,7 @@ export function CartContainer() {
               <button
                 onClick={handleRemoveSelected}
                 disabled={checkedItems.length === 0}
-                className="text-xs font-bold text-zinc-500 hover:text-rose-500 disabled:text-zinc-300 dark:disabled:text-zinc-700 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                className="text-xs font-medium text-zinc-500 hover:text-rose-500 disabled:text-zinc-300 dark:disabled:text-zinc-700 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 Hapus Terpilih
               </button>
@@ -358,7 +351,7 @@ export function CartContainer() {
                 <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 sm:block">
                   Total ({checkedCount} produk):
                 </span>
-                <span className="text-lg sm:text-xl font-black text-rose-500 sm:block sm:mt-0.5">
+                <span className="text-lg sm:text-xl font-bold text-rose-500 sm:block sm:mt-0.5">
                   Rp {subtotal.toLocaleString('id-ID')}
                 </span>
               </div>
@@ -367,7 +360,7 @@ export function CartContainer() {
               <button
                 onClick={handleCheckout}
                 disabled={checkedItems.length === 0}
-                className="w-full sm:w-56 flex items-center justify-center rounded bg-rose-500 hover:bg-rose-600 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 text-white font-extrabold text-sm py-3 px-6 transition-all shadow disabled:text-zinc-400 dark:disabled:text-zinc-500 cursor-pointer active:scale-[0.98]"
+                className="w-full sm:w-56 flex items-center justify-center rounded bg-rose-500 hover:bg-rose-600 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 text-white font-bold text-sm py-3 px-6 transition-all shadow disabled:text-zinc-400 dark:disabled:text-zinc-500 cursor-pointer active:scale-[0.98]"
               >
                 Checkout ({checkedCount})
               </button>
