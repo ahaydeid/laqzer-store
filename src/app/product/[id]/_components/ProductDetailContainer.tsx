@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart } from 'react-icons/fi'
-import { FaWhatsapp } from 'react-icons/fa'
+import { FaWhatsapp, FaFacebook, FaInstagram, FaTiktok, FaLink } from 'react-icons/fa'
 import { Product } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
 import { useCart } from '@/context/CartContext'
@@ -91,6 +91,50 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
   const handleChatWA = () => {
     const text = `Halo ${settings.name}, saya ingin bertanya mengenai produk "${product.name}" (Varian: ${selectedVariant}). Apakah produk ini ready stok?`
     window.open(getWhatsAppLink(text), '_blank')
+  }
+
+  const handleShare = (platform: 'wa' | 'fb' | 'ig' | 'tiktok' | 'link') => {
+    if (typeof window === 'undefined') return
+    const url = window.location.href
+    const text = `Lihat produk menarik ini: ${product.name} di Laqzer Store!`
+
+    if (platform === 'wa') {
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`, '_blank')
+    } else if (platform === 'fb') {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank')
+    } else if (platform === 'ig') {
+      navigator.clipboard.writeText(url)
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Tautan disalin! Silakan bagikan di Instagram.',
+        showConfirmButton: false,
+        timer: 2000
+      })
+      window.open('https://instagram.com', '_blank')
+    } else if (platform === 'tiktok') {
+      navigator.clipboard.writeText(url)
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Tautan disalin! Silakan bagikan di TikTok.',
+        showConfirmButton: false,
+        timer: 2000
+      })
+      window.open('https://tiktok.com', '_blank')
+    } else if (platform === 'link') {
+      navigator.clipboard.writeText(url)
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Tautan berhasil disalin!',
+        showConfirmButton: false,
+        timer: 2000
+      })
+    }
   }
 
   const handleAddToCart = async () => {
@@ -199,6 +243,48 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
             >
               <FiChevronRight className="h-6 w-6" />
             </button>
+          </div>
+
+          {/* Share Section */}
+          <div className="flex items-center gap-3 py-3 border-t border-zinc-100 dark:border-zinc-900 justify-center">
+            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Bagikan:</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleShare('wa')}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors cursor-pointer dark:bg-green-950/20 dark:text-green-400"
+                title="Bagikan ke WhatsApp"
+              >
+                <FaWhatsapp className="h-4.5 w-4.5" />
+              </button>
+              <button
+                onClick={() => handleShare('fb')}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer dark:bg-blue-950/20 dark:text-blue-400"
+                title="Bagikan ke Facebook"
+              >
+                <FaFacebook className="h-4.5 w-4.5" />
+              </button>
+              <button
+                onClick={() => handleShare('ig')}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-50 text-pink-600 hover:bg-pink-100 transition-colors cursor-pointer dark:bg-pink-950/20 dark:text-pink-400"
+                title="Bagikan ke Instagram"
+              >
+                <FaInstagram className="h-4.5 w-4.5" />
+              </button>
+              <button
+                onClick={() => handleShare('tiktok')}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-zinc-800 hover:bg-zinc-200 transition-colors cursor-pointer dark:bg-zinc-800/40 dark:text-zinc-200"
+                title="Bagikan ke TikTok"
+              >
+                <FaTiktok className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => handleShare('link')}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer dark:bg-rose-950/20 dark:text-rose-400"
+                title="Salin Tautan"
+              >
+                <FaLink className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           {/* External Contact Buttons */}
