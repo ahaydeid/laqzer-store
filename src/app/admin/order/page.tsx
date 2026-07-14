@@ -152,7 +152,7 @@ export default function OrderPage() {
             const getTabClass = () => {
               if (isActive) {
                 if (tab === "Selesai") {
-                  return "border-emerald-500 bg-emerald-100/70 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-950/20 dark:text-emerald-400";
+                  return "border-sky-500 bg-sky-100/70 text-sky-700 dark:border-sky-400 dark:bg-sky-950/20 dark:text-sky-400";
                 }
                 if (tab === "Dibatalkan") {
                   return "border-rose-500 bg-rose-100/70 text-rose-700 dark:border-rose-400 dark:bg-rose-950/20 dark:text-rose-400";
@@ -160,7 +160,7 @@ export default function OrderPage() {
                 return "border-sky-500 bg-sky-100/70 text-sky-700 dark:border-sky-400 dark:bg-sky-950/20 dark:text-sky-400";
               } else {
                 if (tab === "Selesai") {
-                  return "border-transparent text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50/30 dark:text-emerald-400 dark:hover:text-emerald-300 dark:hover:bg-emerald-950/10";
+                  return "border-transparent text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-800/20";
                 }
                 if (tab === "Dibatalkan") {
                   return "border-transparent text-rose-600 hover:text-rose-800 hover:bg-rose-50/30 dark:text-rose-400 dark:hover:text-rose-300 dark:hover:bg-rose-950/10";
