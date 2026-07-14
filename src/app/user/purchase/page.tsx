@@ -24,7 +24,7 @@ export default async function PurchasePage() {
 
       {/* Main interactive area */}
       <main className="flex-1 w-full bg-slate-50/50 dark:bg-zinc-900/10">
-        <div className="mx-auto max-w-3xl w-full px-0 sm:px-6 lg:px-8 py-8">
+        <div className="mx-auto max-w-5xl w-full px-0 sm:px-6 lg:px-8 py-8">
           <PurchaseContainer />
         </div>
       </main>
