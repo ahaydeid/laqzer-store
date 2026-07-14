@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { FiSearch, FiShoppingCart, FiBell, FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
+import { FiSearch, FiShoppingCart, FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import Link from 'next/link'
 import { FaRegUserCircle } from 'react-icons/fa'
 import { StoreSettings } from '@/core/types/store'
@@ -177,10 +177,7 @@ export function Navbar({ settings, categories }: NavbarProps) {
               </div>
             )}
 
-            {/* Notification Icon */}
-            <button className="hidden sm:block p-2 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
-              <FiBell className="h-5 w-5" />
-            </button>
+
 
             {/* User Account Icon with Dropdown */}
             <div 
