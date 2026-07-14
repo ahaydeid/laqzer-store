@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart } from 'react-icons/fi'
-import { FaWhatsapp, FaFacebook, FaInstagram, FaTiktok, FaLink } from 'react-icons/fa'
+import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart, FiHeart, FiCheck } from 'react-icons/fi'
+import { FaWhatsapp, FaFacebook, FaInstagram, FaTiktok, FaLink, FaHeart } from 'react-icons/fa'
 import { Product } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
 import { useCart } from '@/context/CartContext'
@@ -35,6 +35,10 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const [selectedVariant, setSelectedVariant] = useState('Hitam')
   const [quantity] = useState(1)
   const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
+  const [showAddSuccess, setShowAddSuccess] = useState(false)
+  const [animateAddSuccess, setAnimateAddSuccess] = useState(false)
 
   const activeImageIdx = (virtualIdx % galleryImages.length + galleryImages.length) % galleryImages.length
 
@@ -66,6 +70,16 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
       return () => clearTimeout(timer)
     }
   }, [virtualIdx, galleryImages.length])
+
+  // Handle copy timer reset
+  useEffect(() => {
+    if (isCopied) {
+      const timer = setTimeout(() => {
+        setIsCopied(false)
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [isCopied])
 
   const getWhatsAppLink = (messageText: string) => {
     const rawPhone = settings.phone || '081234567890'
@@ -126,27 +140,40 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
       window.open('https://tiktok.com', '_blank')
     } else if (platform === 'link') {
       navigator.clipboard.writeText(url)
+      setIsCopied(true)
+    }
+  }
+
+  const handleToggleFavorite = () => {
+    setIsFavorited((prev) => {
+      const next = !prev
       Swal.fire({
         toast: true,
         position: 'top-end',
         icon: 'success',
-        title: 'Tautan berhasil disalin!',
+        title: next ? 'Produk dimasukkan ke Favorit Saya' : 'Produk dihapus dari Favorit Saya',
         showConfirmButton: false,
         timer: 2000
       })
-    }
+      return next
+    })
   }
 
   const handleAddToCart = async () => {
     try {
       await addToCart(product.id, selectedVariant, quantity)
-      Swal.fire({
-        title: 'Berhasil!',
-        text: `${product.name} (Varian: ${selectedVariant}) telah ditambahkan ke keranjang.`,
-        icon: 'success',
-        confirmButtonColor: '#18181b',
-        confirmButtonText: 'Oke',
-      })
+      setShowAddSuccess(true)
+      setTimeout(() => {
+        setAnimateAddSuccess(true)
+      }, 50)
+
+      setTimeout(() => {
+        setAnimateAddSuccess(false)
+      }, 1500)
+
+      setTimeout(() => {
+        setShowAddSuccess(false)
+      }, 1800)
     } catch {
       Swal.fire({
         title: 'Gagal!',
@@ -170,21 +197,20 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
       </button>
 
       {/* Main product presentation grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 lg:gap-x-12 gap-y-3 items-stretch">
         
-        {/* Left Column: Image Gallery & External CTAs */}
-        <div className="flex flex-col gap-4">
-          {/* Main Display Image */}
-          <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-800">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src={galleryImages[activeImageIdx]} 
-              alt={product.name} 
-              className="h-full w-full object-cover transition-all duration-300"
-            />
+        {/* Row 1, Col 1: Main Display Image */}
+        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-800 md:col-start-1 md:row-start-1">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src={galleryImages[activeImageIdx]} 
+            alt={product.name} 
+            className="h-full w-full object-cover transition-all duration-300"
+          />
+        </div>
 
-          </div>
-
+        {/* Row 2, Col 1: Gallery Thumbnails, Share Section & External CTAs */}
+        <div className="flex flex-col gap-3 md:col-start-1 md:row-start-2 mt-2 md:mt-0">
           {/* Gallery Thumbnail Carousel (Centered Sliding Track with Gradient Overlays) */}
           <div className="flex-shrink-0 relative w-full max-w-[280px] sm:max-w-[380px] mx-auto px-8">
             {/* Left Chevron Button */}
@@ -246,7 +272,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           </div>
 
           {/* Share Section */}
-          <div className="flex items-center gap-3 py-3 border-t border-zinc-100 dark:border-zinc-900 justify-center">
+          <div className="flex items-center gap-3 py-3 border-t border-zinc-100 dark:border-zinc-900 justify-start">
             <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Bagikan:</span>
             <div className="flex items-center gap-3">
               <button
@@ -279,12 +305,33 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               </button>
               <button
                 onClick={() => handleShare('link')}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer dark:bg-rose-950/20 dark:text-rose-400"
+                className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors cursor-pointer ${
+                  isCopied
+                    ? 'bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300'
+                    : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700'
+                }`}
                 title="Salin Tautan"
               >
-                <FaLink className="h-5 w-5" />
+                {isCopied ? <FiCheck className="h-5.5 w-5.5" /> : <FaLink className="h-5 w-5" />}
               </button>
             </div>
+
+            {/* Vertical Separator */}
+            <div className="ml-auto h-6 w-[1px] bg-zinc-200 dark:bg-zinc-800 mx-1.5" />
+
+            {/* Favorite Button */}
+            <button
+              onClick={handleToggleFavorite}
+              className="flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-400 transition-colors cursor-pointer outline-none"
+              title={isFavorited ? "Hapus dari Favorit Saya" : "Masukkan ke Favorit Saya"}
+            >
+              {isFavorited ? (
+                <FaHeart className="h-5.5 w-5.5 text-rose-500 fill-rose-500" />
+              ) : (
+                <FiHeart className="h-5.5 w-5.5 text-rose-500" />
+              )}
+              <span>Favorit ({isFavorited ? '10,9RB' : '10,8RB'})</span>
+            </button>
           </div>
 
           {/* External Contact Buttons */}
@@ -307,8 +354,8 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           </div>
         </div>
 
-        {/* Right Column: Metadata, Pricing & Variant Actions */}
-        <div className="flex flex-col justify-between md:h-full gap-6">
+        {/* Row 1, Col 2: Metadata, Pricing, Variant Actions & Checkout Buttons */}
+        <div className="flex flex-col justify-between md:col-start-2 md:row-start-1 md:h-full gap-6">
           <div className="space-y-6">
             {/* Title */}
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white leading-tight">
@@ -348,7 +395,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                     <span className="text-base text-zinc-400 line-through">
                       Rp{product.originalPrice!.toLocaleString('id-ID')}
                     </span>
-                    <span className="rounded-md bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 text-xs font-bold text-red-600 dark:text-red-400">
+                    <span className="rounded-md bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 text-xs font-semibold text-red-600 dark:text-red-400">
                       -{discountPercentage}%
                     </span>
                   </>
@@ -542,6 +589,21 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                 </Link>
               )
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Native React Toast/Modal overlay for Cart Success Notification */}
+      {showAddSuccess && (
+        <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 transition-opacity duration-300 ${animateAddSuccess ? 'opacity-100' : 'opacity-0'}`}>
+          <div className={`bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded w-[280px] p-4 text-center font-sans transition-all duration-300 transform ${animateAddSuccess ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={product.imageUrl} className="w-48 h-48 object-cover rounded mx-auto mb-3" alt={product.name} />
+            <div>
+              <h4 className="text-base font-bold text-zinc-900 dark:text-white leading-tight">{product.name}</h4>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Varian: {selectedVariant} | Jumlah: {quantity}x</p>
+              <p className="text-sm font-bold text-zinc-900 dark:text-white mt-3">Ditambahkan ke Keranjang</p>
+            </div>
           </div>
         </div>
       )}
