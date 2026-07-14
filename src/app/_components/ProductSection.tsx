@@ -87,7 +87,7 @@ export function ProductSection({ products }: ProductSectionProps) {
 
                   {/* Slashed discount badge */}
                   {hasDiscount && (
-                    <span className="absolute top-0 left-0 rounded-br-lg bg-red-500 px-2.5 py-1 text-xs font-semibold text-white uppercase tracking-wider">
+                    <span className="absolute top-0 left-0 rounded-br-xl bg-red-500 px-2.5 py-1 text-xs font-semibold text-white uppercase tracking-wider">
                       -{discountPercentage}%
                     </span>
                   )}

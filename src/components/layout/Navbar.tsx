@@ -111,12 +111,13 @@ export function Navbar({ settings, categories }: NavbarProps) {
             {pathname !== '/cart' && (
               <div className="relative group">
                 <Link 
+                  id="navbar-cart-button"
                   href="/cart" 
-                  className="relative p-2 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors block"
+                  className="relative p-2 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-all transform duration-200 block"
                 >
                   <FiShoppingCart className="h-5 w-5" />
                   {cartCount > 0 && (
-                    <span className="absolute top-0.5 right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
+                    <span className="absolute top-0.5 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
                       {cartCount}
                     </span>
                   )}
@@ -140,7 +141,7 @@ export function Navbar({ settings, categories }: NavbarProps) {
                         </div>
                         
                         <div className="divide-y divide-zinc-100 dark:divide-zinc-900 max-h-72 overflow-y-auto">
-                          {items.slice(0, 5).map((item) => (
+                          {[...items].reverse().slice(0, 5).map((item) => (
                             <div key={item.id} className="p-3 flex gap-3 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/20 transition-colors">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img

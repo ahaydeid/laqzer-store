@@ -18,7 +18,7 @@ interface ProductDetailContainerProps {
 
 export function ProductDetailContainer({ product, settings, relatedProducts = [] }: ProductDetailContainerProps) {
   const router = useRouter()
-  const { addToCart } = useCart()
+  const { addToCart, toggleAllCheck } = useCart()
   
   // Generate 6 distinct simulated images representing fashion/subscription mocks
   const galleryImages = [
@@ -81,6 +81,8 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
     }
   }, [isCopied])
 
+
+
   const getWhatsAppLink = (messageText: string) => {
     const rawPhone = settings.phone || '081234567890'
     const cleanPhone = rawPhone.replace(/[^0-9]/g, '')
@@ -91,21 +93,47 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
     return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(messageText)}`
   }
 
-  const handleBuyNow = () => {
-    const text = `Halo ${settings.name}, saya ingin memesan produk berikut:
-- Nama Produk: ${product.name}
-- Varian: ${selectedVariant}
-- Jumlah: ${quantity} pcs
-- Total Harga: Rp ${(product.price * quantity).toLocaleString('id-ID')}
-
-Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
-    window.open(getWhatsAppLink(text), '_blank')
-  }
-
   const handleChatWA = () => {
     const text = `Halo ${settings.name}, saya ingin bertanya mengenai produk "${product.name}" (Varian: ${selectedVariant}). Apakah produk ini ready stok?`
     window.open(getWhatsAppLink(text), '_blank')
   }
+
+  const handleBuyNow = async () => {
+    try {
+      // 1. Uncheck all other items in the cart to isolate this purchase
+      await toggleAllCheck(false)
+      // 2. Add the current product to the cart (always sets checked = true)
+      await addToCart(product.id, selectedVariant, quantity)
+      // 3. Redirect directly to the checkout page with only this item
+      router.push('/checkout')
+    } catch (error) {
+      console.error('Failed to process Buy Now:', error)
+      Swal.fire({
+        title: 'Gagal!',
+        text: 'Gagal memproses pesanan langsung.',
+        icon: 'error',
+        confirmButtonColor: '#18181b',
+        confirmButtonText: 'Oke',
+      })
+    }
+  }
+
+  const handleChatAdmin = () => {
+    const event = new CustomEvent('open-chat-widget', {
+      detail: {
+        product: {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          imageUrl: product.imageUrl,
+          variant: selectedVariant,
+        }
+      }
+    })
+    window.dispatchEvent(event)
+  }
+
+
 
   const handleShare = (platform: 'wa' | 'fb' | 'ig' | 'tiktok' | 'link') => {
     if (typeof window === 'undefined') return
@@ -160,21 +188,100 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
   }
 
   const handleAddToCart = async () => {
+    let flyImgEl: HTMLImageElement | null = null
+    const activeTimeouts: NodeJS.Timeout[] = []
+
+    const cleanupUI = () => {
+      if (flyImgEl) {
+        flyImgEl.remove()
+      }
+      activeTimeouts.forEach(clearTimeout)
+      setAnimateAddSuccess(false)
+      setShowAddSuccess(false)
+    }
+
     try {
-      await addToCart(product.id, selectedVariant, quantity)
+      // 1. Show modal instantly
       setShowAddSuccess(true)
-      setTimeout(() => {
+      const t1 = setTimeout(() => {
         setAnimateAddSuccess(true)
-      }, 50)
+      }, 10)
+      activeTimeouts.push(t1)
 
-      setTimeout(() => {
+      // 2. Fly to Cart Animation
+      const t2 = setTimeout(() => {
+        const modalImg = document.getElementById('modal-success-image')
+        const cartBtn = document.getElementById('navbar-cart-button')
+        if (modalImg && cartBtn) {
+          const startRect = modalImg.getBoundingClientRect()
+          const endRect = cartBtn.getBoundingClientRect()
+
+          const flyImg = document.createElement('img')
+          flyImg.src = product.imageUrl
+          flyImg.style.position = 'fixed'
+          flyImg.style.left = `${startRect.left}px`
+          flyImg.style.top = `${startRect.top}px`
+          flyImg.style.width = `${startRect.width}px`
+          flyImg.style.height = `${startRect.height}px`
+          flyImg.style.objectFit = 'cover'
+          flyImg.style.borderRadius = '4px'
+          flyImg.style.zIndex = '9999'
+          flyImg.style.pointerEvents = 'none'
+          flyImg.style.transition = 'all 0.7s cubic-bezier(0.42, 0, 0.58, 1)'
+          document.body.appendChild(flyImg)
+          flyImgEl = flyImg
+
+          const tFly = setTimeout(() => {
+            flyImg.style.left = `${endRect.left + endRect.width / 2 - 12}px`
+            flyImg.style.top = `${endRect.top + endRect.height / 2 - 12}px`
+            flyImg.style.width = '24px'
+            flyImg.style.height = '24px'
+            flyImg.style.opacity = '0.3'
+          }, 50)
+          activeTimeouts.push(tFly)
+
+          const tClean = setTimeout(() => {
+            flyImg.remove()
+            flyImgEl = null
+            cartBtn.classList.add('scale-125')
+            const tPop = setTimeout(() => {
+              cartBtn.classList.remove('scale-125')
+            }, 200)
+            activeTimeouts.push(tPop)
+          }, 750)
+          activeTimeouts.push(tClean)
+        }
+      }, 400)
+      activeTimeouts.push(t2)
+
+      // 3. Close modal animation start
+      const t3 = setTimeout(() => {
         setAnimateAddSuccess(false)
-      }, 1500)
+      }, 400)
+      activeTimeouts.push(t3)
 
-      setTimeout(() => {
+      // 4. Unmount modal
+      const t4 = setTimeout(() => {
         setShowAddSuccess(false)
-      }, 1800)
-    } catch {
+      }, 700)
+      activeTimeouts.push(t4)
+
+      // 5. Run async service addition in background (non-blocking)
+      addToCart(product.id, selectedVariant, quantity).catch((error) => {
+        console.error('Failed to add to cart in background:', error)
+        cleanupUI()
+        Swal.fire({
+          title: 'Gagal!',
+          text: 'Gagal menambahkan produk ke keranjang.',
+          icon: 'error',
+          confirmButtonColor: '#18181b',
+          confirmButtonText: 'Oke',
+        })
+      })
+
+    } catch (error) {
+      console.error('Error in handleAddToCart:', error)
+      cleanupUI()
       Swal.fire({
         title: 'Gagal!',
         text: 'Gagal menambahkan produk ke keranjang.',
@@ -337,7 +444,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           {/* External Contact Buttons */}
           <div className="flex-shrink-0 grid grid-cols-2 gap-3 pt-1">
             <button 
-              onClick={handleChatWA}
+              onClick={handleChatAdmin}
               className="flex items-center justify-center gap-2 border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
             >
               <FiMessageSquare className="h-4 w-4" />
@@ -445,7 +552,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           <div className="grid grid-cols-2 gap-3 border-t border-zinc-100 dark:border-zinc-900 pt-5">
             <button 
               onClick={handleAddToCart}
-              className="flex items-center justify-center gap-2 rounded border border-zinc-200 py-3 px-4 text-xs font-semibold tracking-wide hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 transition-all text-zinc-900 dark:text-white"
+              className="flex items-center justify-center cursor-pointer gap-2 rounded border border-zinc-200 py-3 px-4 text-xs font-semibold tracking-wide hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 transition-all text-zinc-900 dark:text-white"
             >
               <FiShoppingCart className="h-4 w-4" />
               <span>Masukkan Keranjang</span>
@@ -453,7 +560,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
 
             <button 
               onClick={handleBuyNow}
-              className="flex items-center justify-center rounded bg-zinc-950 dark:bg-white dark:text-zinc-950 text-white py-3 px-4 text-xs font-semibold tracking-wide hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all active:scale-[0.99]"
+              className="flex items-center justify-center cursor-pointer rounded bg-zinc-950 dark:bg-white dark:text-zinc-950 text-white py-3 px-4 text-xs font-semibold tracking-wide hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all active:scale-[0.99]"
             >
               Beli Sekarang
             </button>
@@ -483,7 +590,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
                 : 'border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
             }`}
           >
-            Penilaian (0)
+            Penilaian (3)
           </button>
         </div>
 
@@ -491,7 +598,7 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
           {activeTab === 'desc' ? (
             <div className="prose dark:prose-invert max-w-none text-zinc-600 dark:text-zinc-300 text-sm leading-relaxed whitespace-pre-line space-y-4">
               <h3 className="text-zinc-900 dark:text-white font-extrabold text-base">
-                {product.name} - Premium Local Quality Product
+                {product.name} - Premium Quality Product
               </h3>
               <p>{product.description}</p>
               
@@ -504,25 +611,120 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
               </ul>
             </div>
           ) : (
-            <div className="py-4 space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-6 bg-zinc-50/50 dark:bg-zinc-900/10 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-900/60 max-w-md">
-                <div className="text-center">
-                  <span className="text-4xl font-extrabold text-zinc-950 dark:text-white">
-                    0.0
+            <div className="py-2 space-y-6">
+              {/* Overall Rating Score Card */}
+              <div className="flex items-center gap-6 bg-white dark:bg-zinc-950 p-6 rounded-xl border border-zinc-100 dark:border-zinc-850/80">
+                <div className="text-center shrink-0">
+                  <span className="text-5xl font-extrabold text-zinc-950 dark:text-white">
+                    {product.rating ? product.rating.toFixed(1) : "4.9"}
                   </span>
-                  <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mt-1">
+                  <span className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1.5">
                     dari 5
                   </span>
                 </div>
-                <div className="flex-1 space-y-1.5">
+                <div className="space-y-1.5">
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <FiStar key={s} className="h-4 w-4 text-zinc-200 dark:text-zinc-800" />
+                      <FiStar key={s} className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                     ))}
                   </div>
-                  <p className="text-xs text-zinc-500 font-medium">
-                    Belum ada ulasan tertulis untuk produk ini.
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
+                    Dari 3 ulasan
                   </p>
+                </div>
+              </div>
+
+              {/* Reviews List */}
+              <div className="space-y-6 divide-y divide-zinc-200/65 dark:divide-zinc-850">
+                {/* Review 1 */}
+                <div className="pt-5 first:pt-0 flex gap-4">
+                  {/* Avatar */}
+                  <div className="h-10 w-10 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200/50 dark:border-zinc-700/50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent("Budi S.")}`} 
+                      alt="Budi S." 
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h5 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Budi S.</h5>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Varian: Hitam • 2 minggu lalu</p>
+                      </div>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <FiStar key={s} className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
+                      Kualitas produk sangat bagus, bahan tebal dan halus. Pengemasan rapi dan pengiriman super cepat. Terima kasih!
+                    </p>
+                  </div>
+                </div>
+
+                {/* Review 2 */}
+                <div className="pt-5 flex gap-4">
+                  {/* Avatar */}
+                  <div className="h-10 w-10 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200/50 dark:border-zinc-700/50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent("Dewi K.")}`} 
+                      alt="Dewi K." 
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h5 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Dewi K.</h5>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Varian: Putih • 1 bulan lalu</p>
+                      </div>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <FiStar key={s} className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
+                      Bagus sekali kemejanya, pas di badan. Jahitannya rapi dan bahannya dingin saat dipakai. Recommended seller!
+                    </p>
+                  </div>
+                </div>
+
+                {/* Review 3 */}
+                <div className="pt-5 flex gap-4">
+                  {/* Avatar */}
+                  <div className="h-10 w-10 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200/50 dark:border-zinc-700/50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent("Ahmad F.")}`} 
+                      alt="Ahmad F." 
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h5 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Ahmad F.</h5>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Varian: Hitam • 1 bulan lalu</p>
+                      </div>
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        {[1, 2, 3, 4].map((s) => (
+                          <FiStar key={s} className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                        ))}
+                        <FiStar className="h-4 w-4 text-zinc-200 dark:text-zinc-800" />
+                      </div>
+                    </div>
+                    <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
+                      Bahan adem, ukuran pas sesuai deskripsi. Cuma pengiriman kurir JNE agak telat sehari dari biasanya, tapi overall oke banget.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -595,14 +797,13 @@ Mohon informasi selanjutnya untuk proses pembayaran. Terima kasih!`
 
       {/* Native React Toast/Modal overlay for Cart Success Notification */}
       {showAddSuccess && (
-        <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 transition-opacity duration-300 ${animateAddSuccess ? 'opacity-100' : 'opacity-0'}`}>
-          <div className={`bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded w-[280px] p-4 text-center font-sans transition-all duration-300 transform ${animateAddSuccess ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
+        <div className={`fixed inset-0 z-50 flex items-center justify-center bg-transparent transition-opacity duration-300 ${animateAddSuccess ? 'opacity-100' : 'opacity-0'}`}>
+          <div className={`bg-white dark:bg-zinc-950 shadow-xl rounded w-[280px] p-4 text-center font-sans transition-all duration-300 transform ${animateAddSuccess ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={product.imageUrl} className="w-48 h-48 object-cover rounded mx-auto mb-3" alt={product.name} />
+            <img id="modal-success-image" src={product.imageUrl} className="w-48 h-48 object-cover rounded mx-auto mb-3" alt={product.name} />
             <div>
               <h4 className="text-base font-bold text-zinc-900 dark:text-white leading-tight">{product.name}</h4>
               <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Varian: {selectedVariant} | Jumlah: {quantity}x</p>
-              <p className="text-sm font-bold text-zinc-900 dark:text-white mt-3">Ditambahkan ke Keranjang</p>
             </div>
           </div>
         </div>

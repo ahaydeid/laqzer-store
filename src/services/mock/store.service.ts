@@ -14,7 +14,7 @@ export class MockStoreService implements IStoreService {
       name: 'Laqzer Indonesia',
       description: 'Katalog fashion lokal premium buatan anak bangsa dengan harga bersahabat.',
       currency: 'IDR',
-      address: 'Jl. Pemuda No. 12, Jakarta',
+      address: 'Permata Balaraja A.85 NO 7, Balaraja Kab Tangerang',
       phone: '081234567890',
     };
   }

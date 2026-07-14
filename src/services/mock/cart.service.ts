@@ -13,7 +13,7 @@ let MOCK_CART_ITEMS: CartItem[] = [
     variant: 'L',
     quantity: 1,
     stock: 100,
-    checked: true,
+    checked: false,
   },
   {
     id: 'cart-fs-3-Default',
@@ -24,7 +24,7 @@ let MOCK_CART_ITEMS: CartItem[] = [
     variant: 'Default',
     quantity: 2,
     stock: 30,
-    checked: true,
+    checked: false,
   }
 ]
 
@@ -59,6 +59,7 @@ export class MockCartService implements ICartService {
       } else {
         MOCK_CART_ITEMS[existingIndex].quantity = newQty
       }
+      MOCK_CART_ITEMS[existingIndex].checked = true
     } else {
       MOCK_CART_ITEMS.push({
         id,

@@ -2,13 +2,24 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { StoreSettings } from '@/core/types/store'
-import { FiChevronDown, FiSend } from 'react-icons/fi'
+import { FiChevronDown, FiSend, FiX } from 'react-icons/fi'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
+interface ProductAttachment {
+  id: string
+  name: string
+  price: number
+  imageUrl: string
+  variant: string
+}
 
 interface Message {
   id: string
   sender: 'admin' | 'user'
   text: string
   timestamp: string
+  product?: ProductAttachment
 }
 
 interface ChatWidgetProps {
@@ -16,8 +27,10 @@ interface ChatWidgetProps {
 }
 
 export function ChatWidget({ settings }: ChatWidgetProps) {
+  const pathname = usePathname()
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [inputText, setInputText] = useState('')
+  const [pendingProduct, setPendingProduct] = useState<ProductAttachment | null>(null)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -28,6 +41,33 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
   ])
 
   const chatEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Auto-focus input field when chat widget opens
+  useEffect(() => {
+    if (isChatOpen) {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus()
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [isChatOpen])
+
+  // Listen to open-chat-widget global event to open chat and attach product
+  useEffect(() => {
+    const handleOpenChat = (e: Event) => {
+      const customEvent = e as CustomEvent<{ product?: ProductAttachment }>
+      setIsChatOpen(true)
+      if (customEvent.detail && customEvent.detail.product) {
+        setPendingProduct(customEvent.detail.product)
+      }
+    }
+
+    window.addEventListener('open-chat-widget', handleOpenChat)
+    return () => {
+      window.removeEventListener('open-chat-widget', handleOpenChat)
+    }
+  }, [])
 
   // Scroll to bottom when message arrives
   useEffect(() => {
@@ -36,32 +76,39 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     }
   }, [messages, isChatOpen])
 
-  const phone = settings.phone || '081234567890'
-  const cleanPhone = phone.replace(/[^0-9]/g, '')
-  const formattedPhone = cleanPhone.startsWith('0') 
-    ? '62' + cleanPhone.slice(1) 
-    : cleanPhone
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
 
   const handleSendMessage = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
-    if (!inputText.trim()) return
+    if (!inputText.trim() && !pendingProduct) return
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      sender: 'user',
-      text: inputText,
-      timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+    const now = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+    const newMessages: Message[] = []
+
+    if (pendingProduct) {
+      newMessages.push({
+        id: `prod-${Date.now()}`,
+        sender: 'user',
+        text: '',
+        product: pendingProduct,
+        timestamp: now,
+      })
     }
 
-    setMessages((prev) => [...prev, newMessage])
-    const typedText = inputText
-    setInputText('')
+    if (inputText.trim()) {
+      newMessages.push({
+        id: `text-${Date.now() + 1}`,
+        sender: 'user',
+        text: inputText,
+        timestamp: now,
+      })
+    }
 
-    // Simulate redirect to WhatsApp with the user's message
-    setTimeout(() => {
-      const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(typedText)}`
-      window.open(whatsappUrl, '_blank')
-    }, 400)
+    setMessages((prev) => [...prev, ...newMessages])
+    setInputText('')
+    setPendingProduct(null)
   }
 
   return (
@@ -119,7 +166,34 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
                 key={msg.id}
                 className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
               >
-                {isUser ? (
+                {msg.product ? (
+                  <Link 
+                    href={`/product/${msg.product.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-2.5 flex gap-3 w-[260px] text-left hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={msg.product.imageUrl} 
+                      alt={msg.product.name} 
+                      className="w-12 h-12 rounded-sm object-cover bg-white dark:bg-zinc-950 shrink-0" 
+                    />
+                    <div className="flex flex-col min-w-0 justify-between">
+                      <div>
+                        <h5 className="text-[11px] font-semibold text-zinc-850 dark:text-zinc-200 truncate leading-tight" title={msg.product.name}>
+                          {msg.product.name}
+                        </h5>
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                          Varian: {msg.product.variant}
+                        </p>
+                      </div>
+                      <p className="text-xs font-bold text-rose-500 dark:text-rose-400 mt-1">
+                        Rp{msg.product.price.toLocaleString('id-ID')}
+                      </p>
+                    </div>
+                  </Link>
+                ) : isUser ? (
                   <div className="flex items-start max-w-[75%] justify-end">
                     <div className="bg-emerald-200 text-zinc-950 rounded-l-xl rounded-b-xl px-4 py-2.5 text-sm shadow-xs">
                       <p className="leading-relaxed break-words">{msg.text}</p>
@@ -149,6 +223,27 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
           })}
           <div ref={chatEndRef} />
         </div>
+ 
+        {/* Pending Product Attachment Card */}
+        {pendingProduct && (
+          <div className="px-3.5 py-2 bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 text-xs shrink-0">
+            <div className="flex items-center gap-2 min-w-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={pendingProduct.imageUrl} className="w-8 h-8 rounded object-cover shrink-0" alt="" />
+              <div className="truncate">
+                <p className="font-semibold text-zinc-800 dark:text-zinc-200 truncate">{pendingProduct.name}</p>
+                <p className="text-[10px] text-zinc-500">Rp {pendingProduct.price.toLocaleString('id-ID')}</p>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              onClick={() => setPendingProduct(null)} 
+              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 cursor-pointer"
+            >
+              <FiX className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         {/* Input Bar */}
         <form 
@@ -156,6 +251,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
           className="p-3.5 bg-white border-t border-zinc-100 dark:bg-zinc-950 dark:border-zinc-800 flex items-center gap-2"
         >
           <input
+            ref={inputRef}
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
@@ -164,7 +260,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
           />
           <button
             type="submit"
-            disabled={!inputText.trim()}
+            disabled={!inputText.trim() && !pendingProduct}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-500 text-white hover:bg-rose-600 active:scale-95 disabled:opacity-50 disabled:pointer-events-none transition-all flex-shrink-0"
           >
             <FiSend className="h-5 w-5 ml-0.5" />

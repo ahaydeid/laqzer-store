@@ -35,9 +35,11 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
   // 1. Get checked items from cart
   const checkedItems = items.filter((item) => item.checked)
 
+  const [isOrderPlaced, setIsOrderPlaced] = useState(false)
+
   // Redirect to cart if no items checked
   useEffect(() => {
-    if (checkedItems.length === 0) {
+    if (checkedItems.length === 0 && !isOrderPlaced) {
       Swal.fire({
         title: 'Akses Ditolak',
         text: 'Anda tidak memiliki produk untuk di-checkout. Silakan pilih produk terlebih dahulu.',
@@ -48,7 +50,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
         router.push('/cart')
       })
     }
-  }, [checkedItems.length, router])
+  }, [checkedItems.length, router, isOrderPlaced])
 
 
 
@@ -174,52 +176,69 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Build message
-    let message = `Halo *${settings.name}*, saya ingin melakukan pemesanan baru dengan detail berikut:\n\n`
-    
-    message += `*Daftar Produk:*\n`
-    checkedItems.forEach((item, index) => {
-      message += `${index + 1}. ${item.name} (${item.variant}) x${item.quantity} - Rp ${(item.price * item.quantity).toLocaleString('id-ID')}\n`
-    })
-    message += `\n`
-
-    message += `*Detail Alamat Pengiriman:*\n`
-    message += `- Penerima: Budi Santoso\n`
-    message += `- Telepon: 081234567890\n`
-    message += `- Alamat: Jl. Kemang Raya No. 10, RT 02 / RW 05\n`
-    message += `- Wilayah: Kec. Cilandak, Kota Jakarta Selatan, DKI Jakarta (12430)\n\n`
-
-    message += `*Kurir & Ekspedisi:*\n`
-    message += `- ${selectedCourier.name} (${selectedCourier.service}) - ${selectedCourier.etd}\n`
-    message += `- Biaya Kirim: Rp ${shippingCost.toLocaleString('id-ID')}\n\n`
-
-
-    message += `*Rincian Pembayaran:*\n`
-    message += `- Subtotal Produk: Rp ${productSubtotal.toLocaleString('id-ID')}\n`
-    message += `- Ongkos Kirim: Rp ${shippingCost.toLocaleString('id-ID')}\n`
-    if (appliedVoucher) {
-      message += `- Voucher: ${appliedVoucher.code} (-Rp ${discount.toLocaleString('id-ID')})\n`
-    }
-    message += `- *Total Pembayaran: Rp ${grandTotal.toLocaleString('id-ID')}*\n\n`
-    message += `Mohon segera konfirmasi pesanan dan instruksi pembayaran saya. Terima kasih!`
-
-    // Open WhatsApp
-    window.open(getWhatsAppLink(message), '_blank')
-
-    // Clear items from cart and redirect to home with success message
-    clearCheckedItems()
+    // 1. Show processing loader modal
     Swal.fire({
-      title: 'Pemesanan Berhasil!',
-      text: 'Anda akan dialihkan ke WhatsApp untuk menyelesaikan pembayaran.',
-      icon: 'success',
-      confirmButtonColor: '#18181b',
-      confirmButtonText: 'Kembali ke Toko',
-    }).then(() => {
-      router.push('/')
+      title: 'Memproses Pesanan...',
+      html: 'Sedang membuat pesanan Anda, mohon tunggu sebentar.',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
     })
+
+    // Simulate server processing (1.5 seconds)
+    setTimeout(() => {
+      // Build confirmation message template for WhatsApp
+      let confirmMessage = `Halo *${settings.name}*, saya ingin melakukan konfirmasi pembayaran untuk pesanan saya:\n\n`
+      confirmMessage += `*Rincian Pesanan:*\n`
+      checkedItems.forEach((item, index) => {
+        confirmMessage += `${index + 1}. ${item.name} (${item.variant}) x${item.quantity}\n`
+      })
+      confirmMessage += `\n`
+      confirmMessage += `- *Total Pembayaran: Rp ${grandTotal.toLocaleString('id-ID')}*\n\n`
+      confirmMessage += `Berikut bukti transfer pembayaran akan saya lampirkan setelah pesan ini. Mohon segera diproses, terima kasih!`
+
+      const waLink = getWhatsAppLink(confirmMessage)
+
+      // Mark order as placed to prevent protective redirects or unmounting
+      setIsOrderPlaced(true)
+
+      // Clear items from cart
+      clearCheckedItems()
+
+      // 2. Show success alert with bank transfer details and WA button
+      Swal.fire({
+        icon: 'success',
+        title: 'Pemesanan Berhasil!',
+        html: `
+          <div class="text-center font-sans">
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+              Silakan lakukan pembayaran transfer bank sesuai instruksi, kemudian kirim bukti pembayaran Anda melalui WhatsApp.
+            </p>
+            <div class="bg-zinc-50 dark:bg-zinc-900/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 text-left text-xs space-y-1 mb-4">
+              <p class="font-bold text-zinc-800 dark:text-zinc-200">Rincian Pembayaran:</p>
+              <p class="text-zinc-600 dark:text-zinc-400">Total Tagihan: <span class="font-bold text-rose-500">Rp ${grandTotal.toLocaleString('id-ID')}</span></p>
+              <p class="text-zinc-600 dark:text-zinc-400">Transfer BCA: <span class="font-bold">8415-1290-88</span> (a.n. Puspa Meylinia Inakhota)</p>
+              <p class="text-zinc-600 dark:text-zinc-400">Transfer Mandiri: <span class="font-bold">137-002-199-2831</span> (a.n. Puspa Meylinia Inakhota)</p>
+            </div>
+          </div>
+        `,
+        confirmButtonColor: '#10b981', // emerald-500 green color
+        confirmButtonText: 'Konfirmasi Pembayaran (WA)',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.open(waLink, '_blank')
+          router.push('/user/purchase') // Redirect to purchase history
+        }
+      })
+    }, 1500)
   }
 
-  if (checkedItems.length === 0) {
+  if (checkedItems.length === 0 && !isOrderPlaced) {
     return null // Will redirect via useEffect
   }
 
@@ -246,18 +265,33 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
           
           {/* Address Form Card (Static Hasil) */}
           <div className="rounded bg-white dark:bg-zinc-950 p-5 space-y-3">
-            <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
+            <div className="flex items-baseline border-b border-zinc-100 dark:border-zinc-900 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-white">
                 Alamat Pengiriman
               </h3>
+              <button 
+                type="button" 
+                className="ml-3 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer outline-none"
+                onClick={() => {
+                  Swal.fire({
+                    title: 'Ubah Alamat',
+                    text: 'Fitur ubah alamat pengiriman saat ini menggunakan alamat default Anda.',
+                    icon: 'info',
+                    confirmButtonColor: '#18181b',
+                    confirmButtonText: 'Oke'
+                  })
+                }}
+              >
+                Ubah
+              </button>
             </div>
             
             <div className="space-y-1 text-sm text-zinc-800 dark:text-zinc-200">
               <div className="flex items-center gap-2">
-                <span className="font-bold">Budi Santoso</span>
+                <span className="font-bold">Ahadi</span>
                 <span className="text-zinc-400 dark:text-zinc-600">|</span>
                 <span className="text-zinc-600 dark:text-zinc-400 font-medium">081234567890</span>
-                <span className="ml-auto text-[10px] font-bold text-rose-500 uppercase tracking-wide px-1.5 py-0.5 border border-rose-500 rounded-sm scale-90">Utama</span>
+                <span className="ml-auto text-xs font-medium text-rose-500 tracking-wide px-1.5 py-0.5 border border-rose-500 rounded-sm scale-90">Utama</span>
               </div>
               <p className="text-zinc-600 dark:text-zinc-400 mt-1">
                 Jl. Kemang Raya No. 10, RT 02 / RW 05
@@ -287,18 +321,18 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
                   />
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
-                      <h4 className="text-xs font-bold text-zinc-900 dark:text-white truncate">
+                      <h4 className="text-sm font-bold text-zinc-900 dark:text-white truncate">
                         {item.name}
                       </h4>
-                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400">
                         Varian: {item.variant} • Kuantitas: {item.quantity} pcs
                       </span>
                     </div>
                     <div className="flex justify-between items-end mt-1">
-                      <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                      <span className="text-xs text-zinc-400 dark:text-zinc-500">
                         Rp {item.price.toLocaleString('id-ID')} / pcs
                       </span>
-                      <span className="text-xs font-bold text-rose-500">
+                      <span className="text-sm font-bold text-rose-500">
                         Rp {(item.price * item.quantity).toLocaleString('id-ID')}
                       </span>
                     </div>
@@ -359,17 +393,17 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
                 Voucher Toko
               </label>
               {appliedVoucher ? (
-                <div className="flex items-center justify-between gap-2 p-2 rounded bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-900/50">
+                <div className="flex items-center justify-between gap-2 p-2 bg-emerald-50 border border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/50">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <FiTag className="h-4 w-4 text-emerald-600 dark:text-emerald-455 shrink-0" />
-                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 truncate">
-                      {appliedVoucher.code} Aktif
+                    <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400 truncate">
+                      {appliedVoucher.code}
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={handleRemoveVoucher}
-                    className="text-[10px] font-bold text-rose-500 hover:text-rose-700 transition-colors"
+                    className="text-[10px] font-medium text-rose-500 hover:text-rose-700 transition-colors"
                   >
                     Batal
                   </button>
@@ -420,9 +454,9 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
 
               <hr className="border-zinc-100 dark:border-zinc-900 pt-1" />
 
-              <div className="flex justify-between text-sm font-extrabold text-zinc-950 dark:text-white">
+              <div className="flex justify-between text-sm font-bold text-zinc-950 dark:text-white">
                 <span>Total Pembayaran</span>
-                <span className="text-base text-rose-500">
+                <span className="text-lg text-rose-500">
                   Rp {grandTotal.toLocaleString('id-ID')}
                 </span>
               </div>
@@ -431,7 +465,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
             {/* Submit Order Button */}
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 bg-rose-500 hover:bg-emerald-700 text-white py-3 px-4 text-sm font-semibold tracking-wide transition-all active:scale-[0.99] cursor-pointer"
+              className="w-full flex  items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white py-3 px-4 text-sm font-semibold tracking-wide transition-all active:scale-[0.99] cursor-pointer"
             >
               <span>Buat Pesanan</span>
             </button>

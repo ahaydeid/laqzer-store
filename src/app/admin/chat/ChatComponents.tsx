@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FiSend, FiChevronLeft } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export interface ChatItem {
   id: string;
@@ -16,6 +17,13 @@ export interface Message {
   sender: "admin" | "customer";
   text: string;
   time: string;
+  product?: {
+    id: string;
+    name: string;
+    price: number;
+    imageUrl: string;
+    variant?: string;
+  };
 }
 
 export const initialChats: ChatItem[] = [
@@ -36,6 +44,19 @@ export const initialChats: ChatItem[] = [
 
 export const initialMessages: Record<string, Message[]> = {
   "1": [
+    {
+      id: "prod-farhan-1",
+      sender: "customer",
+      text: "",
+      time: "09:27",
+      product: {
+        id: "p-1",
+        name: "Essentials Men's Oxford Long Sleeve Shirt",
+        price: 179000,
+        imageUrl: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=600",
+        variant: "Hitam"
+      }
+    },
     { id: "m1", sender: "customer", text: "Halo min, apakah produk Essentials Men's Oxford ready?", time: "09:28" },
     { id: "m2", sender: "admin", text: "Halo Kak Farhan! Ready kak, silakan diorder ya.", time: "09:29" },
     { id: "m3", sender: "customer", text: "Oke min langsung saya order ya. Makasih!", time: "09:30" }
@@ -219,7 +240,36 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode, 
               key={msg.id}
               className={`flex ${isAdmin ? "justify-end" : "justify-start"}`}
             >
-              {isAdmin ? (
+              {msg.product ? (
+                <Link 
+                  href={`/product/${msg.product.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-2.5 flex gap-3 w-[260px] text-left hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img 
+                    src={msg.product.imageUrl} 
+                    alt={msg.product.name} 
+                    className="w-12 h-12 rounded-sm object-cover bg-white dark:bg-zinc-950 shrink-0" 
+                  />
+                  <div className="flex flex-col min-w-0 justify-between">
+                    <div>
+                      <h5 className="text-[11px] font-semibold text-zinc-850 dark:text-zinc-200 truncate leading-tight" title={msg.product.name}>
+                        {msg.product.name}
+                      </h5>
+                      {msg.product.variant && (
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                          Varian: {msg.product.variant}
+                        </p>
+                      )}
+                    </div>
+                    <p className="text-xs font-bold text-rose-500 dark:text-rose-400 mt-1">
+                      Rp{msg.product.price.toLocaleString('id-ID')}
+                    </p>
+                  </div>
+                </Link>
+              ) : isAdmin ? (
                 <div className="flex items-start max-w-[70%] justify-end">
                   <div className="bg-emerald-200 text-zinc-950 rounded-l-xl rounded-b-xl px-4 py-2.5 text-sm">
                     <p className="leading-relaxed break-words">{msg.text}</p>
@@ -270,7 +320,7 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode, 
           />
           <button
             onClick={handleSend}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200 active:scale-95 transition-all cursor-pointer mb-0.5"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-700 hover:bg-sky-800 text-white dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200 active:scale-95 transition-all cursor-pointer mb-0.5"
             title="Kirim"
           >
             <FiSend className="h-4.5 w-4.5" />
