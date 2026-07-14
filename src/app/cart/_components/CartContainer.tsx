@@ -149,7 +149,7 @@ export function CartContainer() {
                     type="checkbox"
                     checked={item.checked}
                     onChange={() => toggleCheckItem(item.id)}
-                    className="h-4 w-4 rounded border-zinc-300 text-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
+                    className="h-4 w-4 rounded border-zinc-300 text-rose-500 accent-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
                   />
                 </td>
                 <td className="py-5 px-4 align-middle">
@@ -243,7 +243,7 @@ export function CartContainer() {
                   type="checkbox"
                   checked={item.checked}
                   onChange={() => toggleCheckItem(item.id)}
-                  className="h-4.5 w-4.5 rounded border-zinc-300 text-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
+                  className="h-4.5 w-4.5 rounded border-zinc-300 text-rose-500 accent-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
                 />
               </div>
 
@@ -327,7 +327,7 @@ export function CartContainer() {
                   id="select-all-bottom"
                   checked={isAllChecked}
                   onChange={(e) => toggleAllCheck(e.target.checked)}
-                  className="h-4.5 w-4.5 rounded border-zinc-300 text-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
+                  className="h-4.5 w-4.5 rounded border-zinc-300 text-rose-500 accent-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
                 />
                 <label htmlFor="select-all-bottom" className="text-xs font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer">
                   Pilih Semua ({items.length})
