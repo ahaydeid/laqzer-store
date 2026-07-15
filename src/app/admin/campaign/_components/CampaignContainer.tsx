@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { 
   FiPercent, 
-  FiTicket, 
+  FiTag, 
   FiPlus, 
   FiEye, 
   FiTrash2, 
@@ -323,7 +323,7 @@ export default function CampaignContainer() {
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Voucher Aktif</span>
             <div className="p-2 bg-indigo-50 dark:bg-indigo-950/40 rounded-lg">
-              <FiTicket className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <FiTag className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             </div>
           </div>
           <div className="mt-4">
@@ -375,7 +375,7 @@ export default function CampaignContainer() {
               : 'border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-900/10'
           }`}
         >
-          <FiTicket className="h-4 w-4" />
+          <FiTag className="h-4 w-4" />
           <span>Voucher Belanja</span>
         </button>
         <button
