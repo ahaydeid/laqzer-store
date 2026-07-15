@@ -1,9 +1,10 @@
+import CampaignContainer from './_components/CampaignContainer'
+
+export const metadata = {
+  title: 'Kelola Campaign | Laqzer Admin',
+  description: 'Kelola diskon produk, voucher belanja, dan iklan popup promo toko',
+}
+
 export default function CampaignPage() {
-  return (
-    <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
-      <h1 className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
-        Ini Nanti Untuk Halaman Campaign
-      </h1>
-    </div>
-  );
+  return <CampaignContainer />
 }
