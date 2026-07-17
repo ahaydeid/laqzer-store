@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
-import { FiTag, FiMessageSquare, FiAlertTriangle, FiShoppingBag, FiArrowRight, FiClock } from 'react-icons/fi'
+import { FiArrowRight, FiClock } from 'react-icons/fi'
+import { Badge } from '@/components/ui/Badge'
 
 export const metadata = {
   title: 'Dashboard Admin | Laqzer Store',
@@ -59,13 +60,12 @@ export default function AdminDashboardPage() {
             {/* 1. Event Berlangsung */}
             <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                  <FiTag className="text-sky-600 dark:text-sky-400 h-3.5 w-3.5" />
-                  <span>Event Berlangsung</span>
-                </div>
-                <span className="text-[10px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/40 px-2 py-0.5 rounded font-medium">
-                  Aktif
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                  Event Berlangsung
                 </span>
+                <Badge variant="success" className="text-[10px] px-2 py-0.5 font-medium">
+                  Aktif
+                </Badge>
               </div>
               
               <div className="space-y-0.5">
@@ -86,13 +86,12 @@ export default function AdminDashboardPage() {
             {/* 2. Pesan & Chat Terbaru */}
             <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                  <FiMessageSquare className="text-sky-600 dark:text-sky-400 h-3.5 w-3.5" />
-                  <span>Pesan Terbaru</span>
-                </div>
-                <span className="text-[10px] bg-sky-50 dark:bg-sky-950/30 text-sky-700 dark:text-sky-400 border border-sky-200/50 dark:border-sky-900/40 px-2 py-0.5 rounded font-medium">
-                  2 Baru
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                  Pesan Terbaru
                 </span>
+                <Badge variant="info" className="text-[10px] px-2 py-0.5 font-medium">
+                  2 Baru
+                </Badge>
               </div>
 
               <div className="space-y-1.5">
@@ -116,23 +115,22 @@ export default function AdminDashboardPage() {
             {/* 3. Stok Menipis & Habis */}
             <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                  <FiAlertTriangle className="text-amber-500 h-3.5 w-3.5" />
-                  <span>Stok Menipis / Habis</span>
-                </div>
-                <span className="text-[10px] bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200/50 dark:border-amber-900/40 px-2 py-0.5 rounded font-medium">
-                  2 Produk
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                  Stok Menipis / Habis
                 </span>
+                <Badge variant="warning" className="text-[10px] px-2 py-0.5 font-medium">
+                  2 Produk
+                </Badge>
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100 dark:border-zinc-800/40">
                   <span className="font-medium text-zinc-700 dark:text-zinc-300 truncate max-w-[120px]">Oxford Shirt</span>
-                  <span className="text-[10px] font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200/50 dark:border-amber-900/40 px-1.5 py-0.5 rounded">Sisa 2</span>
+                  <Badge variant="warning" className="text-[10px] px-1.5 py-0.5 font-medium">Sisa 2</Badge>
                 </div>
                 <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100 dark:border-zinc-800/40">
                   <span className="font-medium text-zinc-700 dark:text-zinc-300 truncate max-w-[120px]">Wool Knit Sweater</span>
-                  <span className="text-[10px] font-medium text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-200/50 dark:border-rose-900/40 px-1.5 py-0.5 rounded">Habis</span>
+                  <Badge variant="destructive" className="text-[10px] px-1.5 py-0.5 font-medium">Habis</Badge>
                 </div>
               </div>
 
@@ -146,10 +144,9 @@ export default function AdminDashboardPage() {
             {/* 4. Pesanan Terbaru */}
             <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                  <FiShoppingBag className="text-sky-600 dark:text-sky-400 h-3.5 w-3.5" />
-                  <span>Pesanan Terbaru</span>
-                </div>
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                  Pesanan Terbaru
+                </span>
                 <Link href="/admin/order" className="text-[10px] text-sky-600 dark:text-sky-400 font-medium hover:underline inline-flex items-center gap-0.5">
                   Lihat Semua <FiArrowRight className="h-2.5 w-2.5" />
                 </Link>
@@ -161,14 +158,14 @@ export default function AdminDashboardPage() {
                     <p className="font-medium text-zinc-800 dark:text-zinc-200 truncate">#20260003 - Farhan M.</p>
                     <p className="text-[9px] text-zinc-400">Rp 179.000</p>
                   </div>
-                  <span className="text-[9px] font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/50 dark:border-emerald-900/40 px-1.5 py-0.5 rounded">Selesai</span>
+                  <Badge variant="success" className="text-[9px] px-1.5 py-0.5 font-medium">Selesai</Badge>
                 </div>
                 <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100 dark:border-zinc-800/40">
                   <div className="min-w-0">
-                    <p className="font-medium text-zinc-800 dark:text-zinc-200 truncate">#20260002 - Siti R.</p>
+                    <p className="font-semibold text-zinc-800 dark:text-zinc-200 truncate">#20260002 - Siti R.</p>
                     <p className="text-[9px] text-zinc-400">Rp 198.000</p>
                   </div>
-                  <span className="text-[9px] font-medium text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/30 border border-sky-200/50 dark:border-sky-900/40 px-1.5 py-0.5 rounded">Diproses</span>
+                  <Badge variant="info" className="text-[9px] px-1.5 py-0.5 font-medium">Diproses</Badge>
                 </div>
               </div>
             </div>
@@ -200,9 +197,7 @@ export default function AdminDashboardPage() {
                   <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 179.000</td>
                   <td className="py-3 text-zinc-500">Transfer Bank Mandiri</td>
                   <td className="py-3">
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">
-                      Selesai
-                    </span>
+                    <Badge variant="success">Selesai</Badge>
                   </td>
                   <td className="py-3 text-right">
                     <Link href="/admin/order" className="text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer">Detail</Link>
@@ -214,9 +209,7 @@ export default function AdminDashboardPage() {
                   <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 198.000</td>
                   <td className="py-3 text-zinc-500">GoPay</td>
                   <td className="py-3">
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400">
-                      Sedang Diproses
-                    </span>
+                    <Badge variant="info">Sedang Diproses</Badge>
                   </td>
                   <td className="py-3 text-right">
                     <Link href="/admin/order" className="text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer">Detail</Link>
@@ -228,9 +221,7 @@ export default function AdminDashboardPage() {
                   <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 650.000</td>
                   <td className="py-3 text-zinc-500">ShopeePay</td>
                   <td className="py-3">
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">
-                      Selesai
-                    </span>
+                    <Badge variant="success">Selesai</Badge>
                   </td>
                   <td className="py-3 text-right">
                     <Link href="/admin/order" className="text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer">Detail</Link>
