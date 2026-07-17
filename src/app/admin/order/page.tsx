@@ -142,6 +142,7 @@ export default function OrderPage() {
   }, []);
 
   const handleOpenEditModal = (order: Order) => {
+    setSelectedOrder(null);
     setEditingOrderForStatus(order);
     setSelectedNewStatus(order.status);
     setSelectedNewPaymentMethod(order.paymentMethod);
