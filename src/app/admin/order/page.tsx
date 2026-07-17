@@ -117,6 +117,15 @@ const STATUS_STEPS: { value: Order["status"]; label: string; activeColor: string
   { value: "Dibatalkan", label: "Dibatalkan", activeColor: "text-rose-600 dark:text-rose-400", activeBg: "bg-rose-50 dark:bg-rose-950/40", activeBorder: "border-rose-400 dark:border-rose-600" },
 ];
 
+const PAYMENT_METHOD_OPTIONS = [
+  "Transfer BCA",
+  "Transfer Bank Mandiri",
+  "GoPay",
+  "ShopeePay",
+  "OVO",
+  "COD"
+];
+
 export default function OrderPage() {
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
   const [searchValue, setSearchValue] = useState("");
@@ -125,6 +134,7 @@ export default function OrderPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [editingOrderForStatus, setEditingOrderForStatus] = useState<Order | null>(null);
   const [selectedNewStatus, setSelectedNewStatus] = useState<Order["status"]>("Belum Dibayar");
+  const [selectedNewPaymentMethod, setSelectedNewPaymentMethod] = useState<string>("Transfer BCA");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -134,24 +144,26 @@ export default function OrderPage() {
   const handleOpenEditModal = (order: Order) => {
     setEditingOrderForStatus(order);
     setSelectedNewStatus(order.status);
+    setSelectedNewPaymentMethod(order.paymentMethod);
   };
 
   const handleSaveStatus = () => {
     if (!editingOrderForStatus) return;
 
     const updatedStatus = selectedNewStatus;
+    const updatedPaymentMethod = selectedNewPaymentMethod;
     const orderId = editingOrderForStatus.id;
 
     setOrders(prev => prev.map(o => {
       if (o.id === orderId) {
-        return { ...o, status: updatedStatus };
+        return { ...o, status: updatedStatus, paymentMethod: updatedPaymentMethod };
       }
       return o;
     }));
 
     setSelectedOrder(prev => {
       if (prev && prev.id === orderId) {
-        return { ...prev, status: updatedStatus };
+        return { ...prev, status: updatedStatus, paymentMethod: updatedPaymentMethod };
       }
       return prev;
     });
@@ -160,7 +172,7 @@ export default function OrderPage() {
     playSwalSound('success');
     Swal.fire({
       title: 'Berhasil!',
-      text: `Status pesanan #${orderId} berhasil diubah menjadi ${updatedStatus}.`,
+      text: `Data pesanan #${orderId} berhasil diperbarui.`,
       icon: 'success',
       confirmButtonColor: '#0369a1'
     });
@@ -524,14 +536,14 @@ export default function OrderPage() {
         )}
       </Modal>
 
-      {/* Edit Status Modal (Multi-step Toggle) */}
+      {/* Edit Order Modal (Payment Method & Status) */}
       <Modal
         isOpen={!!editingOrderForStatus}
         onClose={() => setEditingOrderForStatus(null)}
         title={
           editingOrderForStatus ? (
             <span>
-              Ubah Status Pesanan #{editingOrderForStatus.id}
+              Edit Pesanan #{editingOrderForStatus.id}
             </span>
           ) : undefined
         }
@@ -547,7 +559,25 @@ export default function OrderPage() {
               </p>
             </div>
 
-            {/* Multi-Step Segmented Toggle */}
+            {/* Metode Pembayaran (Option Select - Positioned AT THE TOP) */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+                Metode Pembayaran
+              </label>
+              <select
+                value={selectedNewPaymentMethod}
+                onChange={(e) => setSelectedNewPaymentMethod(e.target.value)}
+                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 cursor-pointer"
+              >
+                {PAYMENT_METHOD_OPTIONS.map((method) => (
+                  <option key={method} value={method} className="dark:bg-zinc-900">
+                    {method}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Multi-Step Segmented Toggle Status (Positioned AT THE BOTTOM) */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
                 Pilih Tahap Status Baru:
@@ -590,7 +620,7 @@ export default function OrderPage() {
                 className="rounded"
               >
                 <FiCheck className="h-3.5 w-3.5" />
-                Simpan Status
+                Simpan
               </Button>
             </div>
           </div>
