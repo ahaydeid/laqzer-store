@@ -36,7 +36,7 @@ export default function AdminDashboardPage() {
           {/* Card: Statistik Transaksi */}
           <div className="space-y-2 flex-1 flex flex-col">
             <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Ringkasan Aktivitas</span>
-            <div className="bg-white/80 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 p-5 rounded flex-1 flex flex-col justify-center">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-5 rounded flex-1 flex flex-col justify-center">
               <div className="w-full">
                 <div className="grid grid-cols-2 text-xs gap-y-3">
                   <span className="text-zinc-400">Pesanan Selesai:</span>
@@ -58,7 +58,7 @@ export default function AdminDashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
 
             {/* 1. Event Berlangsung */}
-            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   Event Berlangsung
@@ -84,7 +84,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* 2. Pesan & Chat Terbaru */}
-            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   Pesan Terbaru
@@ -113,7 +113,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* 3. Stok Menipis & Habis */}
-            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   Stok Menipis / Habis
@@ -142,7 +142,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* 4. Pesanan Terbaru */}
-            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   Pesanan Terbaru
