@@ -348,12 +348,14 @@ export default function OrderPage() {
       >
         {selectedOrder && (
           <div className="p-6 space-y-4">
-            <p className="text-xs text-zinc-400 -mt-2">{selectedOrder.date}</p>
-
             <div className="border-t border-zinc-100 dark:border-zinc-900 pt-3 text-xs space-y-2">
               <div className="flex justify-between">
                 <span className="text-zinc-400">Nama Pelanggan:</span>
                 <span className="font-medium text-zinc-800 dark:text-zinc-200">{selectedOrder.customerName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Tanggal Transaksi:</span>
+                <span className="font-medium text-zinc-800 dark:text-zinc-200">{selectedOrder.date}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-400">Metode Pembayaran:</span>
