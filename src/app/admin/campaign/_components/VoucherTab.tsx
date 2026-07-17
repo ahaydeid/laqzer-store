@@ -213,12 +213,12 @@ export default function VoucherTab({
                       {item.type === 'percent' ? `Diskon ${item.value}%` : `Diskon ${formatRupiah(item.value)}`}
                     </p>
                     <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
-                      Min. Belanja: <span className="font-semibold text-zinc-650 dark:text-zinc-300">{formatRupiah(item.minPurchase)}</span>
+                      Min. Belanja: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{formatRupiah(item.minPurchase)}</span>
                     </p>
                   </div>
                 </div>
 
-                <div className="border-t border-zinc-200/50 dark:border-zinc-850/50 pt-2.5 mt-1 flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500">
+                <div className="border-t border-zinc-200/50 dark:border-zinc-800/50 pt-2.5 mt-1 flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500">
                   <div className="space-y-0.5">
                     <p>Kuota: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{item.quota} klaim</span></p>
                     <p>Kadaluarsa: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{item.expiryDate}</span></p>
@@ -229,7 +229,7 @@ export default function VoucherTab({
                     className={`text-xs px-2.5 py-1 rounded font-semibold transition-colors cursor-pointer border ${
                       item.status === 'active'
                         ? 'border-zinc-300 hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-zinc-800 dark:hover:border-red-900/30 dark:hover:bg-red-950/20 dark:hover:text-red-400 text-zinc-600 dark:text-zinc-400'
-                        : 'border-zinc-300 bg-zinc-200 hover:bg-zinc-300 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-800 dark:hover:bg-zinc-750 dark:text-zinc-300'
+                        : 'border-zinc-300 bg-zinc-200 hover:bg-zinc-300 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300'
                     }`}
                   >
                     {item.status === 'active' ? 'Matikan' : 'Aktifkan'}

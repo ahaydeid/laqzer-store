@@ -29,7 +29,7 @@ export default function DiscountTab({
   return (
     <div className="space-y-4 w-full max-w-full min-w-0">
       <div className="flex items-center justify-between">
-        <span className="font-bold text-zinc-800 dark:text-zinc-205 text-base">Daftar Diskon Berjalan</span>
+        <span className="font-bold text-zinc-900 dark:text-white text-base">Daftar Diskon Berjalan</span>
         <button
           onClick={onOpenModal}
           className="inline-flex items-center gap-2 rounded bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
@@ -65,9 +65,9 @@ export default function DiscountTab({
                 const finalPrice = item.priceAfterDiscount ?? (item.originalPrice * (1 - item.discountPercent / 100));
                 return (
                   <TableRow key={item.id} className="group">
-                    <TableCell className="text-center font-medium whitespace-nowrap">{index + 1}</TableCell>
+                    <TableCell className="text-zinc-500 dark:text-zinc-400 text-xs w-12 font-medium text-center whitespace-nowrap">{index + 1}</TableCell>
                     <TableCell className="whitespace-nowrap">
-                      <span className="font-semibold text-zinc-855 dark:text-zinc-200 block">{item.campaignName || "Promo Gajian"}</span>
+                      <span className="font-medium text-zinc-900 dark:text-zinc-100 block">{item.campaignName || "Promo Gajian"}</span>
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
                       <div className="flex items-center gap-3">
@@ -75,13 +75,13 @@ export default function DiscountTab({
                         <img
                           src={mockProduct?.imageUrl || "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=120"}
                           alt={item.productName}
-                          className="w-10 h-10 rounded object-cover bg-zinc-100 dark:bg-zinc-850"
+                          className="h-9 w-9 rounded-lg object-cover bg-zinc-50 dark:bg-zinc-900"
                         />
                         <div className="min-w-0">
-                          <span className="font-semibold text-zinc-850 dark:text-zinc-205 block max-w-xs truncate" title={item.productName}>
+                          <span className="font-medium text-zinc-900 dark:text-zinc-100 block max-w-xs truncate" title={item.productName}>
                             {item.productName}
                           </span>
-                          <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
                             Base: {formatRupiah(item.originalPrice)}
                           </span>
                         </div>
@@ -92,12 +92,12 @@ export default function DiscountTab({
                         <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded w-max">
                           -{item.discountPercent}%
                         </span>
-                        <span className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+                        <span className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                           Hemat {formatRupiah(item.originalPrice - finalPrice)}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                    <TableCell className="font-medium text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
                       {formatRupiah(finalPrice)}
                     </TableCell>
                     <TableCell className="whitespace-nowrap">

@@ -31,7 +31,7 @@ export default function PopupTab({
                 type="button"
                 onClick={() => onChangePopupConfig({ ...popupConfig, isActive: !popupConfig.isActive })}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
-                  popupConfig.isActive ? 'bg-sky-650' : 'bg-zinc-200 dark:bg-zinc-700'
+                  popupConfig.isActive ? 'bg-sky-600' : 'bg-zinc-200 dark:bg-zinc-700'
                 }`}
               >
                 <span
@@ -146,7 +146,7 @@ export default function PopupTab({
 
         {/* Penjelasan Ringkas Fitur */}
         <div className="bg-sky-50/50 dark:bg-zinc-900/30 p-5 rounded">
-          <h4 className="font-bold text-sky-850 dark:text-sky-450 text-sm mb-2">💡 Tentang Iklan Popup</h4>
+          <h4 className="font-bold text-sky-900 dark:text-sky-400 text-sm mb-2">💡 Tentang Iklan Popup</h4>
           <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
             Iklan popup akan muncul satu kali setiap pengunjung pertama kali membuka web toko (homepage). Sangat efektif untuk mempromosikan diskon besar, voucher baru, atau perilisan produk eksklusif.
           </p>

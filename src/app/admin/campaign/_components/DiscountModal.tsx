@@ -178,7 +178,7 @@ export default function DiscountModal({ isOpen, onClose, onAddDiscount, formatRu
             <button
               type="button"
               onClick={() => setIsComboboxOpen(!isComboboxOpen)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
             >
               <FiChevronDown className="w-4 h-4" />
             </button>
@@ -218,7 +218,7 @@ export default function DiscountModal({ isOpen, onClose, onAddDiscount, formatRu
                         className="w-8 h-8 rounded object-cover shrink-0 bg-zinc-100 dark:bg-zinc-800"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-205 truncate">
+                        <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
                           {p.name}
                         </p>
                         <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">
@@ -226,7 +226,7 @@ export default function DiscountModal({ isOpen, onClose, onAddDiscount, formatRu
                         </p>
                       </div>
                       {selectedProductObj?.id === p.id && (
-                        <FiCheck className="text-sky-650 dark:text-sky-400 w-4 h-4 shrink-0" />
+                        <FiCheck className="text-sky-600 dark:text-sky-400 w-4 h-4 shrink-0" />
                       )}
                     </button>
                   ))
@@ -238,7 +238,7 @@ export default function DiscountModal({ isOpen, onClose, onAddDiscount, formatRu
 
         {/* Sinkronisasi Potongan / Diskon */}
         {selectedProductObj && (
-          <div className="grid grid-cols-2 gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded border border-zinc-150 dark:border-zinc-800/80">
+          <div className="grid grid-cols-2 gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded border border-zinc-200 dark:border-zinc-800/80">
             <div className="col-span-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">
               Kalkulator Diskon ({formatRupiah(selectedProductObj.price)})
             </div>
@@ -271,7 +271,7 @@ export default function DiscountModal({ isOpen, onClose, onAddDiscount, formatRu
                 max={selectedProductObj.price}
                 value={priceAfterDiscount || ''}
                 onChange={handlePriceChange}
-                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3 py-2 text-zinc-850 dark:text-zinc-205 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-semibold text-emerald-600 dark:text-emerald-400"
+                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3 py-2 text-zinc-900 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-semibold text-emerald-600 dark:text-emerald-400"
                 placeholder="Rp 0"
               />
             </div>
@@ -315,7 +315,7 @@ export default function DiscountModal({ isOpen, onClose, onAddDiscount, formatRu
               type="button"
               onClick={() => setDiscountIsActive(!discountIsActive)}
               className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
-                discountIsActive ? 'bg-sky-650' : 'bg-zinc-200 dark:bg-zinc-700'
+                discountIsActive ? 'bg-sky-600' : 'bg-zinc-200 dark:bg-zinc-700'
               }`}
             >
               <span
