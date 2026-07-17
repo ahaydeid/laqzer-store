@@ -75,12 +75,12 @@ export default function DiscountTab({
             <TableHead>
               <tr>
                 <TableHeaderCell className="w-12 text-center whitespace-nowrap">No</TableHeaderCell>
+                <TableHeaderCell className="text-center w-28 whitespace-nowrap">Status</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Event / Campaign</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Produk</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Diskon</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Harga Akhir</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Durasi</TableHeaderCell>
-                <TableHeaderCell className="text-center w-28 whitespace-nowrap">Status</TableHeaderCell>
                 <TableHeaderCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-zinc-50 dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
               </tr>
             </TableHead>
@@ -91,6 +91,21 @@ export default function DiscountTab({
                 return (
                   <TableRow key={item.id} className="group">
                     <TableCell className="text-center text-zinc-400 dark:text-zinc-500 w-12 font-medium whitespace-nowrap">{(index + 1)}</TableCell>
+                    <TableCell className="text-center whitespace-nowrap">
+                      <button
+                        type="button"
+                        onClick={() => onToggleStatus(item.id)}
+                        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
+                          item.isActive ? 'bg-emerald-500' : 'bg-zinc-200 dark:bg-zinc-700'
+                        }`}
+                      >
+                        <span
+                          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                            item.isActive ? 'translate-x-4' : 'translate-x-0'
+                          }`}
+                        />
+                      </button>
+                    </TableCell>
                     <TableCell className="whitespace-nowrap">
                       <span className="text-zinc-800 dark:text-zinc-200 block">{item.campaignName || "Promo Gajian"}</span>
                     </TableCell>
@@ -130,21 +145,6 @@ export default function DiscountTab({
                         <FiCalendar className="h-3.5 w-3.5 text-zinc-400" />
                         <span>{formatDateDuration(item.startDate, item.endDate)}</span>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-center whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() => onToggleStatus(item.id)}
-                        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
-                          item.isActive ? 'bg-emerald-500' : 'bg-zinc-200 dark:bg-zinc-700'
-                        }`}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                            item.isActive ? 'translate-x-4' : 'translate-x-0'
-                          }`}
-                        />
-                      </button>
                     </TableCell>
                     <TableCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 group-even:bg-zinc-50 dark:group-even:bg-zinc-950 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-900 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.25)] transition-colors duration-200 z-10">
                       <button

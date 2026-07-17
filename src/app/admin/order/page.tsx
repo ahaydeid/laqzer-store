@@ -222,7 +222,7 @@ export default function OrderPage() {
             <TableHeaderCell scope="col" className="whitespace-nowrap">Total Belanja</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Metode</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Status</TableHeaderCell>
-            <TableHeaderCell scope="col" className="text-center whitespace-nowrap">Aksi</TableHeaderCell>
+            <TableHeaderCell scope="col" className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-zinc-50 dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
           </tr>
         </TableHead>
         <TableBody>
@@ -230,6 +230,7 @@ export default function OrderPage() {
             displayedOrders.map((order, index) => (
               <TableRow
                 key={order.id}
+                className="group"
               >
                 <TableCell className="text-center text-zinc-400 dark:text-zinc-500 w-12 font-medium whitespace-nowrap">
                   {(currentPage - 1) * itemsPerPage + index + 1}
@@ -270,7 +271,7 @@ export default function OrderPage() {
                     {order.status}
                   </span>
                 </TableCell>
-                <TableCell className="text-center whitespace-nowrap">
+                <TableCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 group-even:bg-zinc-50 dark:group-even:bg-zinc-950 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-900 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.25)] transition-colors duration-200 z-10">
                   <div className="flex items-center justify-center">
                     <ActionButton
                       variant="detail"
