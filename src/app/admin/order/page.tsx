@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiSearch, FiX, FiEye, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiSearch, FiX, FiEye, FiChevronLeft, FiChevronRight, FiEdit2 } from "react-icons/fi";
 import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from "@/components/ui/Table";
 import { Modal } from "@/components/ui/Modal";
 import { ActionButton } from "@/components/ui/ActionButton";
+import { Button } from "@/components/ui/Button";
+import Swal from "sweetalert2";
 
 interface OrderItem {
   name: string;
@@ -107,7 +109,7 @@ const INITIAL_ORDERS: Order[] = [
 ];
 
 export default function OrderPage() {
-  const [orders] = useState<Order[]>(INITIAL_ORDERS);
+  const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
   const [searchValue, setSearchValue] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
   const [isFocused, setIsFocused] = useState(false);
@@ -117,6 +119,49 @@ export default function OrderPage() {
   useEffect(() => {
     document.title = "Kelola Pesanan | Laqzer Admin";
   }, []);
+
+  const handleEditOrder = (order: Order) => {
+    Swal.fire({
+      title: 'Ubah Status Pesanan',
+      text: `Pilih status baru untuk pesanan #${order.id}`,
+      icon: 'question',
+      input: 'select',
+      inputOptions: {
+        'Belum Dibayar': 'Belum Dibayar',
+        'Sedang Diproses': 'Sedang Diproses',
+        'Dikirim': 'Dikirim',
+        'Selesai': 'Selesai',
+        'Dibatalkan': 'Dibatalkan'
+      },
+      inputValue: order.status,
+      showCancelButton: true,
+      confirmButtonColor: '#0369a1',
+      cancelButtonColor: '#71717a',
+      confirmButtonText: 'Simpan',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        setOrders(prev => prev.map(o => {
+          if (o.id === order.id) {
+            return { ...o, status: result.value as Order["status"] }
+          }
+          return o
+        }))
+        setSelectedOrder(prev => {
+          if (prev && prev.id === order.id) {
+            return { ...prev, status: result.value as Order["status"] }
+          }
+          return prev
+        })
+        Swal.fire({
+          title: 'Berhasil!',
+          text: `Status pesanan #${order.id} berhasil diubah menjadi ${result.value}.`,
+          icon: 'success',
+          confirmButtonColor: '#0369a1'
+        })
+      }
+    })
+  }
 
   const handleClearSearch = () => {
     setSearchValue("");
@@ -231,7 +276,7 @@ export default function OrderPage() {
             <TableHeaderCell scope="col" className="whitespace-nowrap">Total Belanja</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Voucher</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Metode</TableHeaderCell>
-            <TableHeaderCell scope="col" className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
+            <TableHeaderCell scope="col" className="text-center w-28 min-w-28 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
           </tr>
         </TableHead>
         <TableBody>
@@ -289,14 +334,21 @@ export default function OrderPage() {
                   )}
                 </TableCell>
                 <TableCell className="whitespace-nowrap">{order.paymentMethod}</TableCell>
-                <TableCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 group-even:bg-zinc-50 dark:group-even:bg-zinc-950 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-900 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.25)] transition-colors duration-200 z-10">
-                  <div className="flex items-center justify-center">
+                <TableCell className="text-center w-28 min-w-28 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 group-even:bg-zinc-50 dark:group-even:bg-zinc-950 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-900 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.25)] transition-colors duration-200 z-10">
+                  <div className="flex items-center justify-center gap-1.5">
                     <ActionButton
                       variant="detail"
                       onClick={() => setSelectedOrder(order)}
                       title="Detail Pesanan"
                     >
                       <FiEye className="h-4 w-4" />
+                    </ActionButton>
+                    <ActionButton
+                      variant="edit"
+                      onClick={() => handleEditOrder(order)}
+                      title="Edit Pesanan"
+                    >
+                      <FiEdit2 className="h-4 w-4" />
                     </ActionButton>
                   </div>
                 </TableCell>
@@ -345,6 +397,29 @@ export default function OrderPage() {
         }
         size="lg"
         panelClassName="animate-in fade-in zoom-in-95 duration-150"
+        footer={
+          selectedOrder ? (
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setSelectedOrder(null)}
+                className="rounded"
+              >
+                Tutup
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => handleEditOrder(selectedOrder)}
+                className="rounded"
+              >
+                <FiEdit2 className="h-3.5 w-3.5" />
+                Edit Status
+              </Button>
+            </div>
+          ) : undefined
+        }
       >
         {selectedOrder && (
           <div className="p-6 space-y-4">
