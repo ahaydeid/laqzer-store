@@ -21,6 +21,7 @@ export default function VoucherTab({
   formatRupiah
 }: VoucherTabProps) {
   const [showModal, setShowModal] = useState(false)
+  const [voucherCampaignName, setVoucherCampaignName] = useState('')
   const [voucherCode, setVoucherCode] = useState('')
   const [voucherType, setVoucherType] = useState<'percent' | 'nominal'>('percent')
   const [voucherValue, setVoucherValue] = useState(10)
@@ -29,6 +30,7 @@ export default function VoucherTab({
   const [voucherExpiry, setVoucherExpiry] = useState('2026-08-01')
 
   const resetForm = () => {
+    setVoucherCampaignName('')
     setVoucherCode('')
     setVoucherType('percent')
     setVoucherValue(10)
@@ -67,6 +69,7 @@ export default function VoucherTab({
 
     onAddVoucher({
       code: cleanCode,
+      campaignName: voucherCampaignName.trim(),
       type: voucherType,
       value: voucherValue,
       minPurchase: voucherMinPurchase,
@@ -117,6 +120,9 @@ export default function VoucherTab({
                   {item.status === 'active' ? 'Aktif' : 'Nonaktif'}
                 </Badge>
               </div>
+              {item.campaignName && (
+                <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-medium truncate">{item.campaignName}</p>
+              )}
 
               <div className="pt-2">
                 <p className="text-lg font-extrabold text-zinc-900 dark:text-white">
@@ -173,6 +179,19 @@ export default function VoucherTab({
       {/* Modal Buat Voucher Baru */}
       <Modal isOpen={showModal} onClose={handleClose} title="Buat Voucher Baru" size="md">
         <form onSubmit={handleSubmit} className="p-6 space-y-4 text-sm">
+          <div>
+            <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
+              Nama Event / Campaign
+            </label>
+            <input
+              type="text"
+              placeholder="Contoh: Promo Gajian Akhir Bulan"
+              value={voucherCampaignName}
+              onChange={(e) => setVoucherCampaignName(e.target.value)}
+              className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
+            />
+          </div>
+
           <div>
             <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
               Kode Voucher

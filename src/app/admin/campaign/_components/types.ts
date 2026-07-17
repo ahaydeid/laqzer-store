@@ -13,6 +13,7 @@ export interface DiscountItem {
 
 export interface VoucherItem {
   code: string
+  campaignName: string
   type: 'percent' | 'nominal'
   value: number
   minPurchase: number

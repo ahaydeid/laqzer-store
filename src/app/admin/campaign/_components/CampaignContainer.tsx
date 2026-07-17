@@ -46,6 +46,7 @@ const INITIAL_DISCOUNTS: DiscountItem[] = [
 const INITIAL_VOUCHERS: VoucherItem[] = [
   {
     code: 'LAQZERBARU',
+    campaignName: 'Promo Pelanggan Baru',
     type: 'percent',
     value: 10,
     minPurchase: 150000,
@@ -55,6 +56,7 @@ const INITIAL_VOUCHERS: VoucherItem[] = [
   },
   {
     code: 'HEMAT50K',
+    campaignName: 'Promo Gajian Akhir Bulan',
     type: 'nominal',
     value: 50000,
     minPurchase: 300000,
@@ -64,6 +66,7 @@ const INITIAL_VOUCHERS: VoucherItem[] = [
   },
   {
     code: 'FREEONGKIR',
+    campaignName: 'Gratis Ongkos Kirim',
     type: 'nominal',
     value: 20000,
     minPurchase: 100000,
