@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
+import Toggle from '@/components/ui/Toggle'
 import { FiSearch, FiChevronDown, FiCheck } from 'react-icons/fi'
 import { MockProduct } from './types'
 
@@ -307,24 +308,14 @@ export default function DiscountModal({ isOpen, onClose, onAddDiscount, formatRu
         {/* Toggle Aktif / Nonaktif */}
         <div className="flex items-center justify-between pt-2">
           <span className="font-semibold text-zinc-700 dark:text-zinc-300">Status Awal Diskon</span>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-zinc-400 dark:text-zinc-500 font-semibold">
-              {discountIsActive ? 'Langsung Aktif' : 'Nonaktif'}
-            </span>
-            <button
-              type="button"
-              onClick={() => setDiscountIsActive(!discountIsActive)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
-                discountIsActive ? 'bg-sky-600' : 'bg-zinc-200 dark:bg-zinc-700'
-              }`}
-            >
-              <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                  discountIsActive ? 'translate-x-5' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
+          <Toggle
+            leftLabel="Aktif"
+            rightLabel="Nonaktif"
+            checked={discountIsActive}
+            onChange={(checked) => setDiscountIsActive(checked)}
+            activeColorClass="bg-sky-600"
+            className="w-40"
+          />
         </div>
 
         {/* Footer Aksi */}
