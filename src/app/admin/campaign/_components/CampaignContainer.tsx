@@ -8,7 +8,6 @@ import {
   FiEye, 
   FiTrash2, 
   FiCalendar, 
-  FiActivity, 
   FiSettings, 
   FiImage, 
   FiX 
@@ -287,27 +286,7 @@ export default function CampaignContainer() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Total Campaigns */}
-        <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 p-5 flex flex-col justify-end relative overflow-hidden h-28">
-          {/* Background Icon Circle in Top-Left */}
-          <div className="absolute -top-24 -left-24 w-56 h-56 rounded-full bg-sky-100/80 dark:bg-sky-900/30 flex items-center justify-center text-white pointer-events-none">
-            <FiActivity className="w-14 h-14 translate-x-10 translate-y-10" />
-          </div>
-
-          <div className="space-y-1 relative z-10">
-            <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-              Total Campaign
-            </h3>
-            <span className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 block">
-              {discounts.length + vouchers.filter(v => v.status === 'active').length + (popupConfig.isActive ? 1 : 0)}{" "}
-              <span className="text-sm font-normal text-zinc-400 dark:text-zinc-500">
-                aktif
-              </span>
-            </span>
-          </div>
-        </div>
-
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Discounts Card */}
         <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 p-5 flex flex-col justify-end relative overflow-hidden h-28">
           {/* Background Icon Circle in Top-Left */}
