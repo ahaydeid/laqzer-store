@@ -116,7 +116,7 @@ export default function AdminDashboardPage() {
           {/* Card: Statistik Transaksi */}
           <div className="space-y-2 flex-1 flex flex-col">
             <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Ringkasan Aktivitas</span>
-            <div className="bg-white/80 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 p-5 rounded flex-1 flex flex-col">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-5 rounded flex-1 flex flex-col">
               <div className="w-full">
                 <div className="grid grid-cols-2 text-xs gap-y-3">
                   <span className="text-zinc-400">Pesanan Selesai:</span>
@@ -256,7 +256,7 @@ export default function AdminDashboardPage() {
 
       {/* STATISTIK Pertumbuhan Transaksi Chart (Presisi 1:1 Edge-to-Edge) */}
       <div className="pt-2">
-        <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg border border-zinc-100 dark:border-zinc-800">
+        <div className="bg-white dark:bg-zinc-900 p-6 rounded">
           <h3 className="mb-6 text-sm font-bold text-slate-700 dark:text-zinc-200">
             Pertumbuhan Transaksi
           </h3>
