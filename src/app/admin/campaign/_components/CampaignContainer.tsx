@@ -8,6 +8,7 @@ import {
   FiX 
 } from 'react-icons/fi'
 import Swal from 'sweetalert2'
+import { playSwalSound } from '@/utils/sound'
 
 import { DiscountItem, VoucherItem, PopupAdConfig } from './types'
 import DiscountTab from './DiscountTab'
@@ -115,13 +116,39 @@ export default function CampaignContainer() {
 
   // Toggle active status in table
   const handleToggleDiscountStatus = (id: string) => {
-    setDiscounts(prev => prev.map(d => {
-      if (d.id === id) {
-        const nextStatus = !d.isActive
-        return { ...d, isActive: nextStatus }
+    const item = discounts.find(d => d.id === id)
+    if (!item) return
+
+    const actionText = item.isActive ? 'menonaktifkan' : 'mengaktifkan'
+
+    playSwalSound('confirm')
+    Swal.fire({
+      title: 'Ubah Status Diskon?',
+      text: `Apakah Anda yakin ingin ${actionText} diskon untuk ${item.productName}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0369a1',
+      cancelButtonColor: '#71717a',
+      confirmButtonText: 'Ya, Ubah!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setDiscounts(prev => prev.map(d => {
+          if (d.id === id) {
+            return { ...d, isActive: !d.isActive }
+          }
+          return d
+        }))
+
+        playSwalSound('success')
+        Swal.fire({
+          title: 'Berhasil!',
+          text: `Status diskon untuk ${item.productName} berhasil diperbarui.`,
+          icon: 'success',
+          confirmButtonColor: '#0369a1'
+        })
       }
-      return d
-    }))
+    })
   }
 
   // Delete discount handler
@@ -223,7 +250,7 @@ export default function CampaignContainer() {
 
           <div className="space-y-1 relative z-10">
             <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-              Voucher Tanggung
+              Voucher
             </h3>
             <span className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 block">
               {vouchers.filter(v => v.status === 'active').length}{" "}
