@@ -73,16 +73,16 @@ export default function DiscountTab({
         <div className="w-full min-w-0 overflow-hidden">
           <Table>
             <TableHead>
-              <TableRow>
+              <tr>
                 <TableHeaderCell className="w-12 text-center whitespace-nowrap">No</TableHeaderCell>
-                <TableHeaderCell className="whitespace-nowrap">Nama Event / Campaign</TableHeaderCell>
+                <TableHeaderCell className="whitespace-nowrap">Event / Campaign</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Produk</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Diskon</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Harga Akhir</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Durasi</TableHeaderCell>
                 <TableHeaderCell className="text-center w-28 whitespace-nowrap">Status</TableHeaderCell>
-                <TableHeaderCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
-              </TableRow>
+                <TableHeaderCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-zinc-50 dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
+              </tr>
             </TableHead>
             <TableBody>
               {discounts.map((item, index) => {
@@ -90,9 +90,9 @@ export default function DiscountTab({
                 const finalPrice = item.priceAfterDiscount ?? (item.originalPrice * (1 - item.discountPercent / 100));
                 return (
                   <TableRow key={item.id} className="group">
-                    <TableCell className="text-zinc-500 dark:text-zinc-400 text-xs w-12 font-medium text-center whitespace-nowrap">{index + 1}</TableCell>
+                    <TableCell className="text-center text-zinc-400 dark:text-zinc-500 w-12 font-medium whitespace-nowrap">{(index + 1)}</TableCell>
                     <TableCell className="whitespace-nowrap">
-                      <span className="font-medium text-zinc-900 dark:text-zinc-100 block">{item.campaignName || "Promo Gajian"}</span>
+                      <span className="text-zinc-800 dark:text-zinc-200 block">{item.campaignName || "Promo Gajian"}</span>
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
                       <div className="flex items-center gap-3">
@@ -103,10 +103,10 @@ export default function DiscountTab({
                           className="h-9 w-9 rounded-lg object-cover bg-zinc-50 dark:bg-zinc-900"
                         />
                         <div className="min-w-0">
-                          <span className="font-medium text-zinc-900 dark:text-zinc-100 block max-w-xs truncate" title={item.productName}>
+                          <span className="text-zinc-800 dark:text-zinc-200 block max-w-xs truncate" title={item.productName}>
                             {item.productName}
                           </span>
-                          <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                          <span className="text-xs text-zinc-400 dark:text-zinc-500">
                             Base: {formatRupiah(item.originalPrice)}
                           </span>
                         </div>
@@ -117,7 +117,7 @@ export default function DiscountTab({
                         <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded w-max">
                           -{item.discountPercent}%
                         </span>
-                        <span className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                        <span className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">
                           {formatRupiah(item.originalPrice - finalPrice)}
                         </span>
                       </div>
@@ -125,8 +125,8 @@ export default function DiscountTab({
                     <TableCell className="font-medium text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
                       {formatRupiah(finalPrice)}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap">
-                      <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                    <TableCell className="whitespace-nowrap text-zinc-600 dark:text-zinc-400 text-sm">
+                      <div className="flex items-center gap-1.5">
                         <FiCalendar className="h-3.5 w-3.5 text-zinc-400" />
                         <span>{formatDateDuration(item.startDate, item.endDate)}</span>
                       </div>
