@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { FiPlus, FiCheck } from 'react-icons/fi'
 import Swal from 'sweetalert2'
+import { playSwalSound } from '@/utils/sound'
 import { VoucherItem } from './types'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -135,7 +136,31 @@ export default function VoucherTab({
               <Button
                 variant={item.status === 'active' ? 'ghost' : 'secondary'}
                 size="xs"
-                onClick={() => onToggleVoucher(item.code)}
+                onClick={() => {
+                  const actionText = item.status === 'active' ? 'menonaktifkan' : 'mengaktifkan'
+                  playSwalSound('confirm')
+                  Swal.fire({
+                    title: 'Ubah Status Voucher?',
+                    text: `Apakah Anda yakin ingin ${actionText} voucher ${item.code}?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0369a1',
+                    cancelButtonColor: '#71717a',
+                    confirmButtonText: 'Ya, Ubah!',
+                    cancelButtonText: 'Batal'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      onToggleVoucher(item.code)
+                      playSwalSound('success')
+                      Swal.fire({
+                        title: 'Berhasil!',
+                        text: `Status voucher ${item.code} berhasil diperbarui.`,
+                        icon: 'success',
+                        confirmButtonColor: '#0369a1'
+                      })
+                    }
+                  })
+                }}
                 className="rounded-lg"
               >
                 {item.status === 'active' ? 'Matikan' : 'Aktifkan'}
