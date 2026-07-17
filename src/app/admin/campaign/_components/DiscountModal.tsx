@@ -309,10 +309,10 @@ export default function DiscountModal({ isOpen, onClose, onAddDiscount, formatRu
         <div className="flex items-center justify-between pt-2">
           <span className="font-semibold text-zinc-700 dark:text-zinc-300">Status Awal Diskon</span>
           <Toggle
-            leftLabel="Aktif"
-            rightLabel="Nonaktif"
-            checked={discountIsActive}
-            onChange={(checked) => setDiscountIsActive(checked)}
+            leftLabel="Nonaktif"
+            rightLabel="Aktif"
+            checked={!discountIsActive}
+            onChange={(checked) => setDiscountIsActive(!checked)}
             activeColorClass={discountIsActive ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-500'}
             className="w-40"
           />
