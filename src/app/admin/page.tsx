@@ -35,7 +35,7 @@ export default function AdminDashboardPage() {
           {/* Card: Statistik Transaksi */}
           <div className="space-y-2 flex-1 flex flex-col">
             <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Ringkasan Aktivitas</span>
-            <div className="bg-white/80 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-800 p-5 rounded flex-1 flex flex-col justify-center">
+            <div className="bg-white/80 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 p-5 rounded flex-1 flex flex-col justify-center">
               <div className="w-full">
                 <div className="grid grid-cols-2 text-xs gap-y-3">
                   <span className="text-zinc-400">Pesanan Selesai:</span>
@@ -43,7 +43,7 @@ export default function AdminDashboardPage() {
                   <span className="text-zinc-400">Pesanan Diproses:</span>
                   <span className="font-semibold text-zinc-700 dark:text-zinc-300 text-right">5 Transaksi</span>
                   <span className="text-zinc-400">Pengunjung Unik:</span>
-                  <span className="font-semibold text-sky-600 dark:text-sky-400 text-right">1.248 Pengunjung</span>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 text-right">1.248 Pengunjung</span>
                 </div>
               </div>
             </div>
@@ -57,19 +57,19 @@ export default function AdminDashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
 
             {/* 1. Event Berlangsung */}
-            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between space-y-3">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   <FiTag className="text-sky-600 dark:text-sky-400 h-3.5 w-3.5" />
                   <span>Event Berlangsung</span>
                 </div>
-                <span className="text-[10px] bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded font-semibold">
+                <span className="text-[10px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/40 px-2 py-0.5 rounded font-medium">
                   Aktif
                 </span>
               </div>
               
-              <div className="space-y-1">
-                <p className="text-xs font-extrabold text-zinc-900 dark:text-white truncate">Promo Gajian Akhir Bulan</p>
+              <div className="space-y-0.5">
+                <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">Promo Gajian Akhir Bulan</p>
                 <p className="text-[11px] text-zinc-400 dark:text-zinc-500 line-clamp-1">Diskon s/d 50% & Voucher HEMAT50K</p>
               </div>
 
@@ -77,98 +77,98 @@ export default function AdminDashboardPage() {
                 <span className="flex items-center gap-1">
                   <FiClock className="h-3 w-3" /> s/d 31 Jul 2026
                 </span>
-                <Link href="/admin/campaign" className="text-sky-600 dark:text-sky-400 font-semibold hover:underline flex items-center gap-0.5">
+                <Link href="/admin/campaign" className="text-sky-600 dark:text-sky-400 font-medium hover:underline flex items-center gap-0.5">
                   Detail <FiArrowRight className="h-2.5 w-2.5" />
                 </Link>
               </div>
             </div>
 
             {/* 2. Pesan & Chat Terbaru */}
-            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between space-y-3">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   <FiMessageSquare className="text-sky-600 dark:text-sky-400 h-3.5 w-3.5" />
                   <span>Pesan Terbaru</span>
                 </div>
-                <span className="text-[10px] bg-sky-100 dark:bg-sky-950/50 text-sky-700 dark:text-sky-400 px-2 py-0.5 rounded font-semibold">
+                <span className="text-[10px] bg-sky-50 dark:bg-sky-950/30 text-sky-700 dark:text-sky-400 border border-sky-200/50 dark:border-sky-900/40 px-2 py-0.5 rounded font-medium">
                   2 Baru
                 </span>
               </div>
 
-              <div className="space-y-2">
-                <div className="text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100/60 dark:border-zinc-800/40 space-y-0.5">
-                  <div className="flex justify-between font-semibold text-zinc-800 dark:text-zinc-200">
+              <div className="space-y-1.5">
+                <div className="text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100 dark:border-zinc-800/40 space-y-0.5">
+                  <div className="flex justify-between font-medium text-zinc-800 dark:text-zinc-200">
                     <span className="truncate max-w-[110px]">Farhan M.</span>
                     <span className="text-[9px] text-zinc-400 font-normal">10 mnt</span>
                   </div>
-                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">&quot;Halo min, paket sy sudah dikirim?&quot;</p>
+                  <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">&quot;Halo min, paket sy sudah dikirim?&quot;</p>
                 </div>
-                <div className="text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100/60 dark:border-zinc-800/40 space-y-0.5">
-                  <div className="flex justify-between font-semibold text-zinc-800 dark:text-zinc-200">
+                <div className="text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100 dark:border-zinc-800/40 space-y-0.5">
+                  <div className="flex justify-between font-medium text-zinc-800 dark:text-zinc-200">
                     <span className="truncate max-w-[110px]">Siti Rahma</span>
                     <span className="text-[9px] text-zinc-400 font-normal">1 jam</span>
                   </div>
-                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">&quot;Voucher promo bisa dipakai hari ini?&quot;</p>
+                  <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">&quot;Voucher promo bisa dipakai hari ini?&quot;</p>
                 </div>
               </div>
             </div>
 
             {/* 3. Stok Menipis & Habis */}
-            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between space-y-3">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   <FiAlertTriangle className="text-amber-500 h-3.5 w-3.5" />
                   <span>Stok Menipis / Habis</span>
                 </div>
-                <span className="text-[10px] bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded font-semibold">
+                <span className="text-[10px] bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200/50 dark:border-amber-900/40 px-2 py-0.5 rounded font-medium">
                   2 Produk
                 </span>
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100/60 dark:border-zinc-800/40">
-                  <span className="font-medium text-zinc-800 dark:text-zinc-200 truncate max-w-[120px]">Oxford Shirt</span>
-                  <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded border border-amber-200/50 dark:border-amber-900/40">Sisa 2</span>
+                <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100 dark:border-zinc-800/40">
+                  <span className="font-medium text-zinc-700 dark:text-zinc-300 truncate max-w-[120px]">Oxford Shirt</span>
+                  <span className="text-[10px] font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200/50 dark:border-amber-900/40 px-1.5 py-0.5 rounded">Sisa 2</span>
                 </div>
-                <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100/60 dark:border-zinc-800/40">
-                  <span className="font-medium text-zinc-800 dark:text-zinc-200 truncate max-w-[120px]">Wool Knit Sweater</span>
-                  <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 px-1.5 py-0.5 rounded border border-rose-200/50 dark:border-rose-900/40">Habis</span>
+                <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100 dark:border-zinc-800/40">
+                  <span className="font-medium text-zinc-700 dark:text-zinc-300 truncate max-w-[120px]">Wool Knit Sweater</span>
+                  <span className="text-[10px] font-medium text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-200/50 dark:border-rose-900/40 px-1.5 py-0.5 rounded">Habis</span>
                 </div>
               </div>
 
               <div className="text-right pt-1">
-                <Link href="/admin/products" className="text-[10px] text-sky-600 dark:text-sky-400 font-semibold hover:underline inline-flex items-center gap-0.5">
+                <Link href="/admin/products" className="text-[10px] text-sky-600 dark:text-sky-400 font-medium hover:underline inline-flex items-center gap-0.5">
                   Kelola Stok <FiArrowRight className="h-2.5 w-2.5" />
                 </Link>
               </div>
             </div>
 
             {/* 4. Pesanan Terbaru */}
-            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between space-y-3">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   <FiShoppingBag className="text-sky-600 dark:text-sky-400 h-3.5 w-3.5" />
                   <span>Pesanan Terbaru</span>
                 </div>
-                <Link href="/admin/order" className="text-[10px] text-sky-600 dark:text-sky-400 font-semibold hover:underline inline-flex items-center gap-0.5">
+                <Link href="/admin/order" className="text-[10px] text-sky-600 dark:text-sky-400 font-medium hover:underline inline-flex items-center gap-0.5">
                   Lihat Semua <FiArrowRight className="h-2.5 w-2.5" />
                 </Link>
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100/60 dark:border-zinc-800/40">
+                <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100 dark:border-zinc-800/40">
                   <div className="min-w-0">
-                    <p className="font-semibold text-zinc-800 dark:text-zinc-200 truncate">#20260003 - Farhan M.</p>
+                    <p className="font-medium text-zinc-800 dark:text-zinc-200 truncate">#20260003 - Farhan M.</p>
                     <p className="text-[9px] text-zinc-400">Rp 179.000</p>
                   </div>
-                  <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-1.5 py-0.5 rounded border border-emerald-200/50 dark:border-emerald-900/40">Selesai</span>
+                  <span className="text-[9px] font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/50 dark:border-emerald-900/40 px-1.5 py-0.5 rounded">Selesai</span>
                 </div>
-                <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100/60 dark:border-zinc-800/40">
+                <div className="flex items-center justify-between text-[11px] bg-zinc-50 dark:bg-zinc-950/40 p-2 rounded border border-zinc-100 dark:border-zinc-800/40">
                   <div className="min-w-0">
-                    <p className="font-semibold text-zinc-800 dark:text-zinc-200 truncate">#20260002 - Siti R.</p>
+                    <p className="font-medium text-zinc-800 dark:text-zinc-200 truncate">#20260002 - Siti R.</p>
                     <p className="text-[9px] text-zinc-400">Rp 198.000</p>
                   </div>
-                  <span className="text-[9px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-1.5 py-0.5 rounded border border-blue-200/50 dark:border-blue-900/40">Diproses</span>
+                  <span className="text-[9px] font-medium text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/30 border border-sky-200/50 dark:border-sky-900/40 px-1.5 py-0.5 rounded">Diproses</span>
                 </div>
               </div>
             </div>
