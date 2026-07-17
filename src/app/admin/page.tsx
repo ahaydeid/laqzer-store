@@ -14,17 +14,17 @@ interface TrendItem {
 }
 
 const salesTrendData: TrendItem[] = [
-  { label: 'Feb', value: 42 },
-  { label: 'Mar', value: 58 },
-  { label: 'Apr', value: 65 },
-  { label: 'Mei', value: 70 },
-  { label: 'Jun', value: 84 },
-  { label: 'Jul', value: 98 },
+  { label: 'Okt', value: 42 },
+  { label: 'Nov', value: 54 },
+  { label: 'Des', value: 65 },
+  { label: 'Jan', value: 72 },
+  { label: 'Feb', value: 83 },
+  { label: 'Mar', value: 88 },
 ]
 
-function LineTrendChart({ data, height = 180 }: { data: TrendItem[]; height?: number }) {
+function LineTrendChart({ data, height = 220 }: { data: TrendItem[]; height?: number }) {
   const max = Math.max(...data.map((d) => d.value), 1)
-  const padding = 20
+  const padding = 18
   const width = 640
   const coordinates = data.map((d, i) => {
     const x = (i / (data.length - 1)) * (width - padding * 2) + padding
@@ -42,9 +42,9 @@ function LineTrendChart({ data, height = 180 }: { data: TrendItem[]; height?: nu
     <div className="h-full w-full flex flex-col justify-between">
       <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full overflow-visible">
         <defs>
-          <linearGradient id="laqzer-sales-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#0284c7" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#0284c7" stopOpacity="0" />
+          <linearGradient id="student-trend-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#6366f1" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -61,24 +61,24 @@ function LineTrendChart({ data, height = 180 }: { data: TrendItem[]; height?: nu
           />
         ))}
 
-        <polygon points={areaPoints} fill="url(#laqzer-sales-fill)" />
+        <polygon points={areaPoints} fill="url(#student-trend-fill)" />
 
         <polyline
           fill="none"
-          stroke="#0284c7"
-          strokeWidth="2.5"
+          stroke="#6366f1"
+          strokeWidth="1.75"
           strokeLinecap="round"
           strokeLinejoin="round"
           points={points}
         />
 
         {coordinates.map(({ x, y }, i) => (
-          <circle key={i} cx={x} cy={y} r="3.5" fill="#0284c7" />
+          <circle key={i} cx={x} cy={y} r="2.5" fill="#6366f1" />
         ))}
       </svg>
       <div className="mt-2 flex justify-between px-2">
         {data.map((item) => (
-          <span key={item.label} className="text-[10px] font-medium text-zinc-400">
+          <span key={item.label} className="text-xs font-medium text-zinc-400">
             {item.label}
           </span>
         ))}
@@ -253,19 +253,14 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* STATISTIK Transaksi & Penjualan Chart Section */}
-      <div className="space-y-2 pt-4">
-        <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Statistik Penjualan</span>
-        <div className="bg-white/80 dark:bg-zinc-900/40 p-6 rounded border border-zinc-100 dark:border-zinc-800">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
-              Pertumbuhan Transaksi & Penjualan
-            </h3>
-            <span className="text-xs font-semibold text-sky-600 dark:text-sky-400">
-              +38% Bulan Ini
-            </span>
-          </div>
-          <div className="h-52">
+      {/* STATISTIK Pertumbuhan Transaksi Chart (Presisi 1:1 Acuan Screenshot) */}
+      <div className="pt-2">
+        <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg border border-zinc-100 dark:border-zinc-800">
+          <h3 className="mb-6 flex items-center justify-between text-sm font-bold text-slate-700 dark:text-zinc-200">
+            <span>Pertumbuhan Transaksi</span>
+            <span className="text-sky-600 dark:text-sky-400 font-bold">laqzer</span>
+          </h3>
+          <div className="h-64">
             <LineTrendChart data={salesTrendData} />
           </div>
         </div>
