@@ -215,14 +215,14 @@ export default function OrderPage() {
       <Table>
         <TableHead>
           <tr>
-            <TableHeaderCell scope="col" className="text-center w-12">No</TableHeaderCell>
-            <TableHeaderCell scope="col">ID Pesanan</TableHeaderCell>
-            <TableHeaderCell scope="col">Nama Pelanggan</TableHeaderCell>
-            <TableHeaderCell scope="col">Tanggal</TableHeaderCell>
-            <TableHeaderCell scope="col">Total Belanja</TableHeaderCell>
-            <TableHeaderCell scope="col">Metode</TableHeaderCell>
-            <TableHeaderCell scope="col">Status</TableHeaderCell>
-            <TableHeaderCell scope="col" className="text-center">Aksi</TableHeaderCell>
+            <TableHeaderCell scope="col" className="text-center w-12 whitespace-nowrap">No</TableHeaderCell>
+            <TableHeaderCell scope="col" className="whitespace-nowrap">ID Pesanan</TableHeaderCell>
+            <TableHeaderCell scope="col" className="whitespace-nowrap">Nama Pelanggan</TableHeaderCell>
+            <TableHeaderCell scope="col" className="whitespace-nowrap">Tanggal</TableHeaderCell>
+            <TableHeaderCell scope="col" className="whitespace-nowrap">Total Belanja</TableHeaderCell>
+            <TableHeaderCell scope="col" className="whitespace-nowrap">Metode</TableHeaderCell>
+            <TableHeaderCell scope="col" className="whitespace-nowrap">Status</TableHeaderCell>
+            <TableHeaderCell scope="col" className="text-center whitespace-nowrap">Aksi</TableHeaderCell>
           </tr>
         </TableHead>
         <TableBody>
@@ -231,13 +231,13 @@ export default function OrderPage() {
               <TableRow
                 key={order.id}
               >
-                <TableCell className="text-center text-zinc-400 dark:text-zinc-500 w-12 font-medium">
+                <TableCell className="text-center text-zinc-400 dark:text-zinc-500 w-12 font-medium whitespace-nowrap">
                   {(currentPage - 1) * itemsPerPage + index + 1}
                 </TableCell>
-                <TableCell className="text-zinc-800 dark:text-zinc-200">
+                <TableCell className="text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
                   {order.id}
                 </TableCell>
-                <TableCell className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
+                <TableCell className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -248,12 +248,12 @@ export default function OrderPage() {
                   </div>
                   {order.customerName}
                 </TableCell>
-                <TableCell>{order.date}</TableCell>
-                <TableCell className="text-zinc-800 dark:text-zinc-200">
+                <TableCell className="whitespace-nowrap">{order.date}</TableCell>
+                <TableCell className="text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
                   Rp {order.total.toLocaleString("id-ID")}
                 </TableCell>
-                <TableCell>{order.paymentMethod}</TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">{order.paymentMethod}</TableCell>
+                <TableCell className="whitespace-nowrap">
                   <span
                     className={`px-2.5 py-1 rounded-full text-[11px] font-normal ${
                       order.status === "Selesai"
@@ -270,7 +270,7 @@ export default function OrderPage() {
                     {order.status}
                   </span>
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="text-center whitespace-nowrap">
                   <div className="flex items-center justify-center">
                     <ActionButton
                       variant="detail"
