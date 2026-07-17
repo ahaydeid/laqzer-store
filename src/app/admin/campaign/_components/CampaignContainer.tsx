@@ -359,8 +359,8 @@ export default function CampaignContainer() {
 
       {/* Live Preview Modal Overlay */}
       {showPopupPreview && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 animate-fade-in">
-          <div className="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-lg overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30 p-4 animate-fade-in" onClick={() => setShowPopupPreview(false)}>
+          <div className="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-lg overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
             {/* Close Button overlay */}
             <button 
               onClick={() => setShowPopupPreview(false)}
