@@ -222,7 +222,7 @@ export default function OrderPage() {
             <TableHeaderCell scope="col" className="whitespace-nowrap">Total Belanja</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Metode</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Status</TableHeaderCell>
-            <TableHeaderCell scope="col" className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-zinc-50 dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
+            <TableHeaderCell scope="col" className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
           </tr>
         </TableHead>
         <TableBody>

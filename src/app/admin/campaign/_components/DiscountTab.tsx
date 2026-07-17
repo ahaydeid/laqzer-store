@@ -81,7 +81,7 @@ export default function DiscountTab({
                 <TableHeaderCell className="whitespace-nowrap">Diskon</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Harga Akhir</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Durasi</TableHeaderCell>
-                <TableHeaderCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-zinc-50 dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
+                <TableHeaderCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
               </tr>
             </TableHead>
             <TableBody>
