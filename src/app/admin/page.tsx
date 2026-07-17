@@ -152,12 +152,12 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            {/* 4. Pesanan Terbaru */}
+            {/* 4. Pesanan Terbaru Widget */}
             <div className="bg-white dark:bg-zinc-900 p-4 rounded-lg border border-zinc-100 dark:border-zinc-800/80 flex flex-col justify-between space-y-3 hover:shadow-xs transition-all">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-800 dark:text-zinc-200">
                   <FiShoppingBag className="text-sky-600 dark:text-sky-400 h-3.5 w-3.5" />
-                  <span>Pesanan Terbaru</span>
+                  <span>Ringkasan Pesanan</span>
                 </div>
                 <Link href="/admin/order" className="text-[10px] text-sky-600 dark:text-sky-400 font-semibold hover:underline inline-flex items-center gap-0.5">
                   Lihat Semua <FiArrowRight className="h-2.5 w-2.5" />
@@ -182,6 +182,71 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Orders History Table (Restored) */}
+      <div className="space-y-2 pt-2">
+        <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Riwayat Pesanan Terbaru</span>
+        <div className="bg-white/80 dark:bg-zinc-900/40 p-5 rounded border border-zinc-100 dark:border-zinc-800 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="text-zinc-400 border-b border-zinc-100 dark:border-zinc-800 pb-2">
+                  <th className="py-2.5 font-semibold">Order ID</th>
+                  <th className="py-2.5 font-semibold">Pelanggan</th>
+                  <th className="py-2.5 font-semibold">Total Pembayaran</th>
+                  <th className="py-2.5 font-semibold">Metode</th>
+                  <th className="py-2.5 font-semibold">Status</th>
+                  <th className="py-2.5 text-right font-semibold">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                <tr className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20">
+                  <td className="py-3 font-semibold text-sky-600 dark:text-sky-400">20260003</td>
+                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Farhan Maulana</td>
+                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 179.000</td>
+                  <td className="py-3 text-zinc-500">Transfer Bank Mandiri</td>
+                  <td className="py-3">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">
+                      Selesai
+                    </span>
+                  </td>
+                  <td className="py-3 text-right">
+                    <Link href="/admin/order" className="text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer">Detail</Link>
+                  </td>
+                </tr>
+                <tr className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20">
+                  <td className="py-3 font-semibold text-sky-600 dark:text-sky-400">20260002</td>
+                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Siti Rahma</td>
+                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 198.000</td>
+                  <td className="py-3 text-zinc-500">GoPay</td>
+                  <td className="py-3">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400">
+                      Sedang Diproses
+                    </span>
+                  </td>
+                  <td className="py-3 text-right">
+                    <Link href="/admin/order" className="text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer">Detail</Link>
+                  </td>
+                </tr>
+                <tr className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20">
+                  <td className="py-3 font-semibold text-sky-600 dark:text-sky-400">20260001</td>
+                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Andi Wijaya</td>
+                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 650.000</td>
+                  <td className="py-3 text-zinc-500">ShopeePay</td>
+                  <td className="py-3">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">
+                      Selesai
+                    </span>
+                  </td>
+                  <td className="py-3 text-right">
+                    <Link href="/admin/order" className="text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer">Detail</Link>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
