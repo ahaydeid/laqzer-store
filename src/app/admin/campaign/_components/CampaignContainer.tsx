@@ -199,8 +199,7 @@ export default function CampaignContainer() {
   }
 
   // Save popup ad settings
-  const handleSavePopupConfig = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSavePopupConfig = () => {
     Swal.fire({
       icon: 'success',
       title: 'Pengaturan Disimpan',

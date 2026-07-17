@@ -1,11 +1,13 @@
-import React from 'react'
-import { FiSettings, FiImage, FiEye } from 'react-icons/fi'
+import React, { useState } from 'react'
+import { FiEye } from 'react-icons/fi'
 import { PopupAdConfig } from './types'
+import Toggle from '@/components/ui/Toggle'
+import { Button } from '@/components/ui/Button'
 
 interface PopupTabProps {
   popupConfig: PopupAdConfig
   onChangePopupConfig: (config: PopupAdConfig) => void
-  onSaveConfig: (e: React.FormEvent) => void
+  onSaveConfig: () => void
   onTestShowPreview: () => void
 }
 
@@ -15,121 +17,168 @@ export default function PopupTab({
   onSaveConfig,
   onTestShowPreview
 }: PopupTabProps) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [draft, setDraft] = useState<PopupAdConfig>(popupConfig)
+
+  const handleEnterEdit = () => {
+    setDraft(popupConfig)
+    setIsEditing(true)
+  }
+
+  const handleCancel = () => {
+    setIsEditing(false)
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onChangePopupConfig(draft)
+    onSaveConfig()
+    setIsEditing(false)
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
       {/* Form Settings Iklan */}
       <div className="lg:col-span-3">
         <div className="bg-white dark:bg-zinc-900 p-5 rounded space-y-4">
+          {/* Header */}
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-            <div className="flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
-              <FiSettings className="h-5 w-5 text-sky-600 dark:text-sky-400" />
-              <span>Konfigurasi Iklan Popup</span>
-            </div>
+            <span className="font-bold text-zinc-800 dark:text-zinc-200 text-sm">Konfigurasi Iklan Popup</span>
             <div className="flex items-center gap-2">
               <span className="text-xs text-zinc-400 dark:text-zinc-500 font-semibold">Status:</span>
-              <button
-                type="button"
-                onClick={() => onChangePopupConfig({ ...popupConfig, isActive: !popupConfig.isActive })}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
-                  popupConfig.isActive ? 'bg-sky-600' : 'bg-zinc-200 dark:bg-zinc-700'
-                }`}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                    popupConfig.isActive ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
+              <Toggle
+                leftLabel="Nonaktif"
+                rightLabel="Aktif"
+                checked={!popupConfig.isActive}
+                onChange={(checked) => onChangePopupConfig({ ...popupConfig, isActive: !checked })}
+                activeColorClass={popupConfig.isActive ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-500'}
+                className="w-36"
+              />
             </div>
           </div>
 
-          <form onSubmit={onSaveConfig} className="space-y-4 text-sm">
-            <div>
-              <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                Judul Iklan Promo
-              </label>
-              <input
-                type="text"
-                value={popupConfig.title}
-                onChange={(e) => onChangePopupConfig({ ...popupConfig, title: e.target.value })}
-                placeholder="Masukkan Judul Promo"
-                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
-              />
+          {/* Read Mode */}
+          {!isEditing && (
+            <div className="space-y-4 text-sm">
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Judul Promo</span>
+                <span className="text-zinc-800 dark:text-zinc-200 font-medium">
+                  {popupConfig.title || <span className="text-zinc-400 dark:text-zinc-600 italic font-normal">Belum diisi</span>}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Deskripsi</span>
+                <span className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  {popupConfig.description || <span className="text-zinc-400 dark:text-zinc-600 italic font-normal">Belum diisi</span>}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Teks Tombol CTA</span>
+                  <span className="text-zinc-800 dark:text-zinc-200 font-medium">
+                    {popupConfig.buttonText || <span className="text-zinc-400 dark:text-zinc-600 italic font-normal">Belum diisi</span>}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Link Tujuan</span>
+                  <span className="text-zinc-800 dark:text-zinc-200 font-medium break-all">
+                    {popupConfig.targetUrl || <span className="text-zinc-400 dark:text-zinc-600 italic font-normal">Belum diisi</span>}
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-2.5 pt-1">
+                <Button variant="secondary" size="sm" onClick={handleEnterEdit} className="rounded">
+                  Edit
+                </Button>
+                <Button variant="outline" size="sm" onClick={onTestShowPreview} className="rounded">
+                  <FiEye className="h-3.5 w-3.5" />
+                  Uji Coba Tampilan
+                </Button>
+              </div>
             </div>
+          )}
 
-            <div>
-              <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                Deskripsi Singkat Promo
-              </label>
-              <textarea
-                rows={3}
-                value={popupConfig.description}
-                onChange={(e) => onChangePopupConfig({ ...popupConfig, description: e.target.value })}
-                placeholder="Masukkan penjelasan promo..."
-                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 resize-none font-medium"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Edit Mode */}
+          {isEditing && (
+            <form onSubmit={handleSubmit} className="space-y-4 text-sm">
               <div>
                 <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                  Teks Tombol Aksi (CTA)
+                  Judul Iklan Promo
                 </label>
                 <input
                   type="text"
-                  value={popupConfig.buttonText}
-                  onChange={(e) => onChangePopupConfig({ ...popupConfig, buttonText: e.target.value })}
-                  placeholder="Contoh: Belanja Sekarang"
+                  value={draft.title}
+                  onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+                  placeholder="Masukkan Judul Promo"
                   className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
                 />
               </div>
+
               <div>
                 <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                  Link Tujuan Redirect
+                  Deskripsi Singkat Promo
                 </label>
-                <input
-                  type="text"
-                  value={popupConfig.targetUrl}
-                  onChange={(e) => onChangePopupConfig({ ...popupConfig, targetUrl: e.target.value })}
-                  placeholder="Contoh: /product/id"
-                  className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
+                <textarea
+                  rows={3}
+                  value={draft.description}
+                  onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+                  placeholder="Masukkan penjelasan promo..."
+                  className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 resize-none font-medium"
                 />
               </div>
-            </div>
 
-            <div className="flex gap-4 pt-2">
-              <button
-                type="submit"
-                className="flex-1 bg-sky-700 hover:bg-sky-800 text-white font-semibold py-2.5 rounded transition-colors cursor-pointer text-center"
-              >
-                Simpan Pengaturan
-              </button>
-              <button
-                type="button"
-                onClick={onTestShowPreview}
-                className="flex-1 border border-sky-600 hover:bg-sky-50/50 dark:hover:bg-sky-950/20 text-sky-600 dark:text-sky-400 font-semibold py-2.5 rounded transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <FiEye className="h-4 w-4" />
-                <span>Uji Coba Tampilan</span>
-              </button>
-            </div>
-          </form>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
+                    Teks Tombol Aksi (CTA)
+                  </label>
+                  <input
+                    type="text"
+                    value={draft.buttonText}
+                    onChange={(e) => setDraft({ ...draft, buttonText: e.target.value })}
+                    placeholder="Contoh: Belanja Sekarang"
+                    className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
+                    Link Tujuan Redirect
+                  </label>
+                  <input
+                    type="text"
+                    value={draft.targetUrl}
+                    onChange={(e) => setDraft({ ...draft, targetUrl: e.target.value })}
+                    placeholder="Contoh: /product/id"
+                    className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2.5 pt-1">
+                <Button type="submit" variant="primary" size="sm" className="rounded">
+                  Simpan Perubahan
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={handleCancel} className="rounded">
+                  Batal
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
 
       {/* Panduan & Preview Asset Banner */}
       <div className="lg:col-span-2 space-y-4">
         <div className="bg-white dark:bg-zinc-900 p-5 rounded">
-          <h3 className="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800 pb-3 flex items-center gap-2">
-            <FiImage className="h-4.5 w-4.5 text-sky-600 dark:text-sky-400" />
-            <span>Preview Asset Banner</span>
+          <h3 className="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800 pb-3 text-sm">
+            Preview Asset Banner
           </h3>
           <div className="mt-4 space-y-3.5">
             <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-inner group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img 
-                src={popupConfig.imageUrl} 
-                alt="Banner Preview" 
+              <img
+                src={popupConfig.imageUrl}
+                alt="Banner Preview"
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             </div>
