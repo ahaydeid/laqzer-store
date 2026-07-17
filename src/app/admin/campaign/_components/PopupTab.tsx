@@ -125,7 +125,7 @@ export default function PopupTab({
             <span>Preview Asset Banner</span>
           </h3>
           <div className="mt-4 space-y-3.5">
-            <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-inner group">
+            <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-inner group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={popupConfig.imageUrl} 
@@ -136,7 +136,7 @@ export default function PopupTab({
             <div className="text-xs text-zinc-400 dark:text-zinc-500 space-y-1">
               <p className="font-semibold text-zinc-500 dark:text-zinc-400">Rekomendasi Format Gambar:</p>
               <ul className="list-disc pl-4 space-y-0.5">
-                <li>Ukuran ideal: 1080 x 1080 px (persegi) atau 1200 x 630 px (landscape)</li>
+                <li>Disarankan rasio <b>persegi (1:1)</b> — tampil optimal di semua perangkat termasuk HP</li>
                 <li>Ekstensi: PNG, JPEG, atau WebP</li>
                 <li>Ukuran file maksimum: 1.5MB</li>
               </ul>

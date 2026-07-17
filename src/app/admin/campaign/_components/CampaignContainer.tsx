@@ -360,18 +360,18 @@ export default function CampaignContainer() {
       {/* Live Preview Modal Overlay */}
       {showPopupPreview && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 animate-fade-in">
-          <div className="relative w-full max-w-4xl bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row border border-zinc-200 dark:border-zinc-800/80 max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-y-visible">
+          <div className="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800/80">
             {/* Close Button overlay */}
             <button 
               onClick={() => setShowPopupPreview(false)}
-              className="absolute right-4 top-4 z-[110] rounded-full p-2 bg-white/80 hover:bg-white dark:bg-zinc-800/80 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-all shadow-md cursor-pointer"
+              className="absolute right-3 top-3 z-[110] rounded-full p-1.5 bg-black/40 hover:bg-black/60 text-white transition-all shadow-md cursor-pointer"
               title="Tutup"
             >
-              <FiX className="h-5 w-5" />
+              <FiX className="h-4 w-4" />
             </button>
 
-            {/* Banner Side */}
-            <div className="w-full md:w-1/2 aspect-square md:aspect-auto md:min-h-[420px] bg-zinc-950 flex items-center justify-center relative overflow-hidden">
+            {/* Banner Image */}
+            <div className="w-full aspect-square bg-zinc-950 relative overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={popupConfig.imageUrl} 
@@ -380,44 +380,30 @@ export default function CampaignContainer() {
               />
             </div>
 
-            {/* Content Side */}
-            <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center space-y-6">
-              <div className="space-y-3">
-                <span className="inline-block text-[10px] uppercase tracking-widest font-extrabold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 px-2.5 py-1 rounded">
-                  Pemberitahuan Khusus
-                </span>
-                <h2 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-white leading-tight">
-                  {popupConfig.title}
-                </h2>
-                <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
-                  {popupConfig.description}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3 pt-2">
-                <a 
-                  href={popupConfig.targetUrl}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    setShowPopupPreview(false)
-                    Swal.fire({
-                      icon: 'info',
-                      title: 'Navigasi Sukses',
-                      text: `Membuka halaman tujuan: ${popupConfig.targetUrl}`,
-                      confirmButtonColor: '#0369a1'
-                    })
-                  }}
-                  className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-3.5 rounded-xl text-center transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 text-xs md:text-sm shadow-md cursor-pointer block"
-                >
-                  {popupConfig.buttonText}
-                </a>
-                <button
-                  onClick={() => setShowPopupPreview(false)}
-                  className="w-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-500 dark:text-zinc-400 font-semibold py-3 rounded-xl text-center transition-colors text-xs md:text-sm cursor-pointer"
-                >
-                  Nanti Saja
-                </button>
-              </div>
+            {/* Buttons */}
+            <div className="p-4 flex flex-col gap-2.5">
+              <a 
+                href={popupConfig.targetUrl}
+                onClick={(e) => {
+                  e.preventDefault()
+                  setShowPopupPreview(false)
+                  Swal.fire({
+                    icon: 'info',
+                    title: 'Navigasi Sukses',
+                    text: `Membuka halaman tujuan: ${popupConfig.targetUrl}`,
+                    confirmButtonColor: '#0369a1'
+                  })
+                }}
+                className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-3 rounded-xl text-center transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 text-sm shadow-md cursor-pointer block"
+              >
+                {popupConfig.buttonText}
+              </a>
+              <button
+                onClick={() => setShowPopupPreview(false)}
+                className="w-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-500 dark:text-zinc-400 font-semibold py-2.5 rounded-xl text-center transition-colors text-sm cursor-pointer"
+              >
+                Nanti Saja
+              </button>
             </div>
           </div>
         </div>
