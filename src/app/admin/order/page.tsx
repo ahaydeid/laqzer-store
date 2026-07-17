@@ -567,7 +567,7 @@ export default function OrderPage() {
               <select
                 value={selectedNewPaymentMethod}
                 onChange={(e) => setSelectedNewPaymentMethod(e.target.value)}
-                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 cursor-pointer"
+                className="w-full bg-transparent px-0 py-1 text-xs font-medium text-zinc-800 dark:text-zinc-200 focus:outline-hidden cursor-pointer border-none outline-none"
               >
                 {PAYMENT_METHOD_OPTIONS.map((method) => (
                   <option key={method} value={method} className="dark:bg-zinc-900">
