@@ -313,7 +313,7 @@ export default function DiscountModal({ isOpen, onClose, onAddDiscount, formatRu
             rightLabel="Nonaktif"
             checked={discountIsActive}
             onChange={(checked) => setDiscountIsActive(checked)}
-            activeColorClass="bg-sky-600"
+            activeColorClass={discountIsActive ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-500'}
             className="w-40"
           />
         </div>
