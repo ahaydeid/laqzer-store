@@ -11,6 +11,31 @@ const MOCK_PRODUCTS = [
   { id: 'mock-5', name: 'Monitor Curved Gaming 27 Inch', imageUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=120' }
 ]
 
+const MONTH_NAMES = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+]
+
+function formatDateDuration(startDateStr: string, endDateStr: string): string {
+  const parseDate = (dateStr: string) => {
+    const parts = dateStr.split('-')
+    if (parts.length !== 3) return null
+    const year = parseInt(parts[0], 10)
+    const monthIndex = parseInt(parts[1], 10) - 1
+    const day = parseInt(parts[2], 10)
+    return { day, month: MONTH_NAMES[monthIndex] || '', year }
+  }
+
+  const start = parseDate(startDateStr)
+  const end = parseDate(endDateStr)
+
+  if (!start || !end) {
+    return `${startDateStr} s/d ${endDateStr}`
+  }
+
+  return `${start.day} ${start.month} s/d ${end.day} ${end.month} ${end.year}`
+}
+
 interface DiscountTabProps {
   discounts: DiscountItem[]
   onToggleStatus: (id: string) => void
@@ -93,7 +118,7 @@ export default function DiscountTab({
                           -{item.discountPercent}%
                         </span>
                         <span className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-                          Hemat {formatRupiah(item.originalPrice - finalPrice)}
+                          {formatRupiah(item.originalPrice - finalPrice)}
                         </span>
                       </div>
                     </TableCell>
@@ -103,7 +128,7 @@ export default function DiscountTab({
                     <TableCell className="whitespace-nowrap">
                       <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
                         <FiCalendar className="h-3.5 w-3.5 text-zinc-400" />
-                        <span>{item.startDate} s/d {item.endDate}</span>
+                        <span>{formatDateDuration(item.startDate, item.endDate)}</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-center whitespace-nowrap">
