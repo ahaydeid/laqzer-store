@@ -128,12 +128,12 @@ export default function DiscountTab({
                       </div>
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
-                      <div className="flex flex-col">
+                      <div className="">
                         <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded w-max">
                           -{item.discountPercent}%
                         </span>
-                        <span className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">
-                          {formatRupiah(item.originalPrice - finalPrice)}
+                        <span className="ml-1 text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+                          ({formatRupiah(item.originalPrice - finalPrice)})
                         </span>
                       </div>
                     </TableCell>
