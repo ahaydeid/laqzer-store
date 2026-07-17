@@ -122,7 +122,7 @@ export default function DiscountTab({
                             {item.productName}
                           </span>
                           <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                            Base: {formatRupiah(item.originalPrice)}
+                            Harga asli: <b className="text-zinc-700 dark:text-zinc-300">{formatRupiah(item.originalPrice)}</b>
                           </span>
                         </div>
                       </div>

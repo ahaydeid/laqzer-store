@@ -135,7 +135,7 @@ export default function DiscountModal({ isOpen, onClose, onAddDiscount, formatRu
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={handleModalClose} title="Buat Diskon Produk Baru" size="lg">
+    <Modal isOpen={isOpen} onClose={handleModalClose} title="Buat Diskon Produk Baru" size="lg" bodyClassName="!overflow-visible">
       <form onSubmit={handleSubmit} className="p-6 space-y-5 text-sm">
         {/* Nama Event/Campaign */}
         <div>
