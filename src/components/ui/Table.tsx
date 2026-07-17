@@ -7,7 +7,7 @@ interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> {
 export function Table({ children, className, ...props }: TableProps) {
   return (
     <div className="overflow-hidden rounded border border-zinc-200/80 bg-white dark:border-zinc-800 dark:bg-zinc-900/40">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto thin-scroll">
         <table className={`w-full border-collapse text-left text-sm ${className || ""}`} {...props}>
           {children}
         </table>
