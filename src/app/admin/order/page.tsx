@@ -228,6 +228,7 @@ export default function OrderPage() {
             <TableHeaderCell scope="col" className="whitespace-nowrap">Nama Pelanggan</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Tanggal</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Total Belanja</TableHeaderCell>
+            <TableHeaderCell scope="col" className="whitespace-nowrap">Voucher</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Metode</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Status</TableHeaderCell>
             <TableHeaderCell scope="col" className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
@@ -260,6 +261,15 @@ export default function OrderPage() {
                 <TableCell className="whitespace-nowrap">{order.date}</TableCell>
                 <TableCell className="text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
                   Rp {order.total.toLocaleString("id-ID")}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {order.voucherCode ? (
+                    <span className="font-mono font-bold bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 px-2.5 py-1 rounded border border-indigo-100/50 dark:border-indigo-900/30 text-xs">
+                      {order.voucherCode}
+                    </span>
+                  ) : (
+                    <span className="text-zinc-400 dark:text-zinc-600 font-medium">-</span>
+                  )}
                 </TableCell>
                 <TableCell className="whitespace-nowrap">{order.paymentMethod}</TableCell>
                 <TableCell className="whitespace-nowrap">
@@ -294,7 +304,7 @@ export default function OrderPage() {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={8} className="py-8 text-center text-zinc-400">
+              <TableCell colSpan={9} className="py-8 text-center text-zinc-400">
                 Tidak ada pesanan ditemukan.
               </TableCell>
             </TableRow>
