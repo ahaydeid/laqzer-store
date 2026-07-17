@@ -8,6 +8,85 @@ export const metadata = {
   description: 'Ringkasan data dan aktivitas toko online Anda',
 }
 
+interface TrendItem {
+  label: string
+  value: number
+}
+
+const salesTrendData: TrendItem[] = [
+  { label: 'Feb', value: 42 },
+  { label: 'Mar', value: 58 },
+  { label: 'Apr', value: 65 },
+  { label: 'Mei', value: 70 },
+  { label: 'Jun', value: 84 },
+  { label: 'Jul', value: 98 },
+]
+
+function LineTrendChart({ data, height = 180 }: { data: TrendItem[]; height?: number }) {
+  const max = Math.max(...data.map((d) => d.value), 1)
+  const padding = 20
+  const width = 640
+  const coordinates = data.map((d, i) => {
+    const x = (i / (data.length - 1)) * (width - padding * 2) + padding
+    const y = height - ((d.value / max) * (height - padding * 2) + padding)
+    return { x, y }
+  })
+  const points = coordinates.map(({ x, y }) => `${x},${y}`).join(' ')
+  const areaPoints = [
+    `${coordinates[0]?.x ?? padding},${height - padding}`,
+    ...coordinates.map(({ x, y }) => `${x},${y}`),
+    `${coordinates[coordinates.length - 1]?.x ?? width - padding},${height - padding}`,
+  ].join(' ')
+
+  return (
+    <div className="h-full w-full flex flex-col justify-between">
+      <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full overflow-visible">
+        <defs>
+          <linearGradient id="laqzer-sales-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#0284c7" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#0284c7" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+
+        {[0, 25, 50, 75, 100].map((v) => (
+          <line
+            key={v}
+            x1={padding}
+            y1={height - ((v / 100) * (height - padding * 2) + padding)}
+            x2={width - padding}
+            y2={height - ((v / 100) * (height - padding * 2) + padding)}
+            stroke="#e2e8f0"
+            strokeDasharray="4 4"
+            className="dark:stroke-zinc-800/80"
+          />
+        ))}
+
+        <polygon points={areaPoints} fill="url(#laqzer-sales-fill)" />
+
+        <polyline
+          fill="none"
+          stroke="#0284c7"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          points={points}
+        />
+
+        {coordinates.map(({ x, y }, i) => (
+          <circle key={i} cx={x} cy={y} r="3.5" fill="#0284c7" />
+        ))}
+      </svg>
+      <div className="mt-2 flex justify-between px-2">
+        {data.map((item) => (
+          <span key={item.label} className="text-[10px] font-medium text-zinc-400">
+            {item.label}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
@@ -174,61 +253,20 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Recent Orders History Table */}
+      {/* STATISTIK Transaksi & Penjualan Chart Section */}
       <div className="space-y-2 pt-4">
-        <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Pesanan Terbaru</span>
-        <div className="bg-white/80 dark:bg-zinc-900/40 p-5 rounded border border-zinc-100 dark:border-zinc-800 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="text-zinc-400 border-b border-zinc-100 dark:border-zinc-800 pb-2">
-                  <th className="py-2.5 font-semibold">Order ID</th>
-                  <th className="py-2.5 font-semibold">Pelanggan</th>
-                  <th className="py-2.5 font-semibold">Total Pembayaran</th>
-                  <th className="py-2.5 font-semibold">Metode</th>
-                  <th className="py-2.5 font-semibold">Status</th>
-                  <th className="py-2.5 text-right font-semibold">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                <tr className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20">
-                  <td className="py-3 font-semibold text-sky-600 dark:text-sky-400">20260003</td>
-                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Farhan Maulana</td>
-                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 179.000</td>
-                  <td className="py-3 text-zinc-500">Transfer Bank Mandiri</td>
-                  <td className="py-3">
-                    <Badge variant="success">Selesai</Badge>
-                  </td>
-                  <td className="py-3 text-right">
-                    <Link href="/admin/order" className="text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer">Detail</Link>
-                  </td>
-                </tr>
-                <tr className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20">
-                  <td className="py-3 font-semibold text-sky-600 dark:text-sky-400">20260002</td>
-                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Siti Rahma</td>
-                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 198.000</td>
-                  <td className="py-3 text-zinc-500">GoPay</td>
-                  <td className="py-3">
-                    <Badge variant="info">Sedang Diproses</Badge>
-                  </td>
-                  <td className="py-3 text-right">
-                    <Link href="/admin/order" className="text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer">Detail</Link>
-                  </td>
-                </tr>
-                <tr className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20">
-                  <td className="py-3 font-semibold text-sky-600 dark:text-sky-400">20260001</td>
-                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Andi Wijaya</td>
-                  <td className="py-3 text-zinc-800 dark:text-zinc-200 font-medium">Rp 650.000</td>
-                  <td className="py-3 text-zinc-500">ShopeePay</td>
-                  <td className="py-3">
-                    <Badge variant="success">Selesai</Badge>
-                  </td>
-                  <td className="py-3 text-right">
-                    <Link href="/admin/order" className="text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer">Detail</Link>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Statistik Penjualan</span>
+        <div className="bg-white/80 dark:bg-zinc-900/40 p-6 rounded border border-zinc-100 dark:border-zinc-800">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
+              Pertumbuhan Transaksi & Penjualan
+            </h3>
+            <span className="text-xs font-semibold text-sky-600 dark:text-sky-400">
+              +38% Bulan Ini
+            </span>
+          </div>
+          <div className="h-52">
+            <LineTrendChart data={salesTrendData} />
           </div>
         </div>
       </div>
