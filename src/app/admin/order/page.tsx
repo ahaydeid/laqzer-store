@@ -142,7 +142,6 @@ export default function OrderPage() {
   }, []);
 
   const handleOpenEditModal = (order: Order) => {
-    setSelectedOrder(null);
     setEditingOrderForStatus(order);
     setSelectedNewStatus(order.status);
     setSelectedNewPaymentMethod(order.paymentMethod);
@@ -402,7 +401,7 @@ export default function OrderPage() {
 
       {/* Order Detail Modal */}
       <Modal
-        isOpen={!!selectedOrder}
+        isOpen={!!selectedOrder && !editingOrderForStatus}
         onClose={() => setSelectedOrder(null)}
         title={
           selectedOrder ? (
