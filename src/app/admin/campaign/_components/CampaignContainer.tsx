@@ -287,69 +287,84 @@ export default function CampaignContainer() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Campaigns */}
-        <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Total Campaign</span>
-            <div className="p-2 bg-sky-50 dark:bg-sky-950/40 rounded-lg">
-              <FiActivity className="h-5 w-5 text-sky-600 dark:text-sky-400" />
-            </div>
+        <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 p-5 flex flex-col justify-end relative overflow-hidden h-28">
+          {/* Background Icon Circle in Top-Left */}
+          <div className="absolute -top-24 -left-24 w-56 h-56 rounded-full bg-sky-100/80 dark:bg-sky-900/30 flex items-center justify-center text-white pointer-events-none">
+            <FiActivity className="w-14 h-14 translate-x-10 translate-y-10" />
           </div>
-          <div className="mt-4">
-            <span className="text-2xl font-extrabold text-zinc-900 dark:text-white">
-              {discounts.length + vouchers.filter(v => v.status === 'active').length + (popupConfig.isActive ? 1 : 0)}
+
+          <div className="space-y-1 relative z-10">
+            <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+              Total Campaign
+            </h3>
+            <span className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 block">
+              {discounts.length + vouchers.filter(v => v.status === 'active').length + (popupConfig.isActive ? 1 : 0)}{" "}
+              <span className="text-sm font-normal text-zinc-400 dark:text-zinc-500">
+                aktif
+              </span>
             </span>
-            <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">Aktif di toko saat ini</p>
           </div>
         </div>
 
         {/* Discounts Card */}
-        <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Diskon Produk</span>
-            <div className="p-2 bg-emerald-50 dark:bg-emerald-950/40 rounded-lg">
-              <FiPercent className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-            </div>
+        <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 p-5 flex flex-col justify-end relative overflow-hidden h-28">
+          {/* Background Icon Circle in Top-Left */}
+          <div className="absolute -top-24 -left-24 w-56 h-56 rounded-full bg-emerald-100/80 dark:bg-emerald-900/30 flex items-center justify-center text-white pointer-events-none">
+            <FiPercent className="w-14 h-14 translate-x-10 translate-y-10" />
           </div>
-          <div className="mt-4">
-            <span className="text-2xl font-extrabold text-zinc-900 dark:text-white">{discounts.length}</span>
-            <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 font-medium">Sedang dipotong harga</p>
+
+          <div className="space-y-1 relative z-10">
+            <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+              Diskon Produk
+            </h3>
+            <span className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 block">
+              {discounts.length}{" "}
+              <span className="text-sm font-normal text-zinc-400 dark:text-zinc-500">
+                produk
+              </span>
+            </span>
           </div>
         </div>
 
         {/* Vouchers Card */}
-        <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Voucher Aktif</span>
-            <div className="p-2 bg-indigo-50 dark:bg-indigo-950/40 rounded-lg">
-              <FiTag className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-            </div>
+        <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 p-5 flex flex-col justify-end relative overflow-hidden h-28">
+          {/* Background Icon Circle in Top-Left */}
+          <div className="absolute -top-24 -left-24 w-56 h-56 rounded-full bg-indigo-100/80 dark:bg-indigo-900/30 flex items-center justify-center text-white pointer-events-none">
+            <FiTag className="w-14 h-14 translate-x-10 translate-y-10" />
           </div>
-          <div className="mt-4">
-            <span className="text-2xl font-extrabold text-zinc-900 dark:text-white">
-              {vouchers.filter(v => v.status === 'active').length}
+
+          <div className="space-y-1 relative z-10">
+            <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+              Voucher Aktif
+            </h3>
+            <span className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 block">
+              {vouchers.filter(v => v.status === 'active').length}{" "}
+              <span className="text-sm font-normal text-zinc-400 dark:text-zinc-500">
+                aktif
+              </span>
             </span>
-            <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">Dari total {vouchers.length} voucher</p>
           </div>
         </div>
 
         {/* Popup Ads Card */}
-        <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all duration-300">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Iklan Popup</span>
-            <div className="p-2 bg-rose-50 dark:bg-rose-950/40 rounded-lg">
-              <FiEye className="h-5 w-5 text-rose-600 dark:text-rose-400" />
-            </div>
+        <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 p-5 flex flex-col justify-end relative overflow-hidden h-28">
+          {/* Background Icon Circle in Top-Left */}
+          <div className="absolute -top-24 -left-24 w-56 h-56 rounded-full bg-rose-100/80 dark:bg-rose-900/30 flex items-center justify-center text-white pointer-events-none">
+            <FiEye className="w-14 h-14 translate-x-10 translate-y-10" />
           </div>
-          <div className="mt-4 flex items-center justify-between">
-            <div>
-              <span className="text-2xl font-extrabold text-zinc-900 dark:text-white">
+
+          <div className="space-y-1 relative z-10">
+            <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+              Iklan Popup
+            </h3>
+            <div className="flex items-center gap-2 relative z-10">
+              <span className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 block">
                 {popupConfig.isActive ? 'Aktif' : 'Nonaktif'}
               </span>
-              <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">Awal muat halaman</p>
+              <span className={`h-2.5 w-2.5 rounded-full ${popupConfig.isActive ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-300 dark:bg-zinc-700'}`} />
             </div>
-            <span className={`h-2.5 w-2.5 rounded-full ${popupConfig.isActive ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-300 dark:bg-zinc-700'}`} />
           </div>
         </div>
       </div>
