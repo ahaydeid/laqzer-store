@@ -63,9 +63,9 @@ export default function AdminDashboardPage() {
                 <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   Event Berlangsung
                 </span>
-                <Badge variant="success" className="text-[10px] px-2 py-0.5 font-medium">
+                <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
                   Aktif
-                </Badge>
+                </span>
               </div>
               
               <div className="space-y-0.5">
@@ -89,9 +89,9 @@ export default function AdminDashboardPage() {
                 <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   Pesan Terbaru
                 </span>
-                <Badge variant="info" className="text-[10px] px-2 py-0.5 font-medium">
+                <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
                   2 Baru
-                </Badge>
+                </span>
               </div>
 
               <div className="space-y-1.5">
@@ -118,9 +118,9 @@ export default function AdminDashboardPage() {
                 <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                   Stok Menipis / Habis
                 </span>
-                <Badge variant="warning" className="text-[10px] px-2 py-0.5 font-medium">
+                <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
                   2 Produk
-                </Badge>
+                </span>
               </div>
 
               <div className="space-y-1.5">
