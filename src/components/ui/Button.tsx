@@ -25,7 +25,7 @@ export function Button({
   }
   const roundedClass = hasRounded ? '' : defaultRounded
 
-  const baseStyles = `inline-flex items-center justify-center gap-1.5 font-semibold ${roundedClass} transition-all duration-150 outline-none active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none`
+  const baseStyles = `inline-flex items-center justify-center gap-1.5 font-semibold ${roundedClass} transition-all duration-150 outline-none active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer`
 
   const variants = {
     primary: 'bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200',
