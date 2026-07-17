@@ -10,15 +10,24 @@ import {
   FiCalendar, 
   FiSettings, 
   FiImage, 
-  FiX 
+  FiX,
+  FiSearch,
+  FiChevronDown,
+  FiCheck
 } from 'react-icons/fi'
 import Swal from 'sweetalert2'
+import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from '@/components/ui/Table'
+import { Modal } from '@/components/ui/Modal'
 
 interface DiscountItem {
   id: string
+  campaignName: string
+  productId: string
   productName: string
   originalPrice: number
+  priceAfterDiscount: number
   discountPercent: number
+  isActive: boolean
   startDate: string
   endDate: string
 }
@@ -42,20 +51,43 @@ interface PopupAdConfig {
   targetUrl: string
 }
 
+interface MockProduct {
+  id: string
+  name: string
+  price: number
+  imageUrl: string
+}
+
+const MOCK_PRODUCTS: MockProduct[] = [
+  { id: 'mock-1', name: 'Laptop Asus ROG Strix G15', price: 18500000, imageUrl: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&q=80&w=120' },
+  { id: 'mock-2', name: 'Keyboard Mechanical Laqzer RGB', price: 850000, imageUrl: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=120' },
+  { id: 'mock-3', name: 'Mouse Wireless Gaming Superlight', price: 450000, imageUrl: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&q=80&w=120' },
+  { id: 'mock-4', name: 'Headset Stereo Pro Bass', price: 650000, imageUrl: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&q=80&w=120' },
+  { id: 'mock-5', name: 'Monitor Curved Gaming 27 Inch', price: 3200000, imageUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=120' }
+]
+
 const INITIAL_DISCOUNTS: DiscountItem[] = [
   {
     id: '1',
+    campaignName: 'Promo Gajian Juli',
+    productId: 'mock-2',
     productName: 'Keyboard Mechanical Laqzer RGB',
     originalPrice: 850000,
+    priceAfterDiscount: 722500,
     discountPercent: 15,
+    isActive: true,
     startDate: '2026-07-10',
     endDate: '2026-07-25',
   },
   {
     id: '2',
+    campaignName: 'Flash Sale Gaming',
+    productId: 'mock-3',
     productName: 'Mouse Wireless Gaming Superlight',
     originalPrice: 450000,
+    priceAfterDiscount: 405000,
     discountPercent: 10,
+    isActive: true,
     startDate: '2026-07-12',
     endDate: '2026-07-20',
   }
@@ -96,11 +128,42 @@ export default function CampaignContainer() {
   
   // State for Discounts
   const [discounts, setDiscounts] = useState<DiscountItem[]>(INITIAL_DISCOUNTS)
-  const [selectedProduct, setSelectedProduct] = useState('')
-  const [discountPercent, setDiscountPercent] = useState(5)
-  const [discountStart, setDiscountStart] = useState('2026-07-15')
-  const [discountEnd, setDiscountEnd] = useState('2026-07-30')
   const [discountCounter, setDiscountCounter] = useState(3)
+
+  // Modal State for Discount Form
+  const [showDiscountModal, setShowDiscountModal] = useState(false)
+  
+  // Form State inside Modal
+  const [campaignName, setCampaignName] = useState('')
+  const [selectedProductObj, setSelectedProductObj] = useState<MockProduct | null>(null)
+  const [discountPercent, setDiscountPercent] = useState<number>(0)
+  const [priceAfterDiscount, setPriceAfterDiscount] = useState<number>(0)
+  const [discountIsActive, setDiscountIsActive] = useState(true)
+  
+  // Date helpers
+  const getTodayString = () => {
+    const today = new Date()
+    const yyyy = today.getFullYear()
+    const mm = String(today.getMonth() + 1).padStart(2, '0')
+    const dd = String(today.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+  }
+
+  const getFutureDateString = (daysAhead: number) => {
+    const date = new Date()
+    date.setDate(date.getDate() + daysAhead)
+    const yyyy = date.getFullYear()
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+  }
+
+  const [discountStart, setDiscountStart] = useState(getTodayString())
+  const [discountEnd, setDiscountEnd] = useState(getFutureDateString(7))
+
+  // Combobox Search State
+  const [productSearchQuery, setProductSearchQuery] = useState('')
+  const [isComboboxOpen, setIsComboboxOpen] = useState(false)
 
   // State for Vouchers
   const [vouchers, setVouchers] = useState<VoucherItem[]>(INITIAL_VOUCHERS)
@@ -123,19 +186,53 @@ export default function CampaignContainer() {
   
   const [showPopupPreview, setShowPopupPreview] = useState(false)
 
-  // Products available for discount creation
-  const MOCK_PRODUCTS = [
-    { name: 'Laptop Asus ROG Strix G15', price: 18500000 },
-    { name: 'Keyboard Mechanical Laqzer RGB', price: 850000 },
-    { name: 'Mouse Wireless Gaming Superlight', price: 450000 },
-    { name: 'Headset Stereo Pro Bass', price: 650000 },
-    { name: 'Monitor Curved Gaming 27 Inch', price: 3200000 }
-  ]
+  // Synchronized inputs handlers
+  const handlePercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawVal = e.target.value
+    if (rawVal === '') {
+      setDiscountPercent(0)
+      if (selectedProductObj) setPriceAfterDiscount(selectedProductObj.price)
+      return
+    }
+    const val = Number(rawVal)
+    if (val < 0 || val > 100) return
+    setDiscountPercent(val)
+    if (selectedProductObj) {
+      const discountVal = (selectedProductObj.price * val) / 100
+      setPriceAfterDiscount(Math.max(0, Math.round(selectedProductObj.price - discountVal)))
+    }
+  }
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawVal = e.target.value
+    if (rawVal === '') {
+      setPriceAfterDiscount(0)
+      setDiscountPercent(100)
+      return
+    }
+    const val = Number(rawVal)
+    if (selectedProductObj) {
+      if (val < 0 || val > selectedProductObj.price) return
+      setPriceAfterDiscount(val)
+      const diff = selectedProductObj.price - val
+      const calculatedPercent = Math.max(0, Math.min(100, Math.round((diff / selectedProductObj.price) * 100)))
+      setDiscountPercent(calculatedPercent)
+    }
+  }
 
   // Add discount handler
   const handleAddDiscount = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!selectedProduct) {
+    if (!campaignName.trim()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Silakan isi nama event/campaign terlebih dahulu.',
+        confirmButtonColor: '#0369a1'
+      })
+      return
+    }
+    if (!selectedProductObj) {
       Swal.fire({
         icon: 'error',
         title: 'Gagal',
@@ -145,12 +242,46 @@ export default function CampaignContainer() {
       return
     }
 
-    const prod = MOCK_PRODUCTS.find(p => p.name === selectedProduct)
+    if (discountPercent <= 0 || discountPercent >= 100) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Persentase diskon harus di antara 1% dan 99%.',
+        confirmButtonColor: '#0369a1'
+      })
+      return
+    }
+
+    if (new Date(discountEnd) < new Date(discountStart)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Tanggal berakhir tidak boleh sebelum tanggal mulai.',
+        confirmButtonColor: '#0369a1'
+      })
+      return
+    }
+
+    // Check duplicate
+    if (discounts.some(d => d.productId === selectedProductObj.id && d.isActive)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: `Produk "${selectedProductObj.name}" sudah memiliki diskon aktif. Silakan hapus diskon lama terlebih dahulu.`,
+        confirmButtonColor: '#0369a1'
+      })
+      return
+    }
+
     const newDiscount: DiscountItem = {
       id: `discount-${discountCounter}`,
-      productName: selectedProduct,
-      originalPrice: prod ? prod.price : 500000,
+      campaignName: campaignName.trim(),
+      productId: selectedProductObj.id,
+      productName: selectedProductObj.name,
+      originalPrice: selectedProductObj.price,
+      priceAfterDiscount: priceAfterDiscount,
       discountPercent: discountPercent,
+      isActive: discountIsActive,
       startDate: discountStart,
       endDate: discountEnd
     }
@@ -161,13 +292,31 @@ export default function CampaignContainer() {
     Swal.fire({
       icon: 'success',
       title: 'Diskon Berhasil Dibuat',
-      text: `Diskon sebesar ${discountPercent}% untuk ${selectedProduct} telah aktif.`,
+      text: `Diskon untuk event "${campaignName}" telah berhasil dibuat.`,
       confirmButtonColor: '#0369a1'
     })
     
-    // Reset Form
-    setSelectedProduct('')
-    setDiscountPercent(5)
+    // Reset Form & Close Modal
+    setCampaignName('')
+    setSelectedProductObj(null)
+    setProductSearchQuery('')
+    setDiscountPercent(0)
+    setPriceAfterDiscount(0)
+    setDiscountIsActive(true)
+    setDiscountStart(getTodayString())
+    setDiscountEnd(getFutureDateString(7))
+    setShowDiscountModal(false)
+  }
+
+  // Toggle active status in table
+  const handleToggleDiscountStatus = (id: string) => {
+    setDiscounts(prev => prev.map(d => {
+      if (d.id === id) {
+        const nextStatus = !d.isActive
+        return { ...d, isActive: nextStatus }
+      }
+      return d
+    }))
   }
 
   // Delete discount handler
@@ -389,128 +538,100 @@ export default function CampaignContainer() {
       <div className="mt-2">
         {/* Tab 1: Diskon Produk */}
         {activeTab === 'discount' && (
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            {/* Form Buat Diskon */}
-            <div className="lg:col-span-2">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded space-y-4">
-                <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-bold border-b border-zinc-100 dark:border-zinc-800 pb-3">
-                  <FiPlus className="h-5 w-5 text-sky-600 dark:text-sky-400" />
-                  <span>Buat Diskon Baru</span>
-                </div>
-                <form onSubmit={handleAddDiscount} className="space-y-4 text-sm">
-                  <div>
-                    <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                      Pilih Produk
-                    </label>
-                    <select
-                      value={selectedProduct}
-                      onChange={(e) => setSelectedProduct(e.target.value)}
-                      className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                    >
-                      <option value="" className="text-zinc-500 dark:bg-zinc-900">-- Pilih Produk --</option>
-                      {MOCK_PRODUCTS.map((p, idx) => (
-                        <option key={idx} value={p.name} className="dark:bg-zinc-900">
-                          {p.name} ({formatRupiah(p.price)})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                      Persentase Diskon (%)
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        min="1"
-                        max="99"
-                        value={discountPercent}
-                        onChange={(e) => setDiscountPercent(Number(e.target.value))}
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent pl-3.5 pr-10 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                      />
-                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">%</span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                        Mulai Berlaku
-                      </label>
-                      <input
-                        type="date"
-                        value={discountStart}
-                        onChange={(e) => setDiscountStart(e.target.value)}
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                        Berakhir Pada
-                      </label>
-                      <input
-                        type="date"
-                        value={discountEnd}
-                        onChange={(e) => setDiscountEnd(e.target.value)}
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full bg-sky-700 hover:bg-sky-800 text-white font-semibold py-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-2 mt-2 shadow-xs"
-                  >
-                    <FiPlus className="h-4 w-4" />
-                    <span>Terapkan Diskon</span>
-                  </button>
-                </form>
-              </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-zinc-800 dark:text-zinc-200 text-base">Daftar Diskon Berjalan</span>
+              <button
+                onClick={() => setShowDiscountModal(true)}
+                className="inline-flex items-center gap-2 rounded bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
+              >
+                <FiPlus className="h-4 w-4" />
+                Buat Diskon Baru
+              </button>
             </div>
 
-            {/* List Diskon */}
-            <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded space-y-4">
-                <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-                  <span className="font-bold text-zinc-800 dark:text-zinc-200">Daftar Diskon Berjalan</span>
-                  <span className="text-xs bg-sky-100 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 px-2.5 py-1 rounded-full font-bold">
-                    {discounts.length} Produk
-                  </span>
-                </div>
-
-                {discounts.length === 0 ? (
-                  <div className="text-center py-12 text-zinc-400 dark:text-zinc-500 space-y-2">
-                    <FiPercent className="h-10 w-10 mx-auto opacity-40" />
-                    <p className="font-medium text-sm">Belum ada promo diskon produk aktif.</p>
-                  </div>
-                ) : (
-                  <div className="divide-y divide-zinc-100 dark:divide-zinc-800 max-h-[380px] overflow-y-auto pr-1">
-                    {discounts.map((item) => {
-                      const finalPrice = item.originalPrice * (1 - item.discountPercent / 100)
-                      return (
-                        <div key={item.id} className="py-3.5 flex items-center justify-between gap-4 first:pt-0 last:pb-0 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/10 px-2 rounded-lg transition-colors">
-                          <div className="min-w-0 flex-1">
-                            <h4 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate" title={item.productName}>
-                              {item.productName}
-                            </h4>
-                            <div className="flex items-center gap-2 mt-1 flex-wrap">
-                              <span className="text-[11px] bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 px-2 py-0.5 rounded font-bold">
-                                -{item.discountPercent}%
+            {discounts.length === 0 ? (
+              <div className="bg-white dark:bg-zinc-900 rounded p-8 text-center text-zinc-400 dark:text-zinc-500 space-y-2">
+                <FiPercent className="h-10 w-10 mx-auto opacity-40" />
+                <p className="font-medium text-sm">Belum ada promo diskon produk aktif.</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableHeaderCell className="w-12 text-center">No</TableHeaderCell>
+                    <TableHeaderCell>Nama Event / Campaign</TableHeaderCell>
+                    <TableHeaderCell>Produk</TableHeaderCell>
+                    <TableHeaderCell>Diskon</TableHeaderCell>
+                    <TableHeaderCell>Harga Akhir</TableHeaderCell>
+                    <TableHeaderCell>Durasi</TableHeaderCell>
+                    <TableHeaderCell className="text-center w-28">Status</TableHeaderCell>
+                    <TableHeaderCell className="text-center w-20">Aksi</TableHeaderCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {discounts.map((item, index) => {
+                    const mockProduct = MOCK_PRODUCTS.find(p => p.name === item.productName || p.id === item.productId);
+                    const finalPrice = item.priceAfterDiscount ?? (item.originalPrice * (1 - item.discountPercent / 100));
+                    return (
+                      <TableRow key={item.id}>
+                        <TableCell className="text-center font-medium">{index + 1}</TableCell>
+                        <TableCell>
+                          <span className="font-semibold text-zinc-800 dark:text-zinc-200 block">{item.campaignName || "Promo Gajian"}</span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={mockProduct?.imageUrl || "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=120"}
+                              alt={item.productName}
+                              className="w-10 h-10 rounded object-cover bg-zinc-100 dark:bg-zinc-850"
+                            />
+                            <div className="min-w-0">
+                              <span className="font-semibold text-zinc-850 dark:text-zinc-205 block max-w-xs truncate" title={item.productName}>
+                                {item.productName}
                               </span>
-                              <span className="text-xs line-through text-zinc-400 font-medium">
-                                {formatRupiah(item.originalPrice)}
-                              </span>
-                              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                {formatRupiah(finalPrice)}
+                              <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">
+                                Base: {formatRupiah(item.originalPrice)}
                               </span>
                             </div>
-                            <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-1 flex items-center gap-1">
-                              <FiCalendar className="h-3 w-3 shrink-0" />
-                              <span>{item.startDate} s/d {item.endDate}</span>
-                            </p>
                           </div>
-                          
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded w-max">
+                              -{item.discountPercent}%
+                            </span>
+                            <span className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+                              Hemat {formatRupiah(item.originalPrice - finalPrice)}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-bold text-emerald-600 dark:text-emerald-400">
+                          {formatRupiah(finalPrice)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                            <FiCalendar className="h-3.5 w-3.5 text-zinc-400" />
+                            <span>{item.startDate} s/d {item.endDate}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleDiscountStatus(item.id)}
+                            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
+                              item.isActive ? 'bg-emerald-500' : 'bg-zinc-200 dark:bg-zinc-700'
+                            }`}
+                          >
+                            <span
+                              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                item.isActive ? 'translate-x-4' : 'translate-x-0'
+                              }`}
+                            />
+                          </button>
+                        </TableCell>
+                        <TableCell className="text-center">
                           <button
                             onClick={() => handleDeleteDiscount(item.id, item.productName)}
                             className="p-2 text-zinc-400 hover:text-red-500 dark:hover:text-red-400 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-colors"
@@ -518,13 +639,13 @@ export default function CampaignContainer() {
                           >
                             <FiTrash2 className="h-4.5 w-4.5" />
                           </button>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
           </div>
         )}
 
@@ -912,6 +1033,234 @@ export default function CampaignContainer() {
           </div>
         </div>
       )}
+
+      {/* Modal Buat Diskon Baru */}
+      <Modal
+        isOpen={showDiscountModal}
+        onClose={() => {
+          setShowDiscountModal(false)
+          setCampaignName('')
+          setSelectedProductObj(null)
+          setProductSearchQuery('')
+          setDiscountPercent(0)
+          setPriceAfterDiscount(0)
+          setDiscountIsActive(true)
+        }}
+        title="Buat Diskon Produk Baru"
+        size="lg"
+      >
+        <form onSubmit={handleAddDiscount} className="p-6 space-y-5 text-sm">
+          {/* Nama Event/Campaign */}
+          <div>
+            <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+              Nama Event / Campaign
+            </label>
+            <input
+              type="text"
+              placeholder="Contoh: Promo Gajian Akhir Bulan"
+              value={campaignName}
+              onChange={(e) => setCampaignName(e.target.value)}
+              className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
+              required
+            />
+          </div>
+
+          {/* Searchable Combobox Produk */}
+          <div className="relative">
+            <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+              Pilih Produk
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder={selectedProductObj ? selectedProductObj.name : "Ketik untuk mencari produk..."}
+                value={productSearchQuery}
+                onChange={(e) => {
+                  setProductSearchQuery(e.target.value)
+                  setIsComboboxOpen(true)
+                  if (selectedProductObj && e.target.value !== selectedProductObj.name) {
+                    setSelectedProductObj(null)
+                    setDiscountPercent(0)
+                    setPriceAfterDiscount(0)
+                  }
+                }}
+                onFocus={() => setIsComboboxOpen(true)}
+                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent pl-10 pr-10 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
+              />
+              <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+              <button
+                type="button"
+                onClick={() => setIsComboboxOpen(!isComboboxOpen)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200"
+              >
+                <FiChevronDown className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Combobox Dropdown */}
+            {isComboboxOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setIsComboboxOpen(false)}
+                />
+                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded shadow-lg max-h-60 overflow-y-auto">
+                  {MOCK_PRODUCTS.filter(p => 
+                    p.name.toLowerCase().includes(productSearchQuery.toLowerCase())
+                  ).length === 0 ? (
+                    <div className="p-3 text-xs text-zinc-400 dark:text-zinc-500 text-center">
+                      Tidak ada produk ditemukan
+                    </div>
+                  ) : (
+                    MOCK_PRODUCTS.filter(p => 
+                      p.name.toLowerCase().includes(productSearchQuery.toLowerCase())
+                    ).map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedProductObj(p)
+                          setProductSearchQuery(p.name)
+                          setPriceAfterDiscount(p.price)
+                          setDiscountPercent(0)
+                          setIsComboboxOpen(false)
+                        }}
+                        className="w-full text-left px-3.5 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 flex items-center gap-3 transition-colors cursor-pointer border-b border-zinc-100/50 dark:border-zinc-900/50 last:border-b-0"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={p.imageUrl} alt={p.name} className="w-8 h-8 rounded object-cover shrink-0 bg-zinc-100 dark:bg-zinc-800" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{p.name}</p>
+                          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">{formatRupiah(p.price)}</p>
+                        </div>
+                        {selectedProductObj?.id === p.id && (
+                          <FiCheck className="text-sky-650 dark:text-sky-400 w-4 h-4 shrink-0" />
+                        )}
+                      </button>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Sinkronisasi Potongan / Diskon */}
+          {selectedProductObj && (
+            <div className="grid grid-cols-2 gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded border border-zinc-150 dark:border-zinc-800/80">
+              <div className="col-span-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">
+                Kalkulator Diskon ({formatRupiah(selectedProductObj.price)})
+              </div>
+              
+              <div>
+                <label className="block font-medium text-zinc-600 dark:text-zinc-400 mb-1">
+                  Diskon (%)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={discountPercent || ''}
+                    onChange={handlePercentChange}
+                    className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent pl-3 pr-8 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
+                    placeholder="0"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">%</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-medium text-zinc-600 dark:text-zinc-400 mb-1">
+                  Harga Setelah Diskon (Rp)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max={selectedProductObj.price}
+                  value={priceAfterDiscount || ''}
+                  onChange={handlePriceChange}
+                  className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3 py-2 text-zinc-850 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-semibold text-emerald-600 dark:text-emerald-400"
+                  placeholder="Rp 0"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Durasi */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                Mulai Berlaku
+              </label>
+              <input
+                type="date"
+                value={discountStart}
+                onChange={(e) => setDiscountStart(e.target.value)}
+                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                Berakhir Pada
+              </label>
+              <input
+                type="date"
+                value={discountEnd}
+                onChange={(e) => setDiscountEnd(e.target.value)}
+                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
+              />
+            </div>
+          </div>
+
+          {/* Toggle Aktif / Nonaktif */}
+          <div className="flex items-center justify-between pt-2">
+            <span className="font-semibold text-zinc-700 dark:text-zinc-300">Status Awal Diskon</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-zinc-400 dark:text-zinc-500 font-semibold">
+                {discountIsActive ? 'Langsung Aktif' : 'Nonaktif'}
+              </span>
+              <button
+                type="button"
+                onClick={() => setDiscountIsActive(!discountIsActive)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
+                  discountIsActive ? 'bg-sky-650' : 'bg-zinc-200 dark:bg-zinc-700'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                    discountIsActive ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* Footer Aksi */}
+          <div className="flex gap-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+            <button
+              type="button"
+              onClick={() => {
+                setShowDiscountModal(false)
+                setCampaignName('')
+                setSelectedProductObj(null)
+                setProductSearchQuery('')
+                setDiscountPercent(0)
+                setPriceAfterDiscount(0)
+                setDiscountIsActive(true)
+              }}
+              className="flex-1 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 font-semibold py-2.5 rounded transition-colors cursor-pointer text-center"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="flex-1 bg-sky-700 hover:bg-sky-800 text-white font-semibold py-2.5 rounded transition-colors cursor-pointer text-center"
+            >
+              Selesaikan
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 }
