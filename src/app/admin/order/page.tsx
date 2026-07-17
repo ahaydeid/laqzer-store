@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiSearch, FiX, FiShoppingBag, FiEye, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiSearch, FiX, FiEye, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from "@/components/ui/Table";
 import { Modal } from "@/components/ui/Modal";
 import { ActionButton } from "@/components/ui/ActionButton";
@@ -264,7 +264,7 @@ export default function OrderPage() {
                 </TableCell>
                 <TableCell className="whitespace-nowrap">
                   {order.voucherCode ? (
-                    <span className="font-mono font-bold bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 px-2.5 py-1 rounded border border-indigo-100/50 dark:border-indigo-900/30 text-xs">
+                    <span className="font-mono bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 px-2.5 py-1 rounded text-xs">
                       {order.voucherCode}
                     </span>
                   ) : (
@@ -338,9 +338,8 @@ export default function OrderPage() {
         onClose={() => setSelectedOrder(null)}
         title={
           selectedOrder ? (
-            <span className="flex items-center gap-2">
-              <FiShoppingBag className="text-sky-500 h-5 w-5" />
-              Detail Pesanan {selectedOrder.id}
+            <span>
+              Detail Pesanan #{selectedOrder.id}
             </span>
           ) : undefined
         }
