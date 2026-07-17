@@ -21,6 +21,8 @@ interface Order {
   date: string;
   items: OrderItem[];
   address: string;
+  voucherCode?: string;
+  discount?: number;
 }
 
 const INITIAL_ORDERS: Order[] = [
@@ -45,8 +47,10 @@ const INITIAL_ORDERS: Order[] = [
     date: "12 Jul 2026",
     address: "Sudirman Mansion Lt. 15, Kebayoran Baru, Jakarta Selatan",
     items: [
-      { name: "Classic Leather Belt", price: 198000, quantity: 1 }
-    ]
+      { name: "Classic Leather Belt", price: 218000, quantity: 1 }
+    ],
+    voucherCode: "FREEONGKIR",
+    discount: 20000
   },
   {
     id: "20260001",
@@ -57,8 +61,10 @@ const INITIAL_ORDERS: Order[] = [
     date: "11 Jul 2026",
     address: "Perumahan Indah Permai Blok C/4, Surabaya, Jawa Timur",
     items: [
-      { name: "Minimalist Running Shoes", price: 650000, quantity: 1 }
-    ]
+      { name: "Minimalist Running Shoes", price: 700000, quantity: 1 }
+    ],
+    voucherCode: "HEMAT50K",
+    discount: 50000
   },
   {
     id: "20260004",
@@ -75,14 +81,16 @@ const INITIAL_ORDERS: Order[] = [
   {
     id: "20260005",
     customerName: "Reza Pratama",
-    total: 150000,
+    total: 135000,
     paymentMethod: "Transfer BCA",
     status: "Dikirim",
     date: "09 Jul 2026",
     address: "Komp. Permai Jaya No. 7, Medan, Sumatera Utara",
     items: [
       { name: "Casual Cotton Tee", price: 75000, quantity: 2 }
-    ]
+    ],
+    voucherCode: "LAQZERBARU",
+    discount: 15000
   },
   {
     id: "20260006",
@@ -386,12 +394,42 @@ export default function OrderPage() {
               </div>
             </div>
 
-            {/* Total */}
-            <div className="border-t border-zinc-100 dark:border-zinc-900 pt-3 flex justify-between items-center">
-              <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Total Pembayaran:</span>
-              <span className="text-base font-bold text-sky-600 dark:text-sky-400">
-                Rp {selectedOrder.total.toLocaleString("id-ID")}
-              </span>
+            {/* Voucher & Total */}
+            <div className="border-t border-zinc-100 dark:border-zinc-900 pt-3 space-y-2">
+              {selectedOrder.voucherCode && selectedOrder.discount ? (
+                <>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-400">Subtotal:</span>
+                    <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                      Rp {selectedOrder.items.reduce((s, i) => s + i.price * i.quantity, 0).toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-zinc-400 flex items-center gap-1.5">
+                      Voucher
+                      <span className="font-mono font-bold bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded border border-indigo-100/50 dark:border-indigo-900/30 text-[10px]">
+                        {selectedOrder.voucherCode}
+                      </span>
+                    </span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                      -Rp {selectedOrder.discount.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                  <div className="border-t border-zinc-100 dark:border-zinc-900 pt-2 flex justify-between items-center">
+                    <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Total Pembayaran:</span>
+                    <span className="text-base font-bold text-sky-600 dark:text-sky-400">
+                      Rp {selectedOrder.total.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Total Pembayaran:</span>
+                  <span className="text-base font-bold text-sky-600 dark:text-sky-400">
+                    Rp {selectedOrder.total.toLocaleString("id-ID")}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
