@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { FiEye } from 'react-icons/fi'
+import { FiEye, FiEdit2, FiCheck } from 'react-icons/fi'
 import { PopupAdConfig } from './types'
 import Toggle from '@/components/ui/Toggle'
 import { Button } from '@/components/ui/Button'
@@ -88,6 +88,7 @@ export default function PopupTab({
               </div>
               <div className="flex gap-2.5 pt-1">
                 <Button variant="secondary" size="sm" onClick={handleEnterEdit} className="rounded">
+                  <FiEdit2 className="h-3.5 w-3.5" />
                   Edit
                 </Button>
                 <Button variant="outline" size="sm" onClick={onTestShowPreview} className="rounded">
@@ -155,11 +156,12 @@ export default function PopupTab({
               </div>
 
               <div className="flex gap-2.5 pt-1">
-                <Button type="submit" variant="primary" size="sm" className="rounded">
-                  Simpan Perubahan
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={handleCancel} className="rounded">
+                <Button type="button" variant="secondary" size="sm" onClick={handleCancel} className="rounded">
                   Batal
+                </Button>
+                <Button type="submit" variant="primary" size="sm" className="rounded">
+                  <FiCheck className="h-3.5 w-3.5" />
+                  Simpan Perubahan
                 </Button>
               </div>
             </form>
