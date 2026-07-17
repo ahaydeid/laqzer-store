@@ -56,7 +56,7 @@ export default function DiscountTab({
                 <TableHeaderCell className="whitespace-nowrap">Harga Akhir</TableHeaderCell>
                 <TableHeaderCell className="whitespace-nowrap">Durasi</TableHeaderCell>
                 <TableHeaderCell className="text-center w-28 whitespace-nowrap">Status</TableHeaderCell>
-                <TableHeaderCell className="text-center w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 z-10 border-l border-zinc-200/50 dark:border-zinc-800/80">Aksi</TableHeaderCell>
+                <TableHeaderCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 z-10 border-l border-zinc-200/50 dark:border-zinc-800/80">Aksi</TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -121,7 +121,7 @@ export default function DiscountTab({
                         />
                       </button>
                     </TableCell>
-                    <TableCell className="text-center whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 group-even:bg-zinc-50 dark:group-even:bg-zinc-900/30 group-hover:bg-zinc-50/50 dark:group-hover:bg-zinc-800/10 border-l border-zinc-200/50 dark:border-zinc-800/80 shadow-[-8px_0_8px_-4px_rgba(0,0,0,0.05)] transition-colors duration-200 z-10">
+                    <TableCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 group-even:bg-zinc-50 dark:group-even:bg-zinc-950 group-hover:bg-zinc-100 dark:group-hover:bg-zinc-800 border-l border-zinc-200/50 dark:border-zinc-800/80 shadow-[-8px_0_8px_-4px_rgba(0,0,0,0.05)] transition-colors duration-200 z-10">
                       <button
                         onClick={() => onDeleteDiscount(item.id, item.productName)}
                         className="p-2 text-zinc-400 hover:text-red-500 dark:hover:text-red-400 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-colors"
