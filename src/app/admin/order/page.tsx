@@ -225,12 +225,12 @@ export default function OrderPage() {
           <tr>
             <TableHeaderCell scope="col" className="text-center w-12 whitespace-nowrap">No</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">ID Pesanan</TableHeaderCell>
+            <TableHeaderCell scope="col" className="whitespace-nowrap">Status</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Nama Pelanggan</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Tanggal</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Total Belanja</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Voucher</TableHeaderCell>
             <TableHeaderCell scope="col" className="whitespace-nowrap">Metode</TableHeaderCell>
-            <TableHeaderCell scope="col" className="whitespace-nowrap">Status</TableHeaderCell>
             <TableHeaderCell scope="col" className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 z-20 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.35)]">Aksi</TableHeaderCell>
           </tr>
         </TableHead>
@@ -246,6 +246,23 @@ export default function OrderPage() {
                 </TableCell>
                 <TableCell className="text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
                   {order.id}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-normal ${
+                      order.status === "Selesai"
+                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400"
+                        : order.status === "Sedang Diproses"
+                        ? "bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400"
+                        : order.status === "Belum Dibayar"
+                        ? "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400"
+                        : order.status === "Dikirim"
+                        ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-400"
+                        : "bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-400"
+                    }`}
+                  >
+                    {order.status}
+                  </span>
                 </TableCell>
                 <TableCell className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
@@ -272,23 +289,6 @@ export default function OrderPage() {
                   )}
                 </TableCell>
                 <TableCell className="whitespace-nowrap">{order.paymentMethod}</TableCell>
-                <TableCell className="whitespace-nowrap">
-                  <span
-                    className={`px-2.5 py-1 rounded-full text-[11px] font-normal ${
-                      order.status === "Selesai"
-                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400"
-                        : order.status === "Sedang Diproses"
-                        ? "bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400"
-                        : order.status === "Belum Dibayar"
-                        ? "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400"
-                        : order.status === "Dikirim"
-                        ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-400"
-                        : "bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-400"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </TableCell>
                 <TableCell className="text-center w-20 min-w-20 whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 group-even:bg-zinc-50 dark:group-even:bg-zinc-950 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-900 shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.25)] transition-colors duration-200 z-10">
                   <div className="flex items-center justify-center">
                     <ActionButton
