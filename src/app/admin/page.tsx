@@ -41,7 +41,7 @@ function LineTrendChart({ data, height = 220 }: { data: TrendItem[]; height?: nu
 
   return (
     <div className="h-full w-full flex flex-col justify-between">
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full overflow-visible">
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="h-full w-full overflow-visible">
         <defs>
           <linearGradient id="student-trend-fill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#0284c7" stopOpacity="0.22" />
