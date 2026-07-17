@@ -360,7 +360,7 @@ export default function CampaignContainer() {
       {/* Live Preview Modal Overlay */}
       {showPopupPreview && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 animate-fade-in">
-          <div className="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800/80">
+          <div className="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-lg overflow-hidden shadow-2xl">
             {/* Close Button overlay */}
             <button 
               onClick={() => setShowPopupPreview(false)}
@@ -394,13 +394,13 @@ export default function CampaignContainer() {
                     confirmButtonColor: '#0369a1'
                   })
                 }}
-                className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-3 rounded-xl text-center transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 text-sm shadow-md cursor-pointer block"
+                className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-3 rounded-lg text-center transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 text-sm shadow-md cursor-pointer block"
               >
                 {popupConfig.buttonText}
               </a>
               <button
                 onClick={() => setShowPopupPreview(false)}
-                className="w-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-500 dark:text-zinc-400 font-semibold py-2.5 rounded-xl text-center transition-colors text-sm cursor-pointer"
+                className="w-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-500 dark:text-zinc-400 font-semibold py-2.5 rounded-lg text-center transition-colors text-sm cursor-pointer"
               >
                 Nanti Saja
               </button>
