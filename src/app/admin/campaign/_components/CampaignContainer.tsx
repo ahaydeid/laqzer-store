@@ -392,7 +392,7 @@ export default function CampaignContainer() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             {/* Form Buat Diskon */}
             <div className="lg:col-span-2">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 space-y-4">
+              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl space-y-4">
                 <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-bold border-b border-zinc-100 dark:border-zinc-800 pb-3">
                   <FiPlus className="h-5 w-5 text-sky-600 dark:text-sky-400" />
                   <span>Buat Diskon Baru</span>
@@ -471,7 +471,7 @@ export default function CampaignContainer() {
 
             {/* List Diskon */}
             <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 space-y-4">
+              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl space-y-4">
                 <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
                   <span className="font-bold text-zinc-800 dark:text-zinc-200">Daftar Diskon Berjalan</span>
                   <span className="text-xs bg-sky-100 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 px-2.5 py-1 rounded-full font-bold">
@@ -533,7 +533,7 @@ export default function CampaignContainer() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             {/* Form Buat Voucher */}
             <div className="lg:col-span-2">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 space-y-4">
+              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl space-y-4">
                 <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-bold border-b border-zinc-100 dark:border-zinc-800 pb-3">
                   <FiPlus className="h-5 w-5 text-sky-600 dark:text-sky-400" />
                   <span>Buat Voucher Baru</span>
@@ -640,7 +640,7 @@ export default function CampaignContainer() {
 
             {/* List Voucher */}
             <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 space-y-4">
+              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl space-y-4">
                 <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
                   <span className="font-bold text-zinc-800 dark:text-zinc-200">Daftar Voucher Toko</span>
                   <span className="text-xs bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 px-2.5 py-1 rounded-full font-bold">
@@ -652,10 +652,10 @@ export default function CampaignContainer() {
                   {vouchers.map((item) => (
                     <div 
                       key={item.code} 
-                      className={`p-4 rounded-xl border flex flex-col justify-between gap-4 transition-all relative overflow-hidden ${
+                      className={`p-4 rounded-xl flex flex-col justify-between gap-4 transition-all relative overflow-hidden ${
                         item.status === 'active' 
-                          ? 'bg-zinc-50/50 dark:bg-zinc-950/30 border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700' 
-                          : 'bg-zinc-100/50 dark:bg-zinc-900/10 border-zinc-200 dark:border-zinc-900/40 opacity-60'
+                          ? 'bg-zinc-50/50 dark:bg-zinc-950/30 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/20' 
+                          : 'bg-zinc-100/50 dark:bg-zinc-900/10 opacity-60'
                       }`}
                     >
                       <div className="space-y-1.5">
@@ -712,7 +712,7 @@ export default function CampaignContainer() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             {/* Form Settings Iklan */}
             <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 space-y-4">
+              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl space-y-4">
                 <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
                   <div className="flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
                     <FiSettings className="h-5 w-5 text-sky-600 dark:text-sky-400" />
@@ -812,7 +812,7 @@ export default function CampaignContainer() {
 
             {/* Panduan & Preview Asset Banner */}
             <div className="lg:col-span-2 space-y-4">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+              <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl">
                 <h3 className="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800 pb-3 flex items-center gap-2">
                   <FiImage className="h-4.5 w-4.5 text-sky-600 dark:text-sky-400" />
                   <span>Preview Asset Banner</span>
@@ -838,7 +838,7 @@ export default function CampaignContainer() {
               </div>
 
               {/* Penjelasan Ringkas Fitur */}
-              <div className="bg-sky-50/50 dark:bg-zinc-900/30 p-5 rounded-xl border border-sky-100/50 dark:border-zinc-800/80">
+              <div className="bg-sky-50/50 dark:bg-zinc-900/30 p-5 rounded-xl">
                 <h4 className="font-bold text-sky-850 dark:text-sky-400 text-sm mb-2">💡 Tentang Iklan Popup</h4>
                 <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   Iklan popup akan muncul satu kali setiap pengunjung pertama kali membuka web toko (homepage). Sangat efektif untuk mempromosikan diskon besar, voucher baru, atau perilisan produk eksklusif.
