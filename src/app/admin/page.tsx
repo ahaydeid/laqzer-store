@@ -11,14 +11,8 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Selamat Datang, Admin</h1>
-          <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">Berikut ringkasan performa dan aktivitas toko Anda hari ini.</p>
-        </div>
-        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-3 py-1.5 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60 hidden sm:inline-block">
-          Sabtu, 18 Juli 2026
-        </span>
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Selamat Datang, Admin</h1>
       </div>
 
       {/* Dashboard Grid — 40:60 */}
@@ -31,9 +25,6 @@ export default function AdminDashboardPage() {
 
             <div className="flex items-center justify-between mb-4 relative z-10">
               <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Total Pendapatan</span>
-              <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">
-                +12.5% bln ini
-              </span>
             </div>
             <div className="space-y-1 relative z-10">
               <span className="text-2xl font-extrabold">Rp 12.450.000</span>
@@ -44,16 +35,16 @@ export default function AdminDashboardPage() {
           {/* Card: Statistik Transaksi */}
           <div className="space-y-2 flex-1 flex flex-col">
             <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Ringkasan Aktivitas</span>
-            <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/80 p-4 rounded-lg flex-1 flex flex-col justify-center space-y-3">
-              <div className="grid grid-cols-2 text-xs gap-y-3">
-                <span className="text-zinc-400">Pesanan Selesai:</span>
-                <span className="font-bold text-zinc-800 dark:text-zinc-200 text-right">78 Transaksi</span>
-                <span className="text-zinc-400">Pesanan Diproses:</span>
-                <span className="font-bold text-amber-600 dark:text-amber-400 text-right">5 Transaksi</span>
-                <span className="text-zinc-400">Pengunjung Unik:</span>
-                <span className="font-bold text-sky-600 dark:text-sky-400 text-right">1.248 Pengunjung</span>
-                <span className="text-zinc-400">Voucher Terpakai:</span>
-                <span className="font-bold text-indigo-600 dark:text-indigo-400 text-right">34 Klaim</span>
+            <div className="bg-white/80 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-800 p-5 rounded flex-1 flex flex-col justify-center">
+              <div className="w-full">
+                <div className="grid grid-cols-2 text-xs gap-y-3">
+                  <span className="text-zinc-400">Pesanan Selesai:</span>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 text-right">78 Transaksi</span>
+                  <span className="text-zinc-400">Pesanan Diproses:</span>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 text-right">5 Transaksi</span>
+                  <span className="text-zinc-400">Pengunjung Unik:</span>
+                  <span className="font-semibold text-sky-600 dark:text-sky-400 text-right">1.248 Pengunjung</span>
+                </div>
               </div>
             </div>
           </div>
@@ -61,12 +52,12 @@ export default function AdminDashboardPage() {
 
         {/* Kolom Kanan: 4 Widgets Ringkas — 60% */}
         <div className="lg:col-span-3 flex flex-col gap-2">
-          <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider ml-1">Ringkasan Aktivitas Toko</span>
+          <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider ml-1">Ketersediaan Stok & Target Penjualan</span>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
 
             {/* 1. Event Berlangsung */}
-            <div className="bg-white dark:bg-zinc-900 p-4 rounded-lg border border-zinc-100 dark:border-zinc-800/80 flex flex-col justify-between space-y-3 hover:shadow-xs transition-all">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-800 dark:text-zinc-200">
                   <FiTag className="text-sky-600 dark:text-sky-400 h-3.5 w-3.5" />
@@ -93,7 +84,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* 2. Pesan & Chat Terbaru */}
-            <div className="bg-white dark:bg-zinc-900 p-4 rounded-lg border border-zinc-100 dark:border-zinc-800/80 flex flex-col justify-between space-y-3 hover:shadow-xs transition-all">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-800 dark:text-zinc-200">
                   <FiMessageSquare className="text-sky-600 dark:text-sky-400 h-3.5 w-3.5" />
@@ -123,7 +114,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* 3. Stok Menipis & Habis */}
-            <div className="bg-white dark:bg-zinc-900 p-4 rounded-lg border border-zinc-100 dark:border-zinc-800/80 flex flex-col justify-between space-y-3 hover:shadow-xs transition-all">
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-800 dark:text-zinc-200">
                   <FiAlertTriangle className="text-amber-500 h-3.5 w-3.5" />
@@ -152,12 +143,12 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            {/* 4. Pesanan Terbaru Widget */}
-            <div className="bg-white dark:bg-zinc-900 p-4 rounded-lg border border-zinc-100 dark:border-zinc-800/80 flex flex-col justify-between space-y-3 hover:shadow-xs transition-all">
+            {/* 4. Pesanan Terbaru */}
+            <div className="bg-white/80 dark:bg-zinc-900/40 p-4 rounded border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-800 dark:text-zinc-200">
                   <FiShoppingBag className="text-sky-600 dark:text-sky-400 h-3.5 w-3.5" />
-                  <span>Ringkasan Pesanan</span>
+                  <span>Pesanan Terbaru</span>
                 </div>
                 <Link href="/admin/order" className="text-[10px] text-sky-600 dark:text-sky-400 font-semibold hover:underline inline-flex items-center gap-0.5">
                   Lihat Semua <FiArrowRight className="h-2.5 w-2.5" />
@@ -186,9 +177,9 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Recent Orders History Table (Restored) */}
-      <div className="space-y-2 pt-2">
-        <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Riwayat Pesanan Terbaru</span>
+      {/* Recent Orders History Table */}
+      <div className="space-y-2 pt-4">
+        <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block ml-1">Pesanan Terbaru</span>
         <div className="bg-white/80 dark:bg-zinc-900/40 p-5 rounded border border-zinc-100 dark:border-zinc-800 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
