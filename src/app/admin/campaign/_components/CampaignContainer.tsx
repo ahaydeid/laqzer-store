@@ -4,67 +4,16 @@ import React, { useState } from 'react'
 import { 
   FiPercent, 
   FiTag, 
-  FiPlus, 
   FiEye, 
-  FiTrash2, 
-  FiCalendar, 
-  FiSettings, 
-  FiImage, 
-  FiX,
-  FiSearch,
-  FiChevronDown,
-  FiCheck
+  FiX 
 } from 'react-icons/fi'
 import Swal from 'sweetalert2'
-import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from '@/components/ui/Table'
-import { Modal } from '@/components/ui/Modal'
 
-interface DiscountItem {
-  id: string
-  campaignName: string
-  productId: string
-  productName: string
-  originalPrice: number
-  priceAfterDiscount: number
-  discountPercent: number
-  isActive: boolean
-  startDate: string
-  endDate: string
-}
-
-interface VoucherItem {
-  code: string
-  type: 'percent' | 'nominal'
-  value: number
-  minPurchase: number
-  quota: number
-  expiryDate: string
-  status: 'active' | 'inactive'
-}
-
-interface PopupAdConfig {
-  isActive: boolean
-  title: string
-  description: string
-  imageUrl: string
-  buttonText: string
-  targetUrl: string
-}
-
-interface MockProduct {
-  id: string
-  name: string
-  price: number
-  imageUrl: string
-}
-
-const MOCK_PRODUCTS: MockProduct[] = [
-  { id: 'mock-1', name: 'Laptop Asus ROG Strix G15', price: 18500000, imageUrl: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&q=80&w=120' },
-  { id: 'mock-2', name: 'Keyboard Mechanical Laqzer RGB', price: 850000, imageUrl: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=120' },
-  { id: 'mock-3', name: 'Mouse Wireless Gaming Superlight', price: 450000, imageUrl: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&q=80&w=120' },
-  { id: 'mock-4', name: 'Headset Stereo Pro Bass', price: 650000, imageUrl: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&q=80&w=120' },
-  { id: 'mock-5', name: 'Monitor Curved Gaming 27 Inch', price: 3200000, imageUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=120' }
-]
+import { DiscountItem, VoucherItem, PopupAdConfig } from './types'
+import DiscountTab from './DiscountTab'
+import DiscountModal from './DiscountModal'
+import VoucherTab from './VoucherTab'
+import PopupTab from './PopupTab'
 
 const INITIAL_DISCOUNTS: DiscountItem[] = [
   {
@@ -129,50 +78,10 @@ export default function CampaignContainer() {
   // State for Discounts
   const [discounts, setDiscounts] = useState<DiscountItem[]>(INITIAL_DISCOUNTS)
   const [discountCounter, setDiscountCounter] = useState(3)
-
-  // Modal State for Discount Form
   const [showDiscountModal, setShowDiscountModal] = useState(false)
-  
-  // Form State inside Modal
-  const [campaignName, setCampaignName] = useState('')
-  const [selectedProductObj, setSelectedProductObj] = useState<MockProduct | null>(null)
-  const [discountPercent, setDiscountPercent] = useState<number>(0)
-  const [priceAfterDiscount, setPriceAfterDiscount] = useState<number>(0)
-  const [discountIsActive, setDiscountIsActive] = useState(true)
-  
-  // Date helpers
-  const getTodayString = () => {
-    const today = new Date()
-    const yyyy = today.getFullYear()
-    const mm = String(today.getMonth() + 1).padStart(2, '0')
-    const dd = String(today.getDate()).padStart(2, '0')
-    return `${yyyy}-${mm}-${dd}`
-  }
-
-  const getFutureDateString = (daysAhead: number) => {
-    const date = new Date()
-    date.setDate(date.getDate() + daysAhead)
-    const yyyy = date.getFullYear()
-    const mm = String(date.getMonth() + 1).padStart(2, '0')
-    const dd = String(date.getDate()).padStart(2, '0')
-    return `${yyyy}-${mm}-${dd}`
-  }
-
-  const [discountStart, setDiscountStart] = useState(getTodayString())
-  const [discountEnd, setDiscountEnd] = useState(getFutureDateString(7))
-
-  // Combobox Search State
-  const [productSearchQuery, setProductSearchQuery] = useState('')
-  const [isComboboxOpen, setIsComboboxOpen] = useState(false)
 
   // State for Vouchers
   const [vouchers, setVouchers] = useState<VoucherItem[]>(INITIAL_VOUCHERS)
-  const [voucherCode, setVoucherCode] = useState('')
-  const [voucherType, setVoucherType] = useState<'percent' | 'nominal'>('percent')
-  const [voucherValue, setVoucherValue] = useState(10)
-  const [voucherMinPurchase, setVoucherMinPurchase] = useState(0)
-  const [voucherQuota, setVoucherQuota] = useState(10)
-  const [voucherExpiry, setVoucherExpiry] = useState('2026-08-01')
 
   // State for Popup Ad
   const [popupConfig, setPopupConfig] = useState<PopupAdConfig>({
@@ -183,129 +92,25 @@ export default function CampaignContainer() {
     buttonText: 'Belanja Sekarang',
     targetUrl: '/product/1'
   })
-  
   const [showPopupPreview, setShowPopupPreview] = useState(false)
 
-  // Synchronized inputs handlers
-  const handlePercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawVal = e.target.value
-    if (rawVal === '') {
-      setDiscountPercent(0)
-      if (selectedProductObj) setPriceAfterDiscount(selectedProductObj.price)
-      return
-    }
-    const val = Number(rawVal)
-    if (val < 0 || val > 100) return
-    setDiscountPercent(val)
-    if (selectedProductObj) {
-      const discountVal = (selectedProductObj.price * val) / 100
-      setPriceAfterDiscount(Math.max(0, Math.round(selectedProductObj.price - discountVal)))
-    }
-  }
-
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawVal = e.target.value
-    if (rawVal === '') {
-      setPriceAfterDiscount(0)
-      setDiscountPercent(100)
-      return
-    }
-    const val = Number(rawVal)
-    if (selectedProductObj) {
-      if (val < 0 || val > selectedProductObj.price) return
-      setPriceAfterDiscount(val)
-      const diff = selectedProductObj.price - val
-      const calculatedPercent = Math.max(0, Math.min(100, Math.round((diff / selectedProductObj.price) * 100)))
-      setDiscountPercent(calculatedPercent)
-    }
-  }
-
   // Add discount handler
-  const handleAddDiscount = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!campaignName.trim()) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal',
-        text: 'Silakan isi nama event/campaign terlebih dahulu.',
-        confirmButtonColor: '#0369a1'
-      })
-      return
-    }
-    if (!selectedProductObj) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal',
-        text: 'Silakan pilih produk terlebih dahulu.',
-        confirmButtonColor: '#0369a1'
-      })
-      return
-    }
-
-    if (discountPercent <= 0 || discountPercent >= 100) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal',
-        text: 'Persentase diskon harus di antara 1% dan 99%.',
-        confirmButtonColor: '#0369a1'
-      })
-      return
-    }
-
-    if (new Date(discountEnd) < new Date(discountStart)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal',
-        text: 'Tanggal berakhir tidak boleh sebelum tanggal mulai.',
-        confirmButtonColor: '#0369a1'
-      })
-      return
-    }
-
-    // Check duplicate
-    if (discounts.some(d => d.productId === selectedProductObj.id && d.isActive)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal',
-        text: `Produk "${selectedProductObj.name}" sudah memiliki diskon aktif. Silakan hapus diskon lama terlebih dahulu.`,
-        confirmButtonColor: '#0369a1'
-      })
-      return
-    }
-
+  const handleAddDiscount = (newDiscountData: Omit<DiscountItem, 'id'>) => {
     const newDiscount: DiscountItem = {
       id: `discount-${discountCounter}`,
-      campaignName: campaignName.trim(),
-      productId: selectedProductObj.id,
-      productName: selectedProductObj.name,
-      originalPrice: selectedProductObj.price,
-      priceAfterDiscount: priceAfterDiscount,
-      discountPercent: discountPercent,
-      isActive: discountIsActive,
-      startDate: discountStart,
-      endDate: discountEnd
+      ...newDiscountData
     }
 
     setDiscounts([newDiscount, ...discounts])
     setDiscountCounter(prev => prev + 1)
-    
+    setShowDiscountModal(false)
+
     Swal.fire({
       icon: 'success',
       title: 'Diskon Berhasil Dibuat',
-      text: `Diskon untuk event "${campaignName}" telah berhasil dibuat.`,
+      text: `Diskon untuk event "${newDiscountData.campaignName}" telah berhasil dibuat.`,
       confirmButtonColor: '#0369a1'
     })
-    
-    // Reset Form & Close Modal
-    setCampaignName('')
-    setSelectedProductObj(null)
-    setProductSearchQuery('')
-    setDiscountPercent(0)
-    setPriceAfterDiscount(0)
-    setDiscountIsActive(true)
-    setDiscountStart(getTodayString())
-    setDiscountEnd(getFutureDateString(7))
-    setShowDiscountModal(false)
   }
 
   // Toggle active status in table
@@ -344,55 +149,15 @@ export default function CampaignContainer() {
   }
 
   // Add voucher handler
-  const handleAddVoucher = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!voucherCode.trim()) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal',
-        text: 'Silakan isi kode voucher.',
-        confirmButtonColor: '#0369a1'
-      })
-      return
-    }
-
-    const cleanCode = voucherCode.toUpperCase().replace(/\s+/g, '')
-    
-    // Check if code exists
-    if (vouchers.some(v => v.code === cleanCode)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal',
-        text: 'Kode voucher sudah terdaftar.',
-        confirmButtonColor: '#0369a1'
-      })
-      return
-    }
-
-    const newVoucher: VoucherItem = {
-      code: cleanCode,
-      type: voucherType,
-      value: voucherValue,
-      minPurchase: voucherMinPurchase,
-      quota: voucherQuota,
-      expiryDate: voucherExpiry,
-      status: 'active'
-    }
-
+  const handleAddVoucher = (newVoucher: VoucherItem) => {
     setVouchers([newVoucher, ...vouchers])
 
     Swal.fire({
       icon: 'success',
       title: 'Voucher Berhasil Dibuat',
-      text: `Voucher ${cleanCode} siap digunakan oleh pembeli.`,
+      text: `Voucher ${newVoucher.code} siap digunakan oleh pembeli.`,
       confirmButtonColor: '#0369a1'
     })
-
-    // Reset Form
-    setVoucherCode('')
-    setVoucherValue(10)
-    setVoucherMinPurchase(0)
-    setVoucherQuota(10)
   }
 
   // Delete/Toggle voucher handler
@@ -426,7 +191,7 @@ export default function CampaignContainer() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full min-w-0">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
@@ -465,7 +230,7 @@ export default function CampaignContainer() {
 
           <div className="space-y-1 relative z-10">
             <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-              Voucher Aktif
+              Voucher Tanggung
             </h3>
             <span className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 block">
               {vouchers.filter(v => v.status === 'active').length}{" "}
@@ -476,16 +241,16 @@ export default function CampaignContainer() {
           </div>
         </div>
 
-        {/* Popup Ads Card */}
+        {/* Popup Status Card */}
         <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 p-5 flex flex-col justify-end relative overflow-hidden h-28">
           {/* Background Icon Circle in Top-Left */}
-          <div className="absolute -top-24 -left-24 w-56 h-56 rounded-full bg-rose-100/80 dark:bg-rose-900/30 flex items-center justify-center text-white pointer-events-none">
+          <div className="absolute -top-24 -left-24 w-56 h-56 rounded-full bg-sky-100/80 dark:bg-sky-900/30 flex items-center justify-center text-white pointer-events-none">
             <FiEye className="w-14 h-14 translate-x-10 translate-y-10" />
           </div>
 
           <div className="space-y-1 relative z-10">
             <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-              Iklan Popup
+              Iklan Popup Promo
             </h3>
             <div className="flex items-center gap-2 relative z-10">
               <span className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 block">
@@ -536,448 +301,51 @@ export default function CampaignContainer() {
 
       {/* Tab Panels */}
       <div className="mt-2">
-        {/* Tab 1: Diskon Produk */}
         {activeTab === 'discount' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-zinc-800 dark:text-zinc-200 text-base">Daftar Diskon Berjalan</span>
-              <button
-                onClick={() => setShowDiscountModal(true)}
-                className="inline-flex items-center gap-2 rounded bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
-              >
-                <FiPlus className="h-4 w-4" />
-                Buat Diskon Baru
-              </button>
-            </div>
-
-            {discounts.length === 0 ? (
-              <div className="bg-white dark:bg-zinc-900 rounded p-8 text-center text-zinc-400 dark:text-zinc-500 space-y-2">
-                <FiPercent className="h-10 w-10 mx-auto opacity-40" />
-                <p className="font-medium text-sm">Belum ada promo diskon produk aktif.</p>
-              </div>
-            ) : (
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableHeaderCell className="w-12 text-center">No</TableHeaderCell>
-                    <TableHeaderCell>Nama Event / Campaign</TableHeaderCell>
-                    <TableHeaderCell>Produk</TableHeaderCell>
-                    <TableHeaderCell>Diskon</TableHeaderCell>
-                    <TableHeaderCell>Harga Akhir</TableHeaderCell>
-                    <TableHeaderCell>Durasi</TableHeaderCell>
-                    <TableHeaderCell className="text-center w-28">Status</TableHeaderCell>
-                    <TableHeaderCell className="text-center w-20">Aksi</TableHeaderCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {discounts.map((item, index) => {
-                    const mockProduct = MOCK_PRODUCTS.find(p => p.name === item.productName || p.id === item.productId);
-                    const finalPrice = item.priceAfterDiscount ?? (item.originalPrice * (1 - item.discountPercent / 100));
-                    return (
-                      <TableRow key={item.id}>
-                        <TableCell className="text-center font-medium">{index + 1}</TableCell>
-                        <TableCell>
-                          <span className="font-semibold text-zinc-800 dark:text-zinc-200 block">{item.campaignName || "Promo Gajian"}</span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={mockProduct?.imageUrl || "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=120"}
-                              alt={item.productName}
-                              className="w-10 h-10 rounded object-cover bg-zinc-100 dark:bg-zinc-850"
-                            />
-                            <div className="min-w-0">
-                              <span className="font-semibold text-zinc-850 dark:text-zinc-205 block max-w-xs truncate" title={item.productName}>
-                                {item.productName}
-                              </span>
-                              <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">
-                                Base: {formatRupiah(item.originalPrice)}
-                              </span>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded w-max">
-                              -{item.discountPercent}%
-                            </span>
-                            <span className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">
-                              Hemat {formatRupiah(item.originalPrice - finalPrice)}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-bold text-emerald-600 dark:text-emerald-400">
-                          {formatRupiah(finalPrice)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                            <FiCalendar className="h-3.5 w-3.5 text-zinc-400" />
-                            <span>{item.startDate} s/d {item.endDate}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <button
-                            type="button"
-                            onClick={() => handleToggleDiscountStatus(item.id)}
-                            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
-                              item.isActive ? 'bg-emerald-500' : 'bg-zinc-200 dark:bg-zinc-700'
-                            }`}
-                          >
-                            <span
-                              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                                item.isActive ? 'translate-x-4' : 'translate-x-0'
-                              }`}
-                            />
-                          </button>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <button
-                            onClick={() => handleDeleteDiscount(item.id, item.productName)}
-                            className="p-2 text-zinc-400 hover:text-red-500 dark:hover:text-red-400 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-colors"
-                            title="Hapus diskon"
-                          >
-                            <FiTrash2 className="h-4.5 w-4.5" />
-                          </button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            )}
-          </div>
+          <DiscountTab 
+            discounts={discounts} 
+            onToggleStatus={handleToggleDiscountStatus} 
+            onDeleteDiscount={handleDeleteDiscount} 
+            onOpenModal={() => setShowDiscountModal(true)} 
+            formatRupiah={formatRupiah} 
+          />
         )}
 
-        {/* Tab 2: Voucher Belanja */}
         {activeTab === 'voucher' && (
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            {/* Form Buat Voucher */}
-            <div className="lg:col-span-2">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded space-y-4">
-                <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-bold border-b border-zinc-100 dark:border-zinc-800 pb-3">
-                  <FiPlus className="h-5 w-5 text-sky-600 dark:text-sky-400" />
-                  <span>Buat Voucher Baru</span>
-                </div>
-                <form onSubmit={handleAddVoucher} className="space-y-4 text-sm">
-                  <div>
-                    <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                      Kode Voucher
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Contoh: LAQZERHEBOH"
-                      value={voucherCode}
-                      onChange={(e) => setVoucherCode(e.target.value)}
-                      className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-mono placeholder:font-sans"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                        Tipe Potongan
-                      </label>
-                      <select
-                        value={voucherType}
-                        onChange={(e) => {
-                          setVoucherType(e.target.value as 'percent' | 'nominal')
-                          setVoucherValue(e.target.value === 'percent' ? 10 : 50000)
-                        }}
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                      >
-                        <option value="percent" className="dark:bg-zinc-900">Persentase (%)</option>
-                        <option value="nominal" className="dark:bg-zinc-900">Nominal Rupiah</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                        Nilai Potongan
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          min="1"
-                          value={voucherValue}
-                          onChange={(e) => setVoucherValue(Number(e.target.value))}
-                          className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent pl-3.5 pr-8 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                        />
-                        <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">
-                          {voucherType === 'percent' ? '%' : 'Rp'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                        Min. Belanja (Rp)
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={voucherMinPurchase}
-                        onChange={(e) => setVoucherMinPurchase(Number(e.target.value))}
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                        Kuota Voucher
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={voucherQuota}
-                        onChange={(e) => setVoucherQuota(Number(e.target.value))}
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                      Tanggal Kadaluarsa
-                    </label>
-                    <input
-                      type="date"
-                      value={voucherExpiry}
-                      onChange={(e) => setVoucherExpiry(e.target.value)}
-                      className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full bg-sky-700 hover:bg-sky-800 text-white font-semibold py-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-2 mt-2 shadow-xs"
-                  >
-                    <FiPlus className="h-4 w-4" />
-                    <span>Aktifkan Voucher</span>
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            {/* List Voucher */}
-            <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded space-y-4">
-                <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-                  <span className="font-bold text-zinc-800 dark:text-zinc-200">Daftar Voucher Toko</span>
-                  <span className="text-xs bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 px-2.5 py-1 rounded-full font-bold">
-                    {vouchers.length} Voucher
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
-                  {vouchers.map((item) => (
-                    <div 
-                      key={item.code} 
-                      className={`p-4 rounded flex flex-col justify-between gap-4 transition-all relative overflow-hidden ${
-                        item.status === 'active' 
-                          ? 'bg-zinc-50/50 dark:bg-zinc-950/30 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/20' 
-                          : 'bg-zinc-100/50 dark:bg-zinc-900/10 opacity-60'
-                      }`}
-                    >
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="font-mono text-sm font-bold bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 px-2.5 py-1 rounded-lg border border-indigo-100/50 dark:border-indigo-900/30">
-                            {item.code}
-                          </span>
-                          <span className={`text-[10px] px-2 py-0.5 rounded font-semibold ${
-                            item.status === 'active' 
-                              ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400' 
-                              : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'
-                          }`}>
-                            {item.status === 'active' ? 'Aktif' : 'Nonaktif'}
-                          </span>
-                        </div>
-                        
-                        <div className="pt-2">
-                          <p className="text-lg font-extrabold text-zinc-900 dark:text-white">
-                            {item.type === 'percent' ? `Diskon ${item.value}%` : `Diskon ${formatRupiah(item.value)}`}
-                          </p>
-                          <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
-                            Min. Belanja: <span className="font-semibold text-zinc-600 dark:text-zinc-300">{formatRupiah(item.minPurchase)}</span>
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="border-t border-zinc-200/50 dark:border-zinc-850/50 pt-2.5 mt-1 flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500">
-                        <div className="space-y-0.5">
-                          <p>Kuota: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{item.quota} klaim</span></p>
-                          <p>Kadaluarsa: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{item.expiryDate}</span></p>
-                        </div>
-                        
-                        <button
-                          onClick={() => handleToggleVoucher(item.code)}
-                          className={`text-xs px-2.5 py-1 rounded font-semibold transition-colors cursor-pointer border ${
-                            item.status === 'active'
-                              ? 'border-zinc-300 hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-zinc-800 dark:hover:border-red-900/30 dark:hover:bg-red-950/20 dark:hover:text-red-400 text-zinc-600 dark:text-zinc-400'
-                              : 'border-zinc-300 bg-zinc-200 hover:bg-zinc-300 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-800 dark:hover:bg-zinc-750 dark:text-zinc-300'
-                          }`}
-                        >
-                          {item.status === 'active' ? 'Matikan' : 'Aktifkan'}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <VoucherTab 
+            vouchers={vouchers} 
+            onAddVoucher={handleAddVoucher} 
+            onToggleVoucher={handleToggleVoucher} 
+            formatRupiah={formatRupiah} 
+          />
         )}
 
-        {/* Tab 3: Iklan Popup */}
         {activeTab === 'popup' && (
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            {/* Form Settings Iklan */}
-            <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded space-y-4">
-                <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-                  <div className="flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
-                    <FiSettings className="h-5 w-5 text-sky-600 dark:text-sky-400" />
-                    <span>Konfigurasi Iklan Popup</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-400 dark:text-zinc-500 font-semibold">Status:</span>
-                    <button
-                      type="button"
-                      onClick={() => setPopupConfig({ ...popupConfig, isActive: !popupConfig.isActive })}
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
-                        popupConfig.isActive ? 'bg-sky-600' : 'bg-zinc-200 dark:bg-zinc-700'
-                      }`}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                          popupConfig.isActive ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                  </div>
-                </div>
-
-                <form onSubmit={handleSavePopupConfig} className="space-y-4 text-sm">
-                  <div>
-                    <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                      Judul Iklan Promo
-                    </label>
-                    <input
-                      type="text"
-                      value={popupConfig.title}
-                      onChange={(e) => setPopupConfig({ ...popupConfig, title: e.target.value })}
-                      placeholder="Masukkan Judul Promo"
-                      className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                      Deskripsi Singkat Promo
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={popupConfig.description}
-                      onChange={(e) => setPopupConfig({ ...popupConfig, description: e.target.value })}
-                      placeholder="Masukkan penjelasan promo..."
-                      className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 resize-none"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                        Teks Tombol Aksi (CTA)
-                      </label>
-                      <input
-                        type="text"
-                        value={popupConfig.buttonText}
-                        onChange={(e) => setPopupConfig({ ...popupConfig, buttonText: e.target.value })}
-                        placeholder="Contoh: Belanja Sekarang"
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">
-                        Link Tujuan Redirect
-                      </label>
-                      <input
-                        type="text"
-                        value={popupConfig.targetUrl}
-                        onChange={(e) => setPopupConfig({ ...popupConfig, targetUrl: e.target.value })}
-                        placeholder="Contoh: /product/id"
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 pt-2">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-sky-700 hover:bg-sky-800 text-white font-semibold py-2.5 rounded-lg transition-colors cursor-pointer text-center"
-                    >
-                      Simpan Pengaturan
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowPopupPreview(true)}
-                      className="flex-1 border border-sky-600 hover:bg-sky-50/50 dark:hover:bg-sky-950/20 text-sky-600 dark:text-sky-400 font-semibold py-2.5 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2"
-                    >
-                      <FiEye className="h-4 w-4" />
-                      <span>Uji Coba Tampilan</span>
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-
-            {/* Panduan & Preview Asset Banner */}
-            <div className="lg:col-span-2 space-y-4">
-              <div className="bg-white dark:bg-zinc-900 p-5 rounded">
-                <h3 className="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800 pb-3 flex items-center gap-2">
-                  <FiImage className="h-4.5 w-4.5 text-sky-600 dark:text-sky-400" />
-                  <span>Preview Asset Banner</span>
-                </h3>
-                <div className="mt-4 space-y-3.5">
-                  <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-inner group">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={popupConfig.imageUrl} 
-                      alt="Banner Preview" 
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="text-xs text-zinc-400 dark:text-zinc-500 space-y-1">
-                    <p className="font-semibold text-zinc-500 dark:text-zinc-400">Rekomendasi Format Gambar:</p>
-                    <ul className="list-disc pl-4 space-y-0.5">
-                      <li>Ukuran ideal: 1080 x 1080 px (persegi) atau 1200 x 630 px (landscape)</li>
-                      <li>Ekstensi: PNG, JPEG, atau WebP</li>
-                      <li>Ukuran file maksimum: 1.5MB</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Penjelasan Ringkas Fitur */}
-              <div className="bg-sky-50/50 dark:bg-zinc-900/30 p-5 rounded">
-                <h4 className="font-bold text-sky-850 dark:text-sky-400 text-sm mb-2">💡 Tentang Iklan Popup</h4>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Iklan popup akan muncul satu kali setiap pengunjung pertama kali membuka web toko (homepage). Sangat efektif untuk mempromosikan diskon besar, voucher baru, atau perilisan produk eksklusif.
-                </p>
-              </div>
-            </div>
-          </div>
+          <PopupTab 
+            popupConfig={popupConfig} 
+            onChangePopupConfig={setPopupConfig} 
+            onSaveConfig={handleSavePopupConfig} 
+            onTestShowPreview={() => setShowPopupPreview(true)} 
+          />
         )}
       </div>
 
+      {/* Modal Buat Diskon Baru */}
+      <DiscountModal 
+        isOpen={showDiscountModal} 
+        onClose={() => setShowDiscountModal(false)} 
+        onAddDiscount={handleAddDiscount} 
+        formatRupiah={formatRupiah} 
+      />
+
       {/* Live Preview Modal Overlay */}
       {showPopupPreview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/70 backdrop-blur-md p-4">
-          <div className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl border border-zinc-200/80 dark:border-zinc-800 max-h-[90vh] flex flex-col md:flex-row transition-all scale-100">
-            {/* Close Button */}
-            <button
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 animate-fade-in">
+          <div className="relative w-full max-w-4xl bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row border border-zinc-150 dark:border-zinc-800/80 max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-y-visible">
+            {/* Close Button overlay */}
+            <button 
               onClick={() => setShowPopupPreview(false)}
-              className="absolute top-4 right-4 z-10 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xs cursor-pointer transition-colors shadow-sm"
+              className="absolute right-4 top-4 z-[110] rounded-full p-2 bg-white/80 hover:bg-white dark:bg-zinc-800/80 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-all shadow-md cursor-pointer"
               title="Tutup"
             >
               <FiX className="h-5 w-5" />
@@ -994,37 +362,39 @@ export default function CampaignContainer() {
             </div>
 
             {/* Content Side */}
-            <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-center space-y-5">
-              <div className="space-y-2">
-                <span className="inline-block text-[10px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest bg-sky-50 dark:bg-sky-950/40 px-2.5 py-1 rounded-full border border-sky-100/50 dark:border-sky-900/30">
-                  Promo Terkini
+            <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center space-y-6">
+              <div className="space-y-3">
+                <span className="inline-block text-[10px] uppercase tracking-widest font-extrabold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 px-2.5 py-1 rounded">
+                  Pemberitahuan Khusus
                 </span>
-                <h3 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-white leading-tight">
+                <h2 className="text-xl md:text-2xl font-black text-zinc-900 dark:text-white leading-tight">
                   {popupConfig.title}
-                </h3>
+                </h2>
                 <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
                   {popupConfig.description}
                 </p>
               </div>
 
-              <div className="pt-2">
-                <button
-                  onClick={() => {
+              <div className="flex flex-col gap-3 pt-2">
+                <a 
+                  href={popupConfig.targetUrl}
+                  onClick={(e) => {
+                    e.preventDefault()
                     setShowPopupPreview(false)
                     Swal.fire({
                       icon: 'info',
-                      title: 'CTA Dipicu',
-                      text: `Pembeli akan diarahkan ke tujuan: ${popupConfig.targetUrl}`,
+                      title: 'Navigasi Sukses',
+                      text: `Membuka halaman tujuan: ${popupConfig.targetUrl}`,
                       confirmButtonColor: '#0369a1'
                     })
                   }}
-                  className="w-full bg-zinc-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-950 font-extrabold py-3.5 px-6 rounded-xl transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg text-sm text-center flex items-center justify-center gap-2"
+                  className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-3.5 rounded-xl text-center transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 text-xs md:text-sm shadow-md cursor-pointer block"
                 >
-                  <span>{popupConfig.buttonText}</span>
-                </button>
+                  {popupConfig.buttonText}
+                </a>
                 <button
                   onClick={() => setShowPopupPreview(false)}
-                  className="w-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-xs font-semibold py-2.5 transition-colors cursor-pointer text-center mt-1"
+                  className="w-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-500 dark:text-zinc-400 font-semibold py-3 rounded-xl text-center transition-colors text-xs md:text-sm cursor-pointer"
                 >
                   Nanti Saja
                 </button>
@@ -1033,234 +403,6 @@ export default function CampaignContainer() {
           </div>
         </div>
       )}
-
-      {/* Modal Buat Diskon Baru */}
-      <Modal
-        isOpen={showDiscountModal}
-        onClose={() => {
-          setShowDiscountModal(false)
-          setCampaignName('')
-          setSelectedProductObj(null)
-          setProductSearchQuery('')
-          setDiscountPercent(0)
-          setPriceAfterDiscount(0)
-          setDiscountIsActive(true)
-        }}
-        title="Buat Diskon Produk Baru"
-        size="lg"
-      >
-        <form onSubmit={handleAddDiscount} className="p-6 space-y-5 text-sm">
-          {/* Nama Event/Campaign */}
-          <div>
-            <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-              Nama Event / Campaign
-            </label>
-            <input
-              type="text"
-              placeholder="Contoh: Promo Gajian Akhir Bulan"
-              value={campaignName}
-              onChange={(e) => setCampaignName(e.target.value)}
-              className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
-              required
-            />
-          </div>
-
-          {/* Searchable Combobox Produk */}
-          <div className="relative">
-            <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-              Pilih Produk
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder={selectedProductObj ? selectedProductObj.name : "Ketik untuk mencari produk..."}
-                value={productSearchQuery}
-                onChange={(e) => {
-                  setProductSearchQuery(e.target.value)
-                  setIsComboboxOpen(true)
-                  if (selectedProductObj && e.target.value !== selectedProductObj.name) {
-                    setSelectedProductObj(null)
-                    setDiscountPercent(0)
-                    setPriceAfterDiscount(0)
-                  }
-                }}
-                onFocus={() => setIsComboboxOpen(true)}
-                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent pl-10 pr-10 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
-              />
-              <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
-              <button
-                type="button"
-                onClick={() => setIsComboboxOpen(!isComboboxOpen)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200"
-              >
-                <FiChevronDown className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Combobox Dropdown */}
-            {isComboboxOpen && (
-              <>
-                <div 
-                  className="fixed inset-0 z-40" 
-                  onClick={() => setIsComboboxOpen(false)}
-                />
-                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded shadow-lg max-h-60 overflow-y-auto">
-                  {MOCK_PRODUCTS.filter(p => 
-                    p.name.toLowerCase().includes(productSearchQuery.toLowerCase())
-                  ).length === 0 ? (
-                    <div className="p-3 text-xs text-zinc-400 dark:text-zinc-500 text-center">
-                      Tidak ada produk ditemukan
-                    </div>
-                  ) : (
-                    MOCK_PRODUCTS.filter(p => 
-                      p.name.toLowerCase().includes(productSearchQuery.toLowerCase())
-                    ).map((p) => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedProductObj(p)
-                          setProductSearchQuery(p.name)
-                          setPriceAfterDiscount(p.price)
-                          setDiscountPercent(0)
-                          setIsComboboxOpen(false)
-                        }}
-                        className="w-full text-left px-3.5 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-900 flex items-center gap-3 transition-colors cursor-pointer border-b border-zinc-100/50 dark:border-zinc-900/50 last:border-b-0"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={p.imageUrl} alt={p.name} className="w-8 h-8 rounded object-cover shrink-0 bg-zinc-100 dark:bg-zinc-800" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{p.name}</p>
-                          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">{formatRupiah(p.price)}</p>
-                        </div>
-                        {selectedProductObj?.id === p.id && (
-                          <FiCheck className="text-sky-650 dark:text-sky-400 w-4 h-4 shrink-0" />
-                        )}
-                      </button>
-                    ))
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Sinkronisasi Potongan / Diskon */}
-          {selectedProductObj && (
-            <div className="grid grid-cols-2 gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded border border-zinc-150 dark:border-zinc-800/80">
-              <div className="col-span-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">
-                Kalkulator Diskon ({formatRupiah(selectedProductObj.price)})
-              </div>
-              
-              <div>
-                <label className="block font-medium text-zinc-600 dark:text-zinc-400 mb-1">
-                  Diskon (%)
-                </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={discountPercent || ''}
-                    onChange={handlePercentChange}
-                    className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent pl-3 pr-8 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
-                    placeholder="0"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">%</span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-medium text-zinc-600 dark:text-zinc-400 mb-1">
-                  Harga Setelah Diskon (Rp)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max={selectedProductObj.price}
-                  value={priceAfterDiscount || ''}
-                  onChange={handlePriceChange}
-                  className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3 py-2 text-zinc-850 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-semibold text-emerald-600 dark:text-emerald-400"
-                  placeholder="Rp 0"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Durasi */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Mulai Berlaku
-              </label>
-              <input
-                type="date"
-                value={discountStart}
-                onChange={(e) => setDiscountStart(e.target.value)}
-                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Berakhir Pada
-              </label>
-              <input
-                type="date"
-                value={discountEnd}
-                onChange={(e) => setDiscountEnd(e.target.value)}
-                className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2 text-zinc-800 dark:text-zinc-200 focus:outline-hidden focus:ring-2 focus:ring-sky-500 font-medium"
-              />
-            </div>
-          </div>
-
-          {/* Toggle Aktif / Nonaktif */}
-          <div className="flex items-center justify-between pt-2">
-            <span className="font-semibold text-zinc-700 dark:text-zinc-300">Status Awal Diskon</span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-zinc-400 dark:text-zinc-500 font-semibold">
-                {discountIsActive ? 'Langsung Aktif' : 'Nonaktif'}
-              </span>
-              <button
-                type="button"
-                onClick={() => setDiscountIsActive(!discountIsActive)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-hidden ${
-                  discountIsActive ? 'bg-sky-650' : 'bg-zinc-200 dark:bg-zinc-700'
-                }`}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                    discountIsActive ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
-
-          {/* Footer Aksi */}
-          <div className="flex gap-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
-            <button
-              type="button"
-              onClick={() => {
-                setShowDiscountModal(false)
-                setCampaignName('')
-                setSelectedProductObj(null)
-                setProductSearchQuery('')
-                setDiscountPercent(0)
-                setPriceAfterDiscount(0)
-                setDiscountIsActive(true)
-              }}
-              className="flex-1 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 font-semibold py-2.5 rounded transition-colors cursor-pointer text-center"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className="flex-1 bg-sky-700 hover:bg-sky-800 text-white font-semibold py-2.5 rounded transition-colors cursor-pointer text-center"
-            >
-              Selesaikan
-            </button>
-          </div>
-        </form>
-      </Modal>
     </div>
   )
 }
