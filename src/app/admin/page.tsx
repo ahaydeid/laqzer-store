@@ -43,8 +43,8 @@ function LineTrendChart({ data, height = 220 }: { data: TrendItem[]; height?: nu
       <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full overflow-visible">
         <defs>
           <linearGradient id="student-trend-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#6366f1" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+            <stop offset="0%" stopColor="#0284c7" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#0284c7" stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -65,15 +65,15 @@ function LineTrendChart({ data, height = 220 }: { data: TrendItem[]; height?: nu
 
         <polyline
           fill="none"
-          stroke="#6366f1"
-          strokeWidth="1.75"
+          stroke="#0284c7"
+          strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
           points={points}
         />
 
         {coordinates.map(({ x, y }, i) => (
-          <circle key={i} cx={x} cy={y} r="2.5" fill="#6366f1" />
+          <circle key={i} cx={x} cy={y} r="1.75" fill="#0284c7" />
         ))}
       </svg>
       <div className="mt-2 flex justify-between px-2">
@@ -256,9 +256,8 @@ export default function AdminDashboardPage() {
       {/* STATISTIK Pertumbuhan Transaksi Chart (Presisi 1:1 Acuan Screenshot) */}
       <div className="pt-2">
         <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg border border-zinc-100 dark:border-zinc-800">
-          <h3 className="mb-6 flex items-center justify-between text-sm font-bold text-slate-700 dark:text-zinc-200">
-            <span>Pertumbuhan Transaksi</span>
-            <span className="text-sky-600 dark:text-sky-400 font-bold">laqzer</span>
+          <h3 className="mb-6 text-sm font-bold text-slate-700 dark:text-zinc-200">
+            Pertumbuhan Transaksi
           </h3>
           <div className="h-64">
             <LineTrendChart data={salesTrendData} />
