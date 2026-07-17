@@ -109,12 +109,12 @@ const INITIAL_ORDERS: Order[] = [
   }
 ];
 
-const STATUS_STEPS: { value: Order["status"]; label: string; activeColor: string; activeBg: string; activeBorder: string }[] = [
-  { value: "Belum Dibayar", label: "Belum Dibayar", activeColor: "text-amber-600 dark:text-amber-400", activeBg: "bg-amber-50 dark:bg-amber-950/40", activeBorder: "border-amber-400 dark:border-amber-600" },
-  { value: "Sedang Diproses", label: "Sedang Diproses", activeColor: "text-blue-600 dark:text-blue-400", activeBg: "bg-blue-50 dark:bg-blue-950/40", activeBorder: "border-blue-400 dark:border-blue-600" },
-  { value: "Dikirim", label: "Dikirim", activeColor: "text-indigo-600 dark:text-indigo-400", activeBg: "bg-indigo-50 dark:bg-indigo-950/40", activeBorder: "border-indigo-400 dark:border-indigo-600" },
-  { value: "Selesai", label: "Selesai", activeColor: "text-emerald-600 dark:text-emerald-400", activeBg: "bg-emerald-50 dark:bg-emerald-950/40", activeBorder: "border-emerald-400 dark:border-emerald-600" },
-  { value: "Dibatalkan", label: "Dibatalkan", activeColor: "text-rose-600 dark:text-rose-400", activeBg: "bg-rose-50 dark:bg-rose-950/40", activeBorder: "border-rose-400 dark:border-rose-600" },
+const STATUS_STEPS: { value: Order["status"]; label: string }[] = [
+  { value: "Belum Dibayar", label: "Belum Dibayar" },
+  { value: "Sedang Diproses", label: "Sedang Diproses" },
+  { value: "Dikirim", label: "Dikirim" },
+  { value: "Selesai", label: "Selesai" },
+  { value: "Dibatalkan", label: "Dibatalkan" },
 ];
 
 const PAYMENT_METHOD_OPTIONS = [
@@ -583,21 +583,20 @@ export default function OrderPage() {
                 Pilih Tahap Status Baru:
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 p-2 bg-zinc-50 dark:bg-zinc-900/60 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60">
-                {STATUS_STEPS.map((step, index) => {
+                {STATUS_STEPS.map((step) => {
                   const isSelected = selectedNewStatus === step.value;
                   return (
                     <button
                       key={step.value}
                       type="button"
                       onClick={() => setSelectedNewStatus(step.value)}
-                      className={`flex flex-col items-center justify-center py-3 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
+                      className={`flex items-center justify-center py-2.5 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
                         isSelected
-                          ? `${step.activeBg} ${step.activeColor} ${step.activeBorder} shadow-sm font-bold scale-[1.02]`
+                          ? "bg-sky-600 text-white border-sky-600 shadow-xs font-bold"
                           : "bg-white dark:bg-zinc-950 border-zinc-200/50 dark:border-zinc-800/50 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60"
                       }`}
                     >
-                      <span className="text-[10px] text-zinc-400 mb-0.5 font-mono">Tahap {index + 1}</span>
-                      <span className="text-center leading-tight text-[11px]">{step.label}</span>
+                      <span className="text-center leading-tight text-xs">{step.label}</span>
                     </button>
                   );
                 })}
