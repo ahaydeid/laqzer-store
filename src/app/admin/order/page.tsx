@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiSearch, FiX, FiEye, FiChevronLeft, FiChevronRight, FiEdit2 } from "react-icons/fi";
+import { FiSearch, FiX, FiEye, FiChevronLeft, FiChevronRight, FiEdit2, FiCheck } from "react-icons/fi";
 import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from "@/components/ui/Table";
 import { Modal } from "@/components/ui/Modal";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { Button } from "@/components/ui/Button";
 import Swal from "sweetalert2";
+import { playSwalSound } from "@/utils/sound";
 
 interface OrderItem {
   name: string;
@@ -108,60 +109,62 @@ const INITIAL_ORDERS: Order[] = [
   }
 ];
 
+const STATUS_STEPS: { value: Order["status"]; label: string; activeColor: string; activeBg: string; activeBorder: string }[] = [
+  { value: "Belum Dibayar", label: "Belum Dibayar", activeColor: "text-amber-600 dark:text-amber-400", activeBg: "bg-amber-50 dark:bg-amber-950/40", activeBorder: "border-amber-400 dark:border-amber-600" },
+  { value: "Sedang Diproses", label: "Sedang Diproses", activeColor: "text-blue-600 dark:text-blue-400", activeBg: "bg-blue-50 dark:bg-blue-950/40", activeBorder: "border-blue-400 dark:border-blue-600" },
+  { value: "Dikirim", label: "Dikirim", activeColor: "text-indigo-600 dark:text-indigo-400", activeBg: "bg-indigo-50 dark:bg-indigo-950/40", activeBorder: "border-indigo-400 dark:border-indigo-600" },
+  { value: "Selesai", label: "Selesai", activeColor: "text-emerald-600 dark:text-emerald-400", activeBg: "bg-emerald-50 dark:bg-emerald-950/40", activeBorder: "border-emerald-400 dark:border-emerald-600" },
+  { value: "Dibatalkan", label: "Dibatalkan", activeColor: "text-rose-600 dark:text-rose-400", activeBg: "bg-rose-50 dark:bg-rose-950/40", activeBorder: "border-rose-400 dark:border-rose-600" },
+];
+
 export default function OrderPage() {
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
   const [searchValue, setSearchValue] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
   const [isFocused, setIsFocused] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [editingOrderForStatus, setEditingOrderForStatus] = useState<Order | null>(null);
+  const [selectedNewStatus, setSelectedNewStatus] = useState<Order["status"]>("Belum Dibayar");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     document.title = "Kelola Pesanan | Laqzer Admin";
   }, []);
 
-  const handleEditOrder = (order: Order) => {
-    Swal.fire({
-      title: 'Ubah Status Pesanan',
-      text: `Pilih status baru untuk pesanan #${order.id}`,
-      icon: 'question',
-      input: 'select',
-      inputOptions: {
-        'Belum Dibayar': 'Belum Dibayar',
-        'Sedang Diproses': 'Sedang Diproses',
-        'Dikirim': 'Dikirim',
-        'Selesai': 'Selesai',
-        'Dibatalkan': 'Dibatalkan'
-      },
-      inputValue: order.status,
-      showCancelButton: true,
-      confirmButtonColor: '#0369a1',
-      cancelButtonColor: '#71717a',
-      confirmButtonText: 'Simpan',
-      cancelButtonText: 'Batal'
-    }).then((result) => {
-      if (result.isConfirmed && result.value) {
-        setOrders(prev => prev.map(o => {
-          if (o.id === order.id) {
-            return { ...o, status: result.value as Order["status"] }
-          }
-          return o
-        }))
-        setSelectedOrder(prev => {
-          if (prev && prev.id === order.id) {
-            return { ...prev, status: result.value as Order["status"] }
-          }
-          return prev
-        })
-        Swal.fire({
-          title: 'Berhasil!',
-          text: `Status pesanan #${order.id} berhasil diubah menjadi ${result.value}.`,
-          icon: 'success',
-          confirmButtonColor: '#0369a1'
-        })
+  const handleOpenEditModal = (order: Order) => {
+    setEditingOrderForStatus(order);
+    setSelectedNewStatus(order.status);
+  };
+
+  const handleSaveStatus = () => {
+    if (!editingOrderForStatus) return;
+
+    const updatedStatus = selectedNewStatus;
+    const orderId = editingOrderForStatus.id;
+
+    setOrders(prev => prev.map(o => {
+      if (o.id === orderId) {
+        return { ...o, status: updatedStatus };
       }
-    })
-  }
+      return o;
+    }));
+
+    setSelectedOrder(prev => {
+      if (prev && prev.id === orderId) {
+        return { ...prev, status: updatedStatus };
+      }
+      return prev;
+    });
+
+    setEditingOrderForStatus(null);
+    playSwalSound('success');
+    Swal.fire({
+      title: 'Berhasil!',
+      text: `Status pesanan #${orderId} berhasil diubah menjadi ${updatedStatus}.`,
+      icon: 'success',
+      confirmButtonColor: '#0369a1'
+    });
+  };
 
   const handleClearSearch = () => {
     setSearchValue("");
@@ -345,7 +348,7 @@ export default function OrderPage() {
                     </ActionButton>
                     <ActionButton
                       variant="edit"
-                      onClick={() => handleEditOrder(order)}
+                      onClick={() => handleOpenEditModal(order)}
                       title="Edit Pesanan"
                     >
                       <FiEdit2 className="h-4 w-4" />
@@ -411,7 +414,7 @@ export default function OrderPage() {
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => handleEditOrder(selectedOrder)}
+                onClick={() => handleOpenEditModal(selectedOrder)}
                 className="rounded"
               >
                 <FiEdit2 className="h-3.5 w-3.5" />
@@ -516,6 +519,79 @@ export default function OrderPage() {
                   </span>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Edit Status Modal (Multi-step Toggle) */}
+      <Modal
+        isOpen={!!editingOrderForStatus}
+        onClose={() => setEditingOrderForStatus(null)}
+        title={
+          editingOrderForStatus ? (
+            <span>
+              Ubah Status Pesanan #{editingOrderForStatus.id}
+            </span>
+          ) : undefined
+        }
+        size="lg"
+        panelClassName="animate-in fade-in zoom-in-95 duration-150"
+      >
+        {editingOrderForStatus && (
+          <div className="p-6 space-y-5">
+            <div className="text-xs space-y-1">
+              <span className="text-zinc-400">Pelanggan:</span>
+              <p className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm">
+                {editingOrderForStatus.customerName}
+              </p>
+            </div>
+
+            {/* Multi-Step Segmented Toggle */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                Pilih Tahap Status Baru:
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 p-2 bg-zinc-50 dark:bg-zinc-900/60 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60">
+                {STATUS_STEPS.map((step, index) => {
+                  const isSelected = selectedNewStatus === step.value;
+                  return (
+                    <button
+                      key={step.value}
+                      type="button"
+                      onClick={() => setSelectedNewStatus(step.value)}
+                      className={`flex flex-col items-center justify-center py-3 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
+                        isSelected
+                          ? `${step.activeBg} ${step.activeColor} ${step.activeBorder} shadow-sm font-bold scale-[1.02]`
+                          : "bg-white dark:bg-zinc-950 border-zinc-200/50 dark:border-zinc-800/50 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60"
+                      }`}
+                    >
+                      <span className="text-[10px] text-zinc-400 mb-0.5 font-mono">Tahap {index + 1}</span>
+                      <span className="text-center leading-tight text-[11px]">{step.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setEditingOrderForStatus(null)}
+                className="rounded"
+              >
+                Batal
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleSaveStatus}
+                className="rounded"
+              >
+                <FiCheck className="h-3.5 w-3.5" />
+                Simpan Status
+              </Button>
             </div>
           </div>
         )}
