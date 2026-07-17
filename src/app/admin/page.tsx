@@ -14,34 +14,29 @@ interface TrendItem {
 }
 
 const salesTrendData: TrendItem[] = [
-  { label: 'Jan', value: 35 },
-  { label: 'Feb', value: 48 },
-  { label: 'Mar', value: 54 },
-  { label: 'Apr', value: 62 },
-  { label: 'Mei', value: 70 },
-  { label: 'Jun', value: 78 },
-  { label: 'Jul', value: 85 },
-  { label: 'Agu', value: 92 },
-  { label: 'Sep', value: 98 },
-  { label: 'Okt', value: 106 },
-  { label: 'Nov', value: 115 },
-  { label: 'Des', value: 124 },
+  { label: 'Okt', value: 42 },
+  { label: 'Nov', value: 54 },
+  { label: 'Des', value: 65 },
+  { label: 'Jan', value: 72 },
+  { label: 'Feb', value: 83 },
+  { label: 'Mar', value: 88 },
 ]
 
 function LineTrendChart({ data, height = 220 }: { data: TrendItem[]; height?: number }) {
   const max = Math.max(...data.map((d) => d.value), 1)
-  const padding = 18
   const width = 640
+  const paddingY = 12
+
   const coordinates = data.map((d, i) => {
-    const x = (i / (data.length - 1)) * (width - padding * 2) + padding
-    const y = height - ((d.value / max) * (height - padding * 2) + padding)
+    const x = (i / (data.length - 1)) * width
+    const y = height - ((d.value / max) * (height - paddingY * 2) + paddingY)
     return { x, y }
   })
   const points = coordinates.map(({ x, y }) => `${x},${y}`).join(' ')
   const areaPoints = [
-    `${coordinates[0]?.x ?? padding},${height - padding}`,
+    `0,${height}`,
     ...coordinates.map(({ x, y }) => `${x},${y}`),
-    `${coordinates[coordinates.length - 1]?.x ?? width - padding},${height - padding}`,
+    `${width},${height}`,
   ].join(' ')
 
   return (
@@ -57,10 +52,10 @@ function LineTrendChart({ data, height = 220 }: { data: TrendItem[]; height?: nu
         {[0, 25, 50, 75, 100].map((v) => (
           <line
             key={v}
-            x1={padding}
-            y1={height - ((v / 100) * (height - padding * 2) + padding)}
-            x2={width - padding}
-            y2={height - ((v / 100) * (height - padding * 2) + padding)}
+            x1="0"
+            y1={height - ((v / 100) * (height - paddingY * 2) + paddingY)}
+            x2={width}
+            y2={height - ((v / 100) * (height - paddingY * 2) + paddingY)}
             stroke="#e2e8f0"
             strokeDasharray="4 4"
             className="dark:stroke-zinc-800/80"
@@ -82,7 +77,7 @@ function LineTrendChart({ data, height = 220 }: { data: TrendItem[]; height?: nu
           <circle key={i} cx={x} cy={y} r="1.75" fill="#0284c7" />
         ))}
       </svg>
-      <div className="mt-2 flex justify-between px-2">
+      <div className="mt-2 flex justify-between">
         {data.map((item) => (
           <span key={item.label} className="text-xs font-medium text-zinc-400">
             {item.label}
@@ -259,7 +254,7 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* STATISTIK Pertumbuhan Transaksi Chart (Presisi 1:1 Acuan Screenshot) */}
+      {/* STATISTIK Pertumbuhan Transaksi Chart (Presisi 1:1 Edge-to-Edge) */}
       <div className="pt-2">
         <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg border border-zinc-100 dark:border-zinc-800">
           <h3 className="mb-6 text-sm font-bold text-slate-700 dark:text-zinc-200">
