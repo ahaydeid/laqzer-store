@@ -273,10 +273,9 @@ export default function CampaignContainer() {
               Iklan Popup Promo
             </h3>
             <div className="flex items-center gap-2 relative z-10">
-              <span className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 block">
+              <span className={`text-2xl font-extrabold block ${popupConfig.isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-800 dark:text-zinc-100'}`}>
                 {popupConfig.isActive ? 'Aktif' : 'Nonaktif'}
               </span>
-              <span className={`h-2.5 w-2.5 rounded-full ${popupConfig.isActive ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-300 dark:bg-zinc-700'}`} />
             </div>
           </div>
         </div>
