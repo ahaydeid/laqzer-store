@@ -14,12 +14,18 @@ interface TrendItem {
 }
 
 const salesTrendData: TrendItem[] = [
-  { label: 'Okt', value: 42 },
-  { label: 'Nov', value: 54 },
-  { label: 'Des', value: 65 },
-  { label: 'Jan', value: 72 },
-  { label: 'Feb', value: 83 },
-  { label: 'Mar', value: 88 },
+  { label: 'Jan', value: 35 },
+  { label: 'Feb', value: 48 },
+  { label: 'Mar', value: 54 },
+  { label: 'Apr', value: 62 },
+  { label: 'Mei', value: 70 },
+  { label: 'Jun', value: 78 },
+  { label: 'Jul', value: 85 },
+  { label: 'Agu', value: 92 },
+  { label: 'Sep', value: 98 },
+  { label: 'Okt', value: 106 },
+  { label: 'Nov', value: 115 },
+  { label: 'Des', value: 124 },
 ]
 
 function LineTrendChart({ data, height = 220 }: { data: TrendItem[]; height?: number }) {
