@@ -8,7 +8,7 @@ export function Table({ children, className, ...props }: TableProps) {
   return (
     <div className="overflow-hidden rounded border border-zinc-200/80 bg-white dark:border-zinc-800 dark:bg-zinc-900/40">
       <div className="overflow-x-auto thin-scroll">
-        <table className={`w-full border-collapse text-left text-sm ${className || ""}`} {...props}>
+        <table className={`w-full border-separate border-spacing-0 text-left text-sm ${className || ""}`} {...props}>
           {children}
         </table>
       </div>

@@ -166,7 +166,7 @@ export function ProductManagement({ initialProducts }: ProductManagementProps) {
         <div>
           <Link
             href="/admin/products/new"
-            className="inline-flex items-center gap-2 rounded bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
+          className="inline-flex items-center gap-2 rounded bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
           >
             <FiPlus className="h-4 w-4" />
             Tambah Produk

@@ -192,13 +192,6 @@ export default function CampaignContainer() {
 
   return (
     <div className="space-y-6 w-full max-w-full min-w-0">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-          Kelola Campaign
-        </h1>
-      </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Discounts Card */}
