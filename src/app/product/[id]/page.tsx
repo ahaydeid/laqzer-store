@@ -23,9 +23,33 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
   }
 
+  const hasDiscount = product.isCampaign && product.originalPrice && product.originalPrice > product.price
+  const discountPct = hasDiscount
+    ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
+    : 0
+
+  const formattedPrice = `Rp ${product.price.toLocaleString('id-ID')}`
+  const promoPrefix = hasDiscount ? `[Diskon ${discountPct}%] ` : ''
+  const pageTitle = `${promoPrefix}Beli ${product.name} seharga ${formattedPrice} | Laqzer Indonesia`
+  
+  const pageDescription = `Dapatkan ${product.name} seharga ${formattedPrice}. Promo gratis ongkir, COD, dan jaminan produk berkualitas premium hanya di Laqzer Indonesia!`
+
   return {
-    title: `${product.name} | Laqzer Indonesia`,
-    description: product.description,
+    title: pageTitle,
+    description: pageDescription,
+    openGraph: {
+      title: pageTitle,
+      description: pageDescription,
+      images: [
+        {
+          url: product.imageUrl,
+          width: 800,
+          height: 800,
+          alt: product.name,
+        },
+      ],
+      type: 'article',
+    },
   }
 }
 
