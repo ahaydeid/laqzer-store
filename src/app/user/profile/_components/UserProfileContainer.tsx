@@ -438,24 +438,32 @@ export function UserProfileContainer() {
             {/* Provinsi */}
             <div>
               <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">Provinsi</label>
-              <select 
-                value={provinceId}
-                onChange={e => {
-                  setProvinceId(e.target.value)
-                  setTempCityId('')
-                  setSubdistrictId('')
-                }}
-                required
-                className={getSelectClass(isEditing)}
-                disabled={!isEditing}
-              >
-                <option value="">{isEditing ? "Pilih Provinsi" : "-"}</option>
-                {provinces.map(p => (
-                  <option key={p.province_id} value={p.province_id}>
-                    {p.province}
-                  </option>
-                ))}
-              </select>
+              {!isEditing ? (
+                <input 
+                  type="text" 
+                  value={initialProfile?.province || '-'} 
+                  className={getInputClass(false)} 
+                  disabled 
+                />
+              ) : (
+                <select 
+                  value={provinceId}
+                  onChange={e => {
+                    setProvinceId(e.target.value)
+                    setTempCityId('')
+                    setSubdistrictId('')
+                  }}
+                  required
+                  className={getSelectClass(true)}
+                >
+                  <option value="">Pilih Provinsi</option>
+                  {provinces.map(p => (
+                    <option key={p.province_id} value={p.province_id}>
+                      {p.province}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             {/* Kota / Kabupaten */}
@@ -463,23 +471,32 @@ export function UserProfileContainer() {
               <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">
                 Kota / Kabupaten {loadingCities && <span className="text-[10px] text-rose-500 animate-pulse">(Memuat...)</span>}
               </label>
-              <select 
-                value={tempCityId}
-                onChange={e => {
-                  setTempCityId(e.target.value)
-                  setSubdistrictId('')
-                }}
-                required
-                disabled={!provinceId || loadingCities || !isEditing}
-                className={getSelectClass(isEditing)}
-              >
-                <option value="">{isEditing ? "Pilih Kota/Kabupaten" : "-"}</option>
-                {cities.map(c => (
-                  <option key={c.city_id} value={c.city_id}>
-                    {c.type} {c.city_name}
-                  </option>
-                ))}
-              </select>
+              {!isEditing ? (
+                <input 
+                  type="text" 
+                  value={initialProfile?.city || '-'} 
+                  className={getInputClass(false)} 
+                  disabled 
+                />
+              ) : (
+                <select 
+                  value={tempCityId}
+                  onChange={e => {
+                    setTempCityId(e.target.value)
+                    setSubdistrictId('')
+                  }}
+                  required
+                  disabled={!provinceId || loadingCities}
+                  className={getSelectClass(true)}
+                >
+                  <option value="">Pilih Kota/Kabupaten</option>
+                  {cities.map(c => (
+                    <option key={c.city_id} value={c.city_id}>
+                      {c.type} {c.city_name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             {/* Kecamatan */}
@@ -487,26 +504,35 @@ export function UserProfileContainer() {
               <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">
                 Kecamatan {loadingSubdistricts && <span className="text-[10px] text-rose-500 animate-pulse">(Memuat...)</span>}
               </label>
-              <select 
-                value={subdistrictId}
-                onChange={e => {
-                  setSubdistrictId(e.target.value)
-                  const selectedSub = subdistricts.find(s => s.subdistrict_id === e.target.value)
-                  if (selectedSub?.postal_code) {
-                    setPostalCode(selectedSub.postal_code)
-                  }
-                }}
-                required={!!tempCityId}
-                disabled={!tempCityId || loadingSubdistricts || !isEditing}
-                className={getSelectClass(isEditing)}
-              >
-                <option value="">{isEditing ? "Pilih Kecamatan" : "-"}</option>
-                {subdistricts.map(s => (
-                  <option key={s.subdistrict_id} value={s.subdistrict_id}>
-                    {s.subdistrict_name}
-                  </option>
-                ))}
-              </select>
+              {!isEditing ? (
+                <input 
+                  type="text" 
+                  value={initialProfile?.subdistrict || '-'} 
+                  className={getInputClass(false)} 
+                  disabled 
+                />
+              ) : (
+                <select 
+                  value={subdistrictId}
+                  onChange={e => {
+                    setSubdistrictId(e.target.value)
+                    const selectedSub = subdistricts.find(s => s.subdistrict_id === e.target.value)
+                    if (selectedSub?.postal_code) {
+                      setPostalCode(selectedSub.postal_code)
+                    }
+                  }}
+                  required={!!tempCityId}
+                  disabled={!tempCityId || loadingSubdistricts}
+                  className={getSelectClass(true)}
+                >
+                  <option value="">Pilih Kecamatan</option>
+                  {subdistricts.map(s => (
+                    <option key={s.subdistrict_id} value={s.subdistrict_id}>
+                      {s.subdistrict_name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             {/* Kode Pos */}
