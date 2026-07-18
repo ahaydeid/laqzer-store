@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -19,6 +19,15 @@ export function ProductDetailModal({
   product,
   categoryName,
 }: ProductDetailModalProps) {
+  const [activeImage, setActiveImage] = useState<string>('')
+
+  useEffect(() => {
+    if (product) {
+      const firstImage = product.images?.[0] || product.imageUrl || ''
+      setActiveImage(firstImage)
+    }
+  }, [product])
+
   if (!product) return null
 
   const formatRupiah = (num: number) => {
@@ -28,6 +37,10 @@ export function ProductDetailModal({
       maximumFractionDigits: 0,
     }).format(num)
   }
+
+  const galleryImages = product.images && product.images.length > 0
+    ? product.images
+    : [product.imageUrl]
 
   const footer = (
     <div className="flex justify-end">
@@ -46,18 +59,46 @@ export function ProductDetailModal({
       footer={footer}
     >
       <div className="p-5 space-y-6">
-        {/* Header Produk & Media Preview */}
+        {/* Header Produk & Media Gallery Preview */}
         <div className="flex flex-col sm:flex-row gap-5 items-start">
-          <div className="w-full sm:w-44 h-44 rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex-shrink-0 relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="object-cover w-full h-full"
-              onError={(e) => {
-                ;(e.target as HTMLImageElement).src = '/img/placeholder.jpg'
-              }}
-            />
+          <div className="space-y-2.5 w-full sm:w-48 flex-shrink-0">
+            {/* Foto Utama */}
+            <div className="w-full h-48 rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={activeImage || product.imageUrl}
+                alt={product.name}
+                className="object-cover w-full h-full"
+                onError={(e) => {
+                  ;(e.target as HTMLImageElement).src = '/img/placeholder.jpg'
+                }}
+              />
+            </div>
+
+            {/* Thumbnail Galeri (Jika > 1 Foto) */}
+            {galleryImages.length > 1 && (
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+                {galleryImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImage(img)}
+                    className={`h-10 w-10 rounded overflow-hidden border transition-all flex-shrink-0 cursor-pointer ${
+                      activeImage === img
+                        ? 'border-zinc-900 dark:border-zinc-100 ring-1 ring-zinc-900 dark:ring-zinc-100'
+                        : 'border-zinc-200 dark:border-zinc-800 opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img}
+                      alt={`Thumb ${idx + 1}`}
+                      className="object-cover w-full h-full"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="space-y-3 flex-1">
@@ -135,14 +176,17 @@ export function ProductDetailModal({
           </div>
         </div>
 
-        {/* Deskripsi Lengkap (Rounded Reguler tanpa Border) */}
+        {/* Deskripsi Lengkap (Rich Text HTML Renderer) */}
         <div className="space-y-2">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
             Deskripsi Produk
           </h4>
-          <div className="rounded bg-zinc-50/60 dark:bg-zinc-900/30 p-4 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400 whitespace-pre-line">
-            {product.description || 'Tidak ada deskripsi rinci untuk produk ini.'}
-          </div>
+          <div
+            className="rounded bg-zinc-50/60 dark:bg-zinc-900/30 p-4 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400 prose dark:prose-invert max-w-none [&_h1]:text-sm [&_h1]:font-bold [&_h2]:text-xs [&_h2]:font-bold [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_p]:mb-2"
+            dangerouslySetInnerHTML={{
+              __html: product.description || 'Tidak ada deskripsi rinci untuk produk ini.',
+            }}
+          />
         </div>
       </div>
     </Modal>

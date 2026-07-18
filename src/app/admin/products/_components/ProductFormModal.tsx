@@ -4,10 +4,11 @@ import React, { useState, useEffect, useRef } from 'react'
 import Swal from 'sweetalert2'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
+import { RichTextEditor } from '@/components/ui/RichTextEditor'
 import { Category } from '@/core/types/category'
 import { Product } from '@/core/types/product'
 import { playSwalSound } from '@/utils/sound'
-import { FiSave, FiAlertCircle, FiUploadCloud, FiX } from 'react-icons/fi'
+import { FiSave, FiAlertCircle, FiUploadCloud, FiX, FiPlus } from 'react-icons/fi'
 
 interface ProductFormModalProps {
   isOpen: boolean
@@ -32,11 +33,10 @@ export function ProductFormModal({
     category: '',
     price: '',
     stock: '',
-    imageUrl: '',
     description: '',
   })
 
-  const [imagePreview, setImagePreview] = useState<string>('')
+  const [images, setImages] = useState<string[]>([])
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -44,56 +44,75 @@ export function ProductFormModal({
   useEffect(() => {
     if (isOpen) {
       setError('')
-      const initialImg = initialData?.imageUrl || ''
       setFormData({
         name: initialData?.name || '',
         category: initialData?.category || categories[0]?.id || '',
         price: initialData?.price?.toString() || '',
         stock: initialData?.stock?.toString() || '',
-        imageUrl: initialImg,
         description: initialData?.description || '',
       })
-      setImagePreview(initialImg)
+
+      // Sync images array (if initialData has images array or fallback to single imageUrl)
+      if (initialData?.images && initialData.images.length > 0) {
+        setImages(initialData.images)
+      } else if (initialData?.imageUrl) {
+        setImages([initialData.imageUrl])
+      } else {
+        setImages([])
+      }
     }
   }, [isOpen, initialData, categories])
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Handle Image File Upload via FileReader
+  // Handle Multi-file Upload (Up to 10 photos total)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+
+    if (images.length + files.length > 10) {
+      setError(`Maksimal foto yang dapat diunggah adalah 10 (saat ini ${images.length} foto).`)
+      return
+    }
+
+    setError('')
+
+    files.forEach((file) => {
       if (!file.type.startsWith('image/')) {
         setError('File yang diunggah harus berupa gambar (JPEG, PNG, WEBP, dll).')
         return
       }
       if (file.size > 5 * 1024 * 1024) {
-        setError('Ukuran gambar tidak boleh melebihi 5MB.')
+        setError('Ukuran gambar tidak boleh melebihi 5MB per file.')
         return
       }
 
-      setError('')
       const reader = new FileReader()
       reader.onloadend = () => {
         const result = reader.result as string
-        setImagePreview(result)
-        setFormData((prev) => ({ ...prev, imageUrl: result }))
+        setImages((prev) => {
+          if (prev.length < 10) {
+            return [...prev, result]
+          }
+          return prev
+        })
       }
       reader.readAsDataURL(file)
-    }
-  }
+    })
 
-  const handleRemoveImage = () => {
-    setImagePreview('')
-    setFormData((prev) => ({ ...prev, imageUrl: '' }))
+    // Reset file input value
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
+  }
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    setImages((prev) => prev.filter((_, index) => index !== indexToRemove))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -117,6 +136,8 @@ export function ProductFormModal({
       return
     }
 
+    const mainImageUrl = images[0] || 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600'
+
     setIsSubmitting(true)
 
     setTimeout(() => {
@@ -127,7 +148,8 @@ export function ProductFormModal({
         category: formData.category,
         price: priceNum,
         stock: stockNum,
-        imageUrl: formData.imageUrl.trim() || 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600',
+        imageUrl: mainImageUrl,
+        images: images.length > 0 ? images : [mainImageUrl],
         description: formData.description.trim(),
       })
 
@@ -244,69 +266,93 @@ export function ProductFormModal({
             </div>
           </div>
 
-          {/* Upload Gambar Produk */}
+          {/* Upload Gambar Galeri Produk (Maksimal 10) */}
           <div>
-            <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
-              Upload Gambar Produk
-            </label>
-            
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                Upload Foto Galeri Produk
+              </label>
+              <span className="text-[11px] text-zinc-400">
+                {images.length}/10 Foto (Foto ke-1 = Sampul)
+              </span>
+            </div>
+
             <input
               type="file"
               ref={fileInputRef}
               accept="image/*"
+              multiple
               onChange={handleFileChange}
               className="hidden"
               id="product-image-upload"
             />
 
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded border border-zinc-200 bg-white hover:bg-zinc-50 text-xs font-semibold text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              >
-                <FiUploadCloud className="h-4 w-4 text-zinc-400" />
-                <span>{imagePreview ? 'Ganti Gambar' : 'Pilih Gambar'}</span>
-              </button>
+            <div className="flex flex-wrap items-center gap-2.5">
+              {/* Tombol Unggah Tambahan */}
+              {images.length < 10 && (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-16 w-16 rounded border-2 border-dashed border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-900/40 flex flex-col items-center justify-center gap-1 text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer flex-shrink-0"
+                  title="Tambah Foto Produk"
+                >
+                  <FiPlus className="h-4 w-4" />
+                  <span className="text-[9px] font-semibold">Tambah</span>
+                </button>
+              )}
 
-              {imagePreview ? (
-                <div className="flex items-center gap-2">
-                  <div className="h-9 w-9 rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 flex-shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
+              {/* Grid Preview Foto Terunggah */}
+              {images.map((img, idx) => (
+                <div
+                  key={idx}
+                  className="relative h-16 w-16 rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 group flex-shrink-0"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={img}
+                    alt={`Preview ${idx + 1}`}
+                    className="object-cover w-full h-full"
+                  />
+
+                  {/* Label Foto Sampul Utama */}
+                  {idx === 0 && (
+                    <span className="absolute bottom-0 inset-x-0 bg-zinc-900/80 dark:bg-zinc-100/90 text-[8px] font-bold text-white dark:text-zinc-900 text-center py-0.5 uppercase tracking-tighter">
+                      Sampul
+                    </span>
+                  )}
+
+                  {/* Tombol Hapus */}
                   <button
                     type="button"
-                    onClick={handleRemoveImage}
-                    className="p-1 text-rose-500 hover:text-rose-700 transition-colors cursor-pointer text-xs"
-                    title="Hapus Gambar"
+                    onClick={() => handleRemoveImage(idx)}
+                    className="absolute top-0.5 right-0.5 p-0.5 rounded-full bg-black/60 text-white hover:bg-rose-600 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                    title="Hapus foto ini"
                   >
-                    <FiX className="h-4 w-4" />
+                    <FiX className="h-3 w-3" />
                   </button>
                 </div>
-              ) : (
-                <span className="text-xs text-zinc-400">Belum ada file dipilih</span>
+              ))}
+
+              {images.length === 0 && (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex-1 min-h-[64px] border-2 border-dashed border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 rounded bg-zinc-50/50 dark:bg-zinc-900/30 flex items-center justify-center gap-2 px-4 py-2 cursor-pointer text-zinc-400 hover:text-zinc-600 transition-colors"
+                >
+                  <FiUploadCloud className="h-4 w-4" />
+                  <span className="text-xs">Klik untuk memilih hingga 10 foto produk</span>
+                </div>
               )}
             </div>
           </div>
 
-          {/* Deskripsi */}
+          {/* Deskripsi (Tiptap Rich Text Editor) */}
           <div>
             <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
               Deskripsi Produk <span className="text-rose-500">*</span>
             </label>
-            <textarea
-              name="description"
+            <RichTextEditor
               value={formData.description}
-              onChange={handleChange}
-              placeholder="Jelaskan detail spesifikasi produk..."
-              rows={4}
-              className="w-full rounded border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60 resize-none"
-              required
+              onChange={(val) => setFormData((prev) => ({ ...prev, description: val }))}
             />
           </div>
         </form>

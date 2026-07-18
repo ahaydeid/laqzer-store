@@ -8,6 +8,7 @@ export interface Product {
   price: number
   originalPrice?: number // Slashed price to indicate discount
   imageUrl: string
+  images?: string[] // Additional product gallery photos (up to 10)
   category: string // Matches the Category ID
   rating: number // e.g., 4.9
   soldCount: number // e.g., 102
