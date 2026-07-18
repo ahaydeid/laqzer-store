@@ -233,12 +233,12 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
         <div className="px-4 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 rounded-t-xl flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             {/* Logo Laqzer */}
-            <div className="w-8 h-8 rounded-full overflow-hidden bg-white dark:bg-zinc-950 flex items-center justify-center p-1 border border-zinc-200 dark:border-zinc-800 shrink-0">
+            <div className="w-8 h-8 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-200/50 dark:border-zinc-700/50">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/img/logo-laqzer-transparan.png"
-                alt="L"
-                className="w-full h-full object-contain"
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(settings.name || 'Laqzer Indonesia')}`}
+                alt={settings.name || 'Laqzer Indonesia'}
+                className="w-full h-full object-cover"
               />
             </div>
             <div>
