@@ -182,19 +182,19 @@ export function PurchaseContainer() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 text-xs font-medium border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-2 px-4 py-3 text-xs border-b-2 transition-all cursor-pointer whitespace-nowrap ${
                 isActive
                   ? 'border-rose-600 text-rose-600 dark:border-rose-500 dark:text-rose-400 font-semibold'
                   : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
               }`}
             >
               <span>{tab.label}</span>
-              {tab.id !== 'semua' && count > 0 && (
+              {['unpaid', 'processing', 'shipped'].includes(tab.id) && count > 0 && (
                 <span
-                  className={`w-5 h-5 text-[10px] font-bold rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                  className={`w-5 h-5 text-[10px] font-medium rounded-full flex items-center justify-center shrink-0 transition-colors ${
                     isActive
                       ? 'bg-rose-600 text-white dark:bg-rose-500 dark:text-zinc-950'
-                      : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+                      : 'bg-slate-200 text-zinc-600 dark:bg-slate-800 dark:text-zinc-400'
                   }`}
                 >
                   {count}
