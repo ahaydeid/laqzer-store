@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { FiSend, FiChevronLeft } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Avatar from "@/components/ui/Avatar";
 import { SupabaseChatService } from "@/services/supabase/chat.service";
 import { ChatMessageRecord } from "@/core/types/chat";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -138,18 +139,12 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
               <FiChevronLeft className="h-5 w-5" />
             </button>
           )}
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-200/50 dark:border-rose-900/40">
-            {roomInfo?.userAvatarUrl ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={roomInfo.userAvatarUrl}
-                alt="Avatar"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <span>{(roomInfo?.userName || "PB").substring(0, 2).toUpperCase()}</span>
-            )}
-          </div>
+          <Avatar
+            photo={roomInfo?.userAvatarUrl}
+            name={roomInfo?.userName || chatId}
+            size="small"
+            className="shrink-0 border border-zinc-200 dark:border-zinc-700"
+          />
           <div className="min-w-0 flex flex-col justify-center h-9">
             <span className="font-semibold text-sm leading-none truncate text-zinc-900 dark:text-zinc-100">
               {roomInfo?.userName || `Obrolan Pembeli #${chatId.slice(0, 8)}`}

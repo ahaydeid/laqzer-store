@@ -1,5 +1,7 @@
 "use client";
 
+import Avatar from "@/components/ui/Avatar";
+
 import { useEffect, useState, useRef, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FiMessageSquare, FiSearch, FiLoader } from "react-icons/fi";
@@ -128,18 +130,12 @@ function ChatContent() {
                     }`}
                   >
                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-200/50 dark:border-rose-900/40">
-                        {chat.userAvatarUrl ? (
-                          /* eslint-disable-next-line @next/next/no-img-element */
-                          <img 
-                            src={chat.userAvatarUrl} 
-                            alt={chat.userName} 
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <span>{chat.userName.substring(0, 2).toUpperCase()}</span>
-                        )}
-                      </div>
+                      <Avatar
+                        photo={chat.userAvatarUrl}
+                        name={chat.userName}
+                        size="medium"
+                        className="shrink-0"
+                      />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1">
                           <p className="font-semibold text-sm truncate text-zinc-900 dark:text-zinc-50">{chat.userName}</p>
