@@ -142,7 +142,7 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
           <Avatar
             photo={roomInfo?.userAvatarUrl}
             name={roomInfo?.userName || chatId}
-            size="small"
+            size="smedium"
             className="shrink-0 border border-zinc-200 dark:border-zinc-700"
           />
           <div className="min-w-0 flex flex-col justify-center h-9">

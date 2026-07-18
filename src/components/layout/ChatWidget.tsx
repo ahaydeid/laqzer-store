@@ -129,6 +129,10 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
       if (customEvent.detail && customEvent.detail.product) {
         setPendingProduct(customEvent.detail.product)
       }
+      // Auto-focus input setelah animasi widget selesai terbuka
+      setTimeout(() => {
+        inputRef.current?.focus()
+      }, 350)
     }
 
     window.addEventListener('open-chat-widget', handleOpenChat)
