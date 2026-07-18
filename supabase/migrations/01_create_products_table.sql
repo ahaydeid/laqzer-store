@@ -20,6 +20,10 @@ CREATE TABLE IF NOT EXISTS public.products (
 -- Enable Row Level Security (RLS)
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if any (prevents 42710 policy already exists error)
+DROP POLICY IF EXISTS "Allow public read access" ON public.products;
+DROP POLICY IF EXISTS "Allow full access for all" ON public.products;
+
 -- Allow public read access
 CREATE POLICY "Allow public read access" ON public.products
   FOR SELECT USING (true);
