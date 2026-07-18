@@ -248,7 +248,7 @@ export function PurchaseContainer() {
           </div>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded transition-all"
+            className="inline-flex items-center justify-center px-4 py-2 text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 rounded transition-all"
           >
             Mulai Belanja Sekarang
           </Link>
@@ -349,7 +349,7 @@ export function PurchaseContainer() {
                   {order.status === 'shipped' && (
                     <button
                       onClick={() => handleMarkAsCompleted(order.id, order.orderNumber)}
-                      className="px-3.5 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <FiCheckCircle className="w-4 h-4" />
                       <span>Pesanan Diterima</span>

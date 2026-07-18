@@ -105,13 +105,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
 
     const fetchActiveOrdersCount = async () => {
       try {
-        const { data, error } = await supabase
+        const { count, error } = await supabase
           .from("orders")
-          .select("id", { count: "exact", head: true })
+          .select("*", { count: "exact", head: true })
           .in("status", ["unpaid", "processing", "shipped"]);
         
-        if (!error && data !== null) {
-          setUnreadOrderCount(data.length);
+        if (!error && count !== null) {
+          setUnreadOrderCount(count);
         }
       } catch (err) {
         console.error("Gagal memuat count pesanan di sidebar:", err);
