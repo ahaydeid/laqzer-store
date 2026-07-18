@@ -416,69 +416,72 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
           </div>
 
           {/* Share Section */}
-          <div className="flex items-center gap-3 py-3 border-t border-zinc-100 dark:border-zinc-900 justify-start">
-            <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Bagikan:</span>
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col md:flex-row md:items-center gap-3 py-3 border-t border-zinc-100 dark:border-zinc-900 justify-start w-full">
+            <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 block">Bagikan:</span>
+            <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => handleShare('wa')}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors cursor-pointer dark:bg-green-950/20 dark:text-green-400"
+                  title="Bagikan ke WhatsApp"
+                >
+                  <FaWhatsapp className="h-5.5 w-5.5" />
+                </button>
+                <button
+                  onClick={() => handleShare('fb')}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer dark:bg-blue-950/20 dark:text-blue-400"
+                  title="Bagikan ke Facebook"
+                >
+                  <FaFacebook className="h-5.5 w-5.5" />
+                </button>
+                <button
+                  onClick={() => handleShare('ig')}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-pink-50 text-pink-600 hover:bg-pink-100 transition-colors cursor-pointer dark:bg-pink-950/20 dark:text-pink-400"
+                  title="Bagikan ke Instagram"
+                >
+                  <FaInstagram className="h-5.5 w-5.5" />
+                </button>
+                <button
+                  onClick={() => handleShare('tiktok')}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-800 hover:bg-zinc-200 transition-colors cursor-pointer dark:bg-zinc-800/40 dark:text-zinc-200"
+                  title="Bagikan ke TikTok"
+                >
+                  <FaTiktok className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => handleShare('link')}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors cursor-pointer ${
+                    isCopied
+                      ? 'bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300'
+                      : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700'
+                  }`}
+                  title="Salin Tautan"
+                >
+                  {isCopied ? <FiCheck className="h-5.5 w-5.5" /> : <FaLink className="h-5 w-5" />}
+                </button>
+              </div>
+
+              {/* Vertical Separator (Desktop Only) */}
+              <div className="hidden md:block ml-auto h-6 w-[1px] bg-zinc-200 dark:bg-zinc-800 mx-1.5" />
+
+              {/* Favorite Button */}
               <button
-                onClick={() => handleShare('wa')}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors cursor-pointer dark:bg-green-950/20 dark:text-green-400"
-                title="Bagikan ke WhatsApp"
+                onClick={handleToggleFavorite}
+                disabled={isFavoriteLoading}
+                className={`flex items-center gap-1.5 text-sm font-semibold transition-colors cursor-pointer outline-none ${
+                  isFavoriteLoading ? 'opacity-50 cursor-wait' : 'hover:text-rose-600 dark:hover:text-rose-400'
+                } text-zinc-600 dark:text-zinc-400`}
+                title={isFavorited ? "Hapus dari Favorit Saya" : "Masukkan ke Favorit Saya"}
               >
-                <FaWhatsapp className="h-5.5 w-5.5" />
-              </button>
-              <button
-                onClick={() => handleShare('fb')}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer dark:bg-blue-950/20 dark:text-blue-400"
-                title="Bagikan ke Facebook"
-              >
-                <FaFacebook className="h-5.5 w-5.5" />
-              </button>
-              <button
-                onClick={() => handleShare('ig')}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-pink-50 text-pink-600 hover:bg-pink-100 transition-colors cursor-pointer dark:bg-pink-950/20 dark:text-pink-400"
-                title="Bagikan ke Instagram"
-              >
-                <FaInstagram className="h-5.5 w-5.5" />
-              </button>
-              <button
-                onClick={() => handleShare('tiktok')}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-800 hover:bg-zinc-200 transition-colors cursor-pointer dark:bg-zinc-800/40 dark:text-zinc-200"
-                title="Bagikan ke TikTok"
-              >
-                <FaTiktok className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => handleShare('link')}
-                className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors cursor-pointer ${
-                  isCopied
-                    ? 'bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300'
-                    : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700'
-                }`}
-                title="Salin Tautan"
-              >
-                {isCopied ? <FiCheck className="h-5.5 w-5.5" /> : <FaLink className="h-5 w-5" />}
+                {isFavorited ? (
+                  <FaHeart className="h-5.5 w-5.5 text-rose-500 fill-rose-500" />
+                ) : (
+                  <FiHeart className="h-5.5 w-5.5 text-rose-500" />
+                )}
+                <span className="hidden md:inline">Favorit ({favoriteCount})</span>
+                <span className="inline md:hidden font-bold">({favoriteCount})</span>
               </button>
             </div>
-
-            {/* Vertical Separator */}
-            <div className="ml-auto h-6 w-[1px] bg-zinc-200 dark:bg-zinc-800 mx-1.5" />
-
-            {/* Favorite Button */}
-            <button
-              onClick={handleToggleFavorite}
-              disabled={isFavoriteLoading}
-              className={`flex items-center gap-1.5 text-sm font-semibold transition-colors cursor-pointer outline-none ${
-                isFavoriteLoading ? 'opacity-50 cursor-wait' : 'hover:text-rose-600 dark:hover:text-rose-400'
-              } text-zinc-600 dark:text-zinc-400`}
-              title={isFavorited ? "Hapus dari Favorit Saya" : "Masukkan ke Favorit Saya"}
-            >
-              {isFavorited ? (
-                <FaHeart className="h-5.5 w-5.5 text-rose-500 fill-rose-500" />
-              ) : (
-                <FiHeart className="h-5.5 w-5.5 text-rose-500" />
-              )}
-              <span>Favorit ({favoriteCount})</span>
-            </button>
           </div>
 
           {/* External Contact Buttons (Desktop Only) */}
