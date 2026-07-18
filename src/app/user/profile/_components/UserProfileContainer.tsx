@@ -52,6 +52,7 @@ export function UserProfileContainer() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [searching, setSearching] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
+  const [isLocationSelected, setIsLocationSelected] = useState(false) // Blokir fetch setelah pilih lokasi
 
   // 1. Fetch user profile from Supabase profiles table on mount
   useEffect(() => {
@@ -96,16 +97,11 @@ export function UserProfileContainer() {
 
   // 2. Autocomplete search logic (debounced)
   useEffect(() => {
+    // Jangan fetch jika lokasi sudah dipilih — tunggu user mengetik lagi
+    if (isLocationSelected) return
+
     if (!isEditing || searchQuery.length < 3) {
       setSearchResults([])
-      return
-    }
-
-    // Jangan search jika query persis sama dengan lokasi terpilih saat ini
-    const currentLocationLabel = subdistrict 
-      ? `${subdistrict}, ${city}, ${province}`.toLowerCase() 
-      : ''
-    if (searchQuery.toLowerCase() === currentLocationLabel) {
       return
     }
 
@@ -122,10 +118,10 @@ export function UserProfileContainer() {
           console.error("Gagal mencari lokasi:", err)
           setSearching(false)
         })
-    }, 450)
+    }, 700) // Debounce 700ms untuk hemat kuota API
 
     return () => clearTimeout(delayDebounceFn)
-  }, [searchQuery, isEditing, subdistrict, city, province])
+  }, [searchQuery, isEditing, isLocationSelected])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -140,6 +136,7 @@ export function UserProfileContainer() {
 
   // Select location from search recommendations
   const handleSelectLocation = (loc: SearchResult) => {
+    setIsLocationSelected(true) // Kunci agar useEffect tidak re-fetch setelah memilih
     setProvince(loc.province_name)
     setProvinceId('') // Tidak wajib di-set karena ongkir menggunakan subdistrictId
     setCity(loc.city_name)
@@ -155,6 +152,7 @@ export function UserProfileContainer() {
     setPostalCode(loc.zip_code)
     
     setSearchQuery(loc.label) // Gunakan label bawaan Komerce yang lengkap
+    setSearchResults([])
     setShowDropdown(false)
   }
 
@@ -420,8 +418,12 @@ export function UserProfileContainer() {
                   <input 
                     type="text"
                     value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    placeholder="Ketik minimal 3 huruf (cth: Cipondoh atau Balaraja)"
+                    onChange={e => {
+                      setSearchQuery(e.target.value)
+                      // Jika user mengetik ulang setelah memilih lokasi, buka kembali pencarian
+                      if (isLocationSelected) setIsLocationSelected(false)
+                    }}
+                    placeholder="Masukkan nama Kelurahan atau Kecamatan"
                     required
                     className="w-full rounded border pl-10 pr-4 py-2.5 text-zinc-800 dark:text-zinc-200 font-medium transition-all duration-200 border-zinc-200 dark:border-zinc-800 bg-transparent focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
                   />
