@@ -3,6 +3,7 @@ import "./globals.css";
 import { getServices } from "@/services";
 import { ChatWidget } from "@/components/layout/ChatWidget";
 import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Laqzer Store - UMKM Digital",
@@ -23,10 +24,12 @@ export default async function RootLayout({
       className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col">
-        <CartProvider>
-          {children}
-          <ChatWidget settings={settings} />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            {children}
+            <ChatWidget settings={settings} />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

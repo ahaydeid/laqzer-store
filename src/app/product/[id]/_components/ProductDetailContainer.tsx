@@ -8,6 +8,7 @@ import { FaWhatsapp, FaFacebook, FaInstagram, FaTiktok, FaLink, FaHeart } from '
 import { Product } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
 import { useCart } from '@/context/CartContext'
+import { useAuth } from '@/components/providers/AuthProvider'
 import Swal from 'sweetalert2'
 
 interface ProductDetailContainerProps {
@@ -19,6 +20,7 @@ interface ProductDetailContainerProps {
 export function ProductDetailContainer({ product, settings, relatedProducts = [] }: ProductDetailContainerProps) {
   const router = useRouter()
   const { addToCart, toggleAllCheck } = useCart()
+  const { requireAuth } = useAuth()
   
   // Generate 6 distinct simulated images representing fashion/subscription mocks
   const galleryImages = [
@@ -188,6 +190,8 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   }
 
   const handleAddToCart = async () => {
+    if (!requireAuth('menambahkan produk ke keranjang')) return
+
     let flyImgEl: HTMLImageElement | null = null
     const activeTimeouts: NodeJS.Timeout[] = []
 
