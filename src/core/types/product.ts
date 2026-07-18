@@ -12,6 +12,6 @@ export interface Product {
   rating: number // e.g., 4.9
   soldCount: number // e.g., 102
   stock: number // Current available stock
-  soldProgress?: number // Percentage of stock sold (used for Flash Sale progress bars, e.g., 85 for 85%)
-  isFlashSale: boolean
+  soldProgress?: number // Percentage of stock sold (used for Campaign progress bars, e.g., 85 for 85%)
+  isCampaign: boolean
 }

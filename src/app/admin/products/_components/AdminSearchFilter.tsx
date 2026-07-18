@@ -19,7 +19,7 @@ export function AdminSearchFilter() {
           type="text"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
-          placeholder={isFocused ? 'Cari berdasarkan nama produk...' : 'Cari'}
+          placeholder={isFocused ? 'Cari berdasarkan nama produk...' : 'Cari...'}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           className={`transition-all duration-300 ease-in-out rounded-full border border-zinc-200 bg-white py-2 pl-10 text-sm outline-none focus:border-sky-500 dark:border-zinc-800 dark:bg-zinc-900/50 ${

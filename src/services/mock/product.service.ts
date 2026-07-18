@@ -15,7 +15,7 @@ const MOCK_PRODUCTS: Product[] = [
     soldCount: 90,
     stock: 100,
     soldProgress: 90, // 90%
-    isFlashSale: true,
+    isCampaign: true,
   },
   {
     id: 'fs-2',
@@ -29,7 +29,7 @@ const MOCK_PRODUCTS: Product[] = [
     soldCount: 18,
     stock: 20,
     soldProgress: 90, // 90%
-    isFlashSale: true,
+    isCampaign: true,
   },
   {
     id: 'fs-3',
@@ -43,7 +43,7 @@ const MOCK_PRODUCTS: Product[] = [
     soldCount: 15,
     stock: 30,
     soldProgress: 50, // 50%
-    isFlashSale: true,
+    isCampaign: true,
   },
   {
     id: 'fs-4',
@@ -57,7 +57,7 @@ const MOCK_PRODUCTS: Product[] = [
     soldCount: 25,
     stock: 50,
     soldProgress: 50, // 50%
-    isFlashSale: true,
+    isCampaign: true,
   },
 
   // Standard Catalog Items (for 'Todays For You')
@@ -72,7 +72,7 @@ const MOCK_PRODUCTS: Product[] = [
     rating: 4.9,
     soldCount: 1250,
     stock: 120,
-    isFlashSale: false,
+    isCampaign: false,
   },
   {
     id: 'p-2',
@@ -85,7 +85,7 @@ const MOCK_PRODUCTS: Product[] = [
     rating: 4.8,
     soldCount: 840,
     stock: 95,
-    isFlashSale: false,
+    isCampaign: false,
   },
   {
     id: 'p-3',
@@ -98,7 +98,7 @@ const MOCK_PRODUCTS: Product[] = [
     rating: 4.7,
     soldCount: 560,
     stock: 200,
-    isFlashSale: false,
+    isCampaign: false,
   },
   {
     id: 'p-4',
@@ -111,7 +111,7 @@ const MOCK_PRODUCTS: Product[] = [
     rating: 4.9,
     soldCount: 2100,
     stock: 150,
-    isFlashSale: false,
+    isCampaign: false,
   },
   {
     id: 'p-5',
@@ -123,7 +123,7 @@ const MOCK_PRODUCTS: Product[] = [
     rating: 4.9,
     soldCount: 520,
     stock: 45,
-    isFlashSale: false,
+    isCampaign: false,
   },
   {
     id: 'p-6',
@@ -136,7 +136,7 @@ const MOCK_PRODUCTS: Product[] = [
     rating: 4.9,
     soldCount: 180,
     stock: 35,
-    isFlashSale: false,
+    isCampaign: false,
   },
   {
     id: 'p-7',
@@ -149,7 +149,7 @@ const MOCK_PRODUCTS: Product[] = [
     rating: 4.8,
     soldCount: 1420,
     stock: 80,
-    isFlashSale: false,
+    isCampaign: false,
   },
   {
     id: 'p-8',
@@ -162,22 +162,22 @@ const MOCK_PRODUCTS: Product[] = [
     rating: 4.7,
     soldCount: 310,
     stock: 25,
-    isFlashSale: false,
+    isCampaign: false,
   }
 ]
 
 export class MockProductService implements IProductService {
-  async getFlashSaleProducts(): Promise<Product[]> {
+  async getCampaignProducts(): Promise<Product[]> {
     await new Promise((resolve) => setTimeout(resolve, 200))
-    return MOCK_PRODUCTS.filter((p) => p.isFlashSale)
+    return MOCK_PRODUCTS.filter((p) => p.isCampaign)
   }
 
   async getProducts(category?: string): Promise<Product[]> {
     await new Promise((resolve) => setTimeout(resolve, 300))
     if (!category || category === 'all') {
-      return MOCK_PRODUCTS.filter((p) => !p.isFlashSale)
+      return MOCK_PRODUCTS.filter((p) => !p.isCampaign)
     }
-    return MOCK_PRODUCTS.filter((p) => !p.isFlashSale && p.category === category)
+    return MOCK_PRODUCTS.filter((p) => !p.isCampaign && p.category === category)
   }
 
   async getProductById(id: string): Promise<Product | null> {

@@ -19,7 +19,7 @@ export class SupabaseProductService implements IProductService {
     return createBrowserClient()
   }
 
-  async getFlashSaleProducts(): Promise<Product[]> {
+  async getCampaignProducts(): Promise<Product[]> {
     // const supabase = this.getClient()
     
     // Example of fetching from Supabase database table
@@ -27,13 +27,13 @@ export class SupabaseProductService implements IProductService {
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .eq('is_flash_sale', true)
+      .eq('is_campaign', true)
 
     if (error) throw error
     return data
     */
 
-    throw new Error('SupabaseProductService.getFlashSaleProducts() is not implemented yet.')
+    throw new Error('SupabaseProductService.getCampaignProducts() is not implemented yet.')
   }
 
   async getProducts(category?: string): Promise<Product[]> {
@@ -42,7 +42,7 @@ export class SupabaseProductService implements IProductService {
 
     // Example of fetching catalog products from Supabase
     /*
-    let query = supabase.from('products').select('*').eq('is_flash_sale', false)
+    let query = supabase.from('products').select('*').eq('is_campaign', false)
     if (category && category !== 'all') {
       query = query.eq('category', category)
     }

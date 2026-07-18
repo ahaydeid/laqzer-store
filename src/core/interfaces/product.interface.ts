@@ -5,9 +5,9 @@ import { Product } from '../types/product'
  */
 export interface IProductService {
   /**
-   * Fetches products designated for the Flash Sale banner.
+   * Fetches products designated for the active Campaign banner.
    */
-  getFlashSaleProducts(): Promise<Product[]>
+  getCampaignProducts(): Promise<Product[]>
 
   /**
    * Fetches catalog products, optionally filtered by category.

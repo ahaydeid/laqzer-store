@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Swal from 'sweetalert2'
 import { Category } from '@/core/types/category'
 import { Product } from '@/core/types/product'
+import { playSwalSound } from '@/utils/sound'
 import { FiArrowLeft, FiSave, FiAlertCircle } from 'react-icons/fi'
 
 interface ProductFormProps {
@@ -17,19 +19,26 @@ export function ProductForm({ categories, initialData, type }: ProductFormProps)
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
-    category: initialData?.category || categories[0]?.name || '',
+    category: initialData?.category || categories[0]?.id || '',
     price: initialData?.price?.toString() || '',
+    originalPrice: initialData?.originalPrice?.toString() || '',
     stock: initialData?.stock?.toString() || '',
     imageUrl: initialData?.imageUrl || '',
     description: initialData?.description || '',
+    isCampaign: initialData?.isCampaign || false,
   })
   
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type: inputType } = e.target
+    if (inputType === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked
+      setFormData((prev) => ({ ...prev, [name]: checked }))
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,14 +66,19 @@ export function ProductForm({ categories, initialData, type }: ProductFormProps)
     // Simulasi respons API
     setTimeout(() => {
       setIsSubmitting(false)
-      alert(
-        type === 'create' 
+      playSwalSound('success')
+      Swal.fire({
+        title: 'Berhasil!',
+        text: type === 'create' 
           ? 'Produk berhasil ditambahkan! (Simulasi)' 
-          : 'Perubahan produk berhasil disimpan! (Simulasi)'
-      )
+          : 'Perubahan produk berhasil disimpan! (Simulasi)',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false,
+      })
       router.push('/admin/products')
       router.refresh()
-    }, 800)
+    }, 600)
   }
 
   return (
@@ -81,11 +95,6 @@ export function ProductForm({ categories, initialData, type }: ProductFormProps)
           <h1 className="text-xl font-bold tracking-tight">
             {type === 'create' ? 'Tambah Produk Baru' : 'Edit Detail Produk'}
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            {type === 'create' 
-              ? 'Lengkapi form di bawah untuk mendaftarkan produk baru ke katalog.' 
-              : 'Perbarui informasi detail produk terpilih.'}
-          </p>
         </div>
       </div>
 
@@ -163,14 +172,14 @@ export function ProductForm({ categories, initialData, type }: ProductFormProps)
                   className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2.5 px-4 text-sm outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
                 >
                   {categories.map((cat) => (
-                    <option key={cat.id} value={cat.name}>
+                    <option key={cat.id} value={cat.id}>
                       {cat.name}
                     </option>
                   ))}
                 </select>
               </div>
 
-              {/* Harga */}
+              {/* Harga Satuan */}
               <div>
                 <label className="block text-xs font-semibold mb-1 text-zinc-700 dark:text-zinc-300">
                   Harga Satuan (Rp) <span className="text-rose-500">*</span>
@@ -183,6 +192,21 @@ export function ProductForm({ categories, initialData, type }: ProductFormProps)
                   placeholder="Contoh: 150000"
                   className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2.5 px-4 text-sm outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
                   required
+                />
+              </div>
+
+              {/* Harga Asli / Coret (Diskon) */}
+              <div>
+                <label className="block text-xs font-semibold mb-1 text-zinc-700 dark:text-zinc-300">
+                  Harga Asli / Coret (Rp) <span className="text-zinc-400 font-normal">(Opsional)</span>
+                </label>
+                <input
+                  type="number"
+                  name="originalPrice"
+                  value={formData.originalPrice}
+                  onChange={handleChange}
+                  placeholder="Contoh: 200000"
+                  className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2.5 px-4 text-sm outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
                 />
               </div>
 
@@ -200,6 +224,22 @@ export function ProductForm({ categories, initialData, type }: ProductFormProps)
                   className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2.5 px-4 text-sm outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
                   required
                 />
+              </div>
+
+              {/* Toggle Status Campaign */}
+              <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/60">
+                <label className="flex items-center justify-between cursor-pointer">
+                  <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                    Ikutkan dalam Campaign
+                  </span>
+                  <input
+                    type="checkbox"
+                    name="isCampaign"
+                    checked={formData.isCampaign}
+                    onChange={handleChange}
+                    className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+                  />
+                </label>
               </div>
             </div>
           </div>
@@ -235,7 +275,6 @@ export function ProductForm({ categories, initialData, type }: ProductFormProps)
                     alt="Preview"
                     className="object-cover w-full h-full"
                     onError={(e) => {
-                      // Prevent loop
                       ;(e.target as HTMLImageElement).src = '/img/placeholder.jpg'
                     }}
                   />
