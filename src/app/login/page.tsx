@@ -1,20 +1,28 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, Suspense } from 'react'
 import { createClient } from '@/services/supabase/client'
 import { FcGoogle } from 'react-icons/fc'
+import { FiArrowLeft } from 'react-icons/fi'
+import { useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 
-export default function LoginPage() {
+function LoginContent() {
   const [loading, setLoading] = useState(false)
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const nextParam = searchParams.get('next') || '/'
 
   const handleGoogleLogin = async () => {
     try {
       setLoading(true)
       const supabase = createClient()
+      const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextParam)}`
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
         },
       })
       if (error) throw error
@@ -27,8 +35,19 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm aspect-square bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-8 flex flex-col justify-between">
-        <div className="space-y-1.5 text-center pt-2">
+      <div className="w-full max-w-sm aspect-square bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-8 flex flex-col justify-between relative">
+        {/* Back Button */}
+        <div className="flex items-center justify-between pt-1">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
+          >
+            <FiArrowLeft className="h-3.5 w-3.5" />
+            <span>Beranda</span>
+          </Link>
+        </div>
+
+        <div className="space-y-1.5 text-center">
           <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             Masuk ke Laqzer Store
           </h1>
@@ -47,10 +66,22 @@ export default function LoginPage() {
           <span>{loading ? 'Menghubungkan...' : 'Lanjutkan dengan Google'}</span>
         </button>
 
-        <p className="text-[11px] text-center text-zinc-400 dark:text-zinc-500 leading-tight pb-2">
+        <p className="text-[11px] text-center text-zinc-400 dark:text-zinc-500 leading-tight pb-1">
           Dengan melanjutkan, Anda menyetujui Ketentuan Layanan dan Kebijakan Privasi toko kami.
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[70vh] flex items-center justify-center">
+        <p className="text-xs text-zinc-400">Memuat...</p>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }
