@@ -31,10 +31,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const supabase = createClient()
 
+    const syncUserProfile = async (currentUser: User) => {
+      const avatarUrl =
+        currentUser.user_metadata?.avatar_url ||
+        currentUser.user_metadata?.picture ||
+        (currentUser.identities && currentUser.identities[0]?.identity_data?.avatar_url) ||
+        (currentUser.identities && currentUser.identities[0]?.identity_data?.picture) ||
+        null
+
+      const fullName =
+        currentUser.user_metadata?.full_name ||
+        currentUser.user_metadata?.name ||
+        currentUser.email?.split('@')[0] ||
+        'Pembeli'
+
+      try {
+        // 1. Upsert data ke profiles
+        await supabase.from('profiles').upsert(
+          {
+            id: currentUser.id,
+            email: currentUser.email,
+            full_name: fullName,
+            avatar_url: avatarUrl,
+          },
+          { onConflict: 'id' }
+        )
+
+        // 2. Update data di chat_rooms
+        if (avatarUrl) {
+          await supabase
+            .from('chat_rooms')
+            .update({
+              user_name: fullName,
+              user_avatar_url: avatarUrl,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('user_id', currentUser.id)
+        }
+      } catch (err) {
+        console.error('Error syncing user profile avatar:', err)
+      }
+    }
+
     // Fetch initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
+      if (session?.user) {
+        syncUserProfile(session.user)
+      }
       setLoading(false)
     })
 
@@ -43,6 +88,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (_event, session) => {
         setSession(session)
         setUser(session?.user ?? null)
+        if (session?.user) {
+          syncUserProfile(session.user)
+        }
         setLoading(false)
       }
     )
