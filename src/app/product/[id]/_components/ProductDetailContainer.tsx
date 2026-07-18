@@ -180,10 +180,10 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
 
   // Load status favorit dan jumlah favorit dari Supabase saat mount
   useEffect(() => {
-    wishlistService.getWishlistCount(String(product.id)).then(setFavoriteCount).catch(() => {})
-
-    if (!user?.id) return
-    wishlistService.isFavorited(user.id, String(product.id)).then(setIsFavorited).catch(() => {})
+    wishlistService.getFavoriteStatus(String(product.id), user?.id).then((res) => {
+      setFavoriteCount(res.count)
+      setIsFavorited(res.isFavorited)
+    }).catch(() => {})
   }, [user?.id, product.id, wishlistService])
 
   const handleToggleFavorite = async () => {

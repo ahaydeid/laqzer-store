@@ -50,46 +50,42 @@ export class SupabaseWishlistService {
   async getFavoriteProducts(userId: string): Promise<Product[]> {
     const supabase = this.getClient()
 
-    // Ambil semua product_id dari wishlist user, urut terbaru
-    const { data: wishlistRows } = await supabase
+    const { data, error } = await supabase
       .from('wishlists')
-      .select('product_id, created_at')
+      .select('created_at, products (*)')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
 
-    if (!wishlistRows || wishlistRows.length === 0) return []
+    if (error) {
+      console.error('Error getting favorite products:', error)
+      return []
+    }
 
-    const productIds = wishlistRows.map((r) => r.product_id)
+    if (!data) return []
 
-    const { data: products } = await supabase
-      .from('products')
-      .select('*')
-      .in('id', productIds)
-
-    if (!products) return []
-
-    // Urutkan sesuai urutan wishlist (terbaru = pertama)
-    const ordered = productIds
-      .map((id) => products.find((p) => String(p.id) === String(id)))
-      .filter(Boolean) as any[]
-
-    return ordered.map((data) => ({
-      id: data.id,
-      name: data.name,
-      description: data.description || '',
-      price: Number(data.price),
-      originalPrice: data.original_price ? Number(data.original_price) : undefined,
-      imageUrl: data.image_url,
-      images: Array.isArray(data.images) ? data.images : [],
-      category: data.category,
-      rating: data.rating !== null && data.rating !== undefined ? Number(data.rating) : 5.0,
-      soldCount: data.sold_count ? Number(data.sold_count) : 0,
-      stock: Number(data.stock || 0),
-      soldProgress: data.sold_progress ? Number(data.sold_progress) : 0,
-      isCampaign: Boolean(data.is_campaign),
-      variants: Array.isArray(data.variants) ? data.variants : [],
-      weight: data.weight !== null && data.weight !== undefined ? Number(data.weight) : 500,
-    }))
+    return data
+      .map((row: any) => {
+        const prod = row.products
+        if (!prod) return null
+        return {
+          id: prod.id,
+          name: prod.name,
+          description: prod.description || '',
+          price: Number(prod.price),
+          originalPrice: prod.original_price ? Number(prod.original_price) : undefined,
+          imageUrl: prod.image_url,
+          images: Array.isArray(prod.images) ? prod.images : [],
+          category: prod.category,
+          rating: prod.rating !== null && prod.rating !== undefined ? Number(prod.rating) : 5.0,
+          soldCount: prod.sold_count ? Number(prod.sold_count) : 0,
+          stock: Number(prod.stock || 0),
+          soldProgress: prod.sold_progress ? Number(prod.sold_progress) : 0,
+          isCampaign: Boolean(prod.is_campaign),
+          variants: Array.isArray(prod.variants) ? prod.variants : [],
+          weight: prod.weight !== null && prod.weight !== undefined ? Number(prod.weight) : 500,
+        }
+      })
+      .filter(Boolean) as Product[]
   }
 
   async getWishlistCount(productId: string): Promise<number> {
@@ -104,5 +100,30 @@ export class SupabaseWishlistService {
       return 0
     }
     return count || 0
+  }
+
+  async getFavoriteStatus(productId: string, userId?: string): Promise<{ count: number; isFavorited: boolean }> {
+    const supabase = this.getClient()
+    
+    const countPromise = supabase
+      .from('wishlists')
+      .select('*', { count: 'exact', head: true })
+      .eq('product_id', productId)
+
+    const favPromise = userId 
+      ? supabase
+          .from('wishlists')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('product_id', productId)
+          .maybeSingle()
+      : Promise.resolve({ data: null })
+
+    const [countRes, favRes] = await Promise.all([countPromise, favPromise])
+
+    return {
+      count: countRes.count || 0,
+      isFavorited: !!favRes.data
+    }
   }
 }

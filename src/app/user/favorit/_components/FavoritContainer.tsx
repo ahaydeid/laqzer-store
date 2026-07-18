@@ -83,9 +83,6 @@ export function FavoritContainer() {
           </div>
           <div>
             <h3 className="text-sm font-bold text-zinc-900 dark:text-white">Belum ada produk favorit</h3>
-            <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-xs">
-              Tekan ikon hati di halaman produk untuk menyimpannya di sini.
-            </p>
           </div>
           <Link
             href="/"
