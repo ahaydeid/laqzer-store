@@ -173,7 +173,7 @@ export function PurchaseContainer() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-zinc-200 dark:border-zinc-800 overflow-x-auto scrollbar-none">
+      <div className="flex border-b border-zinc-200 dark:border-zinc-800 overflow-x-auto scrollbar-none gap-1">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id
           const count = getTabCount(tab.id)
@@ -181,16 +181,16 @@ export function PurchaseContainer() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-5 py-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-2 px-4 py-3 text-xs font-medium border-b-2 transition-all cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? 'border-rose-600 text-rose-600 dark:border-rose-500 dark:text-rose-500 bg-rose-50/30 dark:bg-zinc-900/40'
-                  : 'border-transparent text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-900/20'
+                  ? 'border-rose-600 text-rose-600 dark:border-rose-500 dark:text-rose-400 font-semibold'
+                  : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
               }`}
             >
               <span>{tab.label}</span>
               {count > 0 && (
                 <span
-                  className={`px-2 py-0.5 text-[10px] font-bold rounded-full transition-colors ${
+                  className={`w-5 h-5 text-[10px] font-bold rounded-full flex items-center justify-center shrink-0 transition-colors ${
                     isActive
                       ? 'bg-rose-600 text-white dark:bg-rose-500 dark:text-zinc-950'
                       : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
