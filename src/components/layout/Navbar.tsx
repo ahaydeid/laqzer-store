@@ -125,57 +125,59 @@ export function Navbar({ settings, categories }: NavbarProps) {
                   )}
                 </Link>
                 
-                {/* Dropdown Menu */}
-                <div className="absolute right-0 top-full pt-2 w-96 z-50 pointer-events-none opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto group-hover:visible transition-all duration-200 ease-out origin-top-right transform">
-                  <div className="absolute right-4 top-0 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-zinc-200 dark:border-b-zinc-800" />
-                  <div className="absolute right-4 top-1 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white dark:border-b-zinc-950" />
-                  
-                  <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded overflow-hidden mt-1.5 shadow-lg">
-                    {items.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-                        <FiShoppingCart className="h-10 w-10 text-zinc-300 dark:text-zinc-700 mb-2" />
-                        <span className="text-xs text-zinc-500 font-medium">Belum ada produk di keranjang</span>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="p-3 border-b border-zinc-100 dark:border-zinc-900">
-                          <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500">Baru Ditambahkan</span>
+                {/* Dropdown Menu (Only shown when user is logged in) */}
+                {user && (
+                  <div className="absolute right-0 top-full pt-2 w-96 z-50 pointer-events-none opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto group-hover:visible transition-all duration-200 ease-out origin-top-right transform">
+                    <div className="absolute right-4 top-0 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-zinc-200 dark:border-b-zinc-800" />
+                    <div className="absolute right-4 top-1 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white dark:border-b-zinc-950" />
+                    
+                    <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded overflow-hidden mt-1.5 shadow-lg">
+                      {items.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+                          <FiShoppingCart className="h-10 w-10 text-zinc-300 dark:text-zinc-700 mb-2" />
+                          <span className="text-xs text-zinc-500 font-medium">Belum ada produk di keranjang</span>
                         </div>
-                        
-                        <div className="divide-y divide-zinc-100 dark:divide-zinc-900 max-h-72 overflow-y-auto">
-                          {[...items].reverse().slice(0, 5).map((item) => (
-                            <div key={item.id} className="p-3 flex gap-3 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/20 transition-colors">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={item.imageUrl}
-                                alt={item.name}
-                                className="h-10 w-10 rounded object-cover bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shrink-0"
-                              />
-                              <div className="flex-1 min-w-0 flex items-center">
-                                <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 truncate block">{item.name}</span>
+                      ) : (
+                        <>
+                          <div className="p-3 border-b border-zinc-100 dark:border-zinc-900">
+                            <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500">Baru Ditambahkan</span>
+                          </div>
+                          
+                          <div className="divide-y divide-zinc-100 dark:divide-zinc-900 max-h-72 overflow-y-auto">
+                            {[...items].reverse().slice(0, 5).map((item) => (
+                              <div key={item.id} className="p-3 flex gap-3 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/20 transition-colors">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={item.imageUrl}
+                                  alt={item.name}
+                                  className="h-10 w-10 rounded object-cover bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shrink-0"
+                                />
+                                <div className="flex-1 min-w-0 flex items-center">
+                                  <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 truncate block">{item.name}</span>
+                                </div>
+                                <span className="text-xs font-bold text-rose-500 shrink-0 self-center">
+                                  Rp {item.price.toLocaleString('id-ID')}
+                                </span>
                               </div>
-                              <span className="text-xs font-bold text-rose-500 shrink-0 self-center">
-                                Rp {item.price.toLocaleString('id-ID')}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                        
-                        <div className="bg-zinc-50 dark:bg-zinc-900/50 p-3 flex items-center justify-between gap-4 border-t border-zinc-200 dark:border-zinc-800">
-                          <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold">
-                            {items.length > 5 ? `${items.length - 5} Produk Lainnya` : ''}
-                          </span>
-                          <Link
-                            href="/cart"
-                            className="bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-[11px] px-3.5 py-1.5 rounded transition-all cursor-pointer"
-                          >
-                            Tampilkan Keranjang Belanja
-                        </Link>
-                        </div>
-                      </>
-                    )}
+                            ))}
+                          </div>
+                          
+                          <div className="bg-zinc-50 dark:bg-zinc-900/50 p-3 flex items-center justify-between gap-4 border-t border-zinc-200 dark:border-zinc-800">
+                            <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold">
+                              {items.length > 5 ? `${items.length - 5} Produk Lainnya` : ''}
+                            </span>
+                            <Link
+                              href="/cart"
+                              className="bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-[11px] px-3.5 py-1.5 rounded transition-all cursor-pointer"
+                            >
+                              Tampilkan Keranjang Belanja
+                          </Link>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
