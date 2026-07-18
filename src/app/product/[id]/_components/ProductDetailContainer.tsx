@@ -637,7 +637,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               <h3 className="text-zinc-900 dark:text-white font-extrabold text-base">
                 {product.name}
               </h3>
-              <p>{product.description}</p>
+              <div dangerouslySetInnerHTML={{ __html: product.description }} className="text-zinc-600 dark:text-zinc-300" />
               
               <h4 className="text-zinc-900 dark:text-white font-bold text-sm pt-2">Kenapa Harus Membeli di Toko Kami:</h4>
               <ul className="list-disc pl-5 space-y-1 text-sm">
