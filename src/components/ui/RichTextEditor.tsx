@@ -18,17 +18,32 @@ interface RichTextEditorProps {
   placeholder?: string
 }
 
+const formatInitialValueHtml = (val?: string) => {
+  if (!val) return ''
+  // If value already contains HTML tags, return as is
+  if (/<[a-z][\s\S]*>/i.test(val)) {
+    return val
+  }
+  // Otherwise, split double newlines into <p> and single newlines into <br />
+  return val
+    .split(/\n\n+/)
+    .map((paragraph) => `<p>${paragraph.replace(/\n/g, '<br />')}</p>`)
+    .join('')
+}
+
 export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
+  const initialHtml = formatInitialValueHtml(value)
+
   const editor = useEditor({
     extensions: [StarterKit],
-    content: value || '',
+    content: initialHtml,
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML())
     },
     editorProps: {
       attributes: {
-        class: 'min-h-[130px] p-3 text-xs outline-none text-zinc-800 dark:text-zinc-200 focus:outline-none prose dark:prose-invert max-w-none',
+        class: 'min-h-[130px] p-3 text-xs outline-none text-zinc-800 dark:text-zinc-200 focus:outline-none prose dark:prose-invert max-w-none whitespace-pre-line [&_p]:mb-2 [&_h1]:text-sm [&_h1]:font-bold [&_h2]:text-xs [&_h2]:font-bold [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4',
       },
     },
   })
@@ -36,7 +51,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   // Synchronize external value changes (e.g., reset or load initial data)
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value || '')
+      editor.commands.setContent(formatInitialValueHtml(value))
     }
   }, [value, editor])
 
