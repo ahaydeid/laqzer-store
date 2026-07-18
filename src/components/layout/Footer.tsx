@@ -110,9 +110,12 @@ export function Footer({ settings }: FooterProps) {
       </div>
 
       {/* Footer Bottom bar */}
-      <div className="mx-auto max-w-7xl border-t border-zinc-800 mt-12 pt-6 flex flex-col items-center gap-4 text-xs text-center">
-        <p>
-          &copy; {currentYear} {settings.name}. Hak Cipta Dilindungi. &middot; Dibuat oleh{' '}
+      <div className="mx-auto max-w-7xl border-t border-zinc-800 mt-12 pt-6 grid grid-cols-3 items-center gap-4 text-xs">
+        <p className="text-left">
+          &copy; {currentYear} {settings.name}. Hak Cipta Dilindungi.
+        </p>
+        <p className="text-center">
+          Dibuat oleh{' '}
           <a
             href="https://ahadi.my.id/own"
             target="_blank"
@@ -122,7 +125,7 @@ export function Footer({ settings }: FooterProps) {
             Ahadi
           </a>
         </p>
-        <div className="flex gap-4 text-zinc-500">
+        <div className="flex gap-4 text-zinc-500 justify-end">
           <a href="#" className="hover:underline">Syarat &amp; Ketentuan</a>
           <a href="#" className="hover:underline">Kebijakan Privasi</a>
         </div>
