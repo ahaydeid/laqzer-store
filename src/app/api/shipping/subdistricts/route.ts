@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         key: apiKey
       },
       signal: AbortSignal.timeout(6000), // Batas waktu 6 detik
-      next: { revalidate: 86400 } // Cache selama 24 jam
+      cache: 'no-store' // Hindari bug cache nyangkut di disk .next/cache server
     })
 
     if (!res.ok) {
