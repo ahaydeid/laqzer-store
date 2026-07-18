@@ -85,6 +85,12 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
     }));
   };
 
+  const triggerRevalidation = () => {
+    fetch('/api/revalidate?path=/').catch(err => 
+      console.error('Failed to trigger products cache revalidation:', err)
+    );
+  };
+
   const handleSaveStock = async (productId: string, name: string) => {
     const newStock = draftStocks[productId] ?? 0;
     try {
@@ -92,6 +98,7 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
       await productService.updateProduct(productId, { stock: newStock });
       setProducts(prev => prev.map(p => p.id === productId ? { ...p, stock: newStock } : p));
       setEditingProductId(null);
+      triggerRevalidation();
       
       playSwalSound("success");
       
@@ -129,6 +136,7 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
           const productService = getServices().products;
           await productService.deleteProduct(id);
           setProducts(prev => prev.filter(p => p.id !== id));
+          triggerRevalidation();
           playSwalSound("success");
           Swal.fire({
             title: 'Berhasil!',
@@ -177,10 +185,12 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
         setProducts(prev =>
           prev.map(p => (p.id === savedData.id ? updated : p))
         );
+        triggerRevalidation();
       } else {
         // Create new product
         const created = await productService.createProduct(savedData);
         setProducts(prev => [created, ...prev]);
+        triggerRevalidation();
       }
     } catch (err: any) {
       console.error(err);

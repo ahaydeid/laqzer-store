@@ -11,4 +11,5 @@ export interface CartItem {
   quantity: number
   stock: number
   checked: boolean
+  weight: number
 }

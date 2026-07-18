@@ -1,12 +1,14 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { StoreSettings } from '@/core/types/store'
-import { FiChevronLeft, FiTag } from 'react-icons/fi'
+import { SupabaseProfileService } from '@/services/supabase/profile.service'
+import { UserProfile } from '@/core/types/profile'
+import { FiChevronLeft, FiTag, FiLoader } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 import { Modal } from '@/components/ui/Modal'
 
@@ -22,21 +24,29 @@ interface CourierOption {
   etd: string
 }
 
-const COURIER_OPTIONS: CourierOption[] = [
-  { id: 'jne-reg', name: 'JNE', service: 'Reguler', cost: 15000, etd: '2-3 Hari' },
-  { id: 'jnt-reg', name: 'J&T', service: 'Express', cost: 16000, etd: '1-2 Hari' },
-  { id: 'sicepat-reg', name: 'SiCepat', service: 'Reguler', cost: 14000, etd: '2-3 Hari' },
-  { id: 'gosend-instant', name: 'GoSend', service: 'Instant (Sameday)', cost: 25000, etd: '3-6 Jam' },
-]
-
 export function CheckoutContainer({ settings }: CheckoutContainerProps) {
   const router = useRouter()
+  const { user } = useAuth()
   const { items, clearCheckedItems } = useCart()
+  
+  const profileService = useMemo(() => new SupabaseProfileService(), [])
 
   // 1. Get checked items from cart
   const checkedItems = items.filter((item) => item.checked)
 
   const [isOrderPlaced, setIsOrderPlaced] = useState(false)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [loadingProfile, setLoadingProfile] = useState(true)
+  const [couriers, setCouriers] = useState<CourierOption[]>([])
+  const [selectedCourier, setSelectedCourier] = useState<CourierOption | null>(null)
+  const [loadingShipping, setLoadingShipping] = useState(false)
+  const [shippingError, setShippingError] = useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Memoize checkedItems to prevent redundant re-renders
+  const checkedItemsHash = useMemo(() => {
+    return JSON.stringify(checkedItems.map(i => `${i.id}-${i.quantity}`))
+  }, [checkedItems])
 
   // Redirect to cart if no items checked
   useEffect(() => {
@@ -53,37 +63,83 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
     }
   }, [checkedItems.length, router, isOrderPlaced])
 
-
-
-  // Shipping State
-  const [selectedCourier, setSelectedCourier] = useState<CourierOption>(COURIER_OPTIONS[0])
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const getDeliveryEstimate = (courierId: string) => {
-    const today = new Date(2026, 6, 14) // July 14, 2026
-    if (courierId.includes('instant')) {
-      return {
-        single: 'Hari Ini',
-        range: 'Hari Ini (3-6 Jam)'
-      }
+  // 2. Fetch User Profile
+  useEffect(() => {
+    if (!user) {
+      setLoadingProfile(false)
+      return
     }
-    const minDays = courierId === 'jnt-reg' ? 1 : 2
-    const maxDays = courierId === 'jnt-reg' ? 2 : 3
-    const minDate = new Date(today)
-    minDate.setDate(today.getDate() + minDays)
-    const maxDate = new Date(today)
-    maxDate.setDate(today.getDate() + maxDays)
-    const formatDayMonth = (d: Date) => {
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des']
-      return `${d.getDate()} ${monthNames[d.getMonth()]}`
+
+    setLoadingProfile(true)
+    profileService.getProfile(user.id).then((prof) => {
+      setProfile(prof)
+      setLoadingProfile(false)
+    }).catch(err => {
+      console.error('Error memuat profil di checkout:', err)
+      setLoadingProfile(false)
+    })
+  }, [user, profileService])
+
+  // 3. Fetch Shipping Cost from RajaOngkir
+  useEffect(() => {
+    if (!profile || !profile.cityId || checkedItems.length === 0) return
+
+    // Hitung total berat belanjaan berdasarkan berat produk asli
+    const totalWeight = checkedItems.reduce((acc, item) => acc + ((item.weight || 500) * item.quantity), 0)
+    setLoadingShipping(true)
+    setShippingError(null)
+
+    fetch('/api/shipping/cost', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        destinationCityId: profile.cityId,
+        weightInGrams: totalWeight
+      })
+    })
+    .then(async (res) => {
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data?.error || 'Gagal memuat tarif ongkir')
+      }
+      return data
+    })
+    .then(data => {
+      const list = data?.rajaongkir?.results || []
+      setCouriers(list)
+      if (list.length > 0) {
+        setSelectedCourier(list[0])
+      } else {
+        setSelectedCourier(null)
+      }
+      setLoadingShipping(false)
+    })
+    .catch(err => {
+      console.error('Gagal fetch shipping cost:', err)
+      setShippingError(err?.message || 'Gagal terhubung ke RajaOngkir API')
+      setCouriers([])
+      setSelectedCourier(null)
+      setLoadingShipping(false)
+    })
+  }, [profile?.cityId, checkedItemsHash])
+
+  // Delivery Estimate formatter
+  const getDeliveryEstimate = (courier: CourierOption | null) => {
+    if (!courier) return { single: '-', range: '-' }
+    const etd = courier.etd || '2-3'
+    // Bersihkan non-numeric
+    const cleanEtd = etd.replace(/[^0-9\-]/g, '')
+    if (!cleanEtd) {
+      return { single: etd, range: etd }
     }
     return {
-      single: formatDayMonth(maxDate),
-      range: `${formatDayMonth(minDate)} - ${formatDayMonth(maxDate)}`
+      single: `${cleanEtd} Hari`,
+      range: `${cleanEtd} Hari`
     }
   }
 
-  const deliveryEstimate = getDeliveryEstimate(selectedCourier.id)
+
+  const deliveryEstimate = getDeliveryEstimate(selectedCourier)
 
   // Voucher State
   const [voucherInput, setVoucherInput] = useState('')
@@ -112,7 +168,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
     }
   }
 
-  const shippingCost = selectedCourier.cost
+  const shippingCost = selectedCourier ? selectedCourier.cost : 0
   const grandTotal = Math.max(0, productSubtotal + shippingCost - discount)
 
   // Voucher Handler
@@ -131,7 +187,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
         title: 'Voucher Berhasil!',
         text: 'Diskon 10% telah diterapkan pada pesanan Anda.',
         icon: 'success',
-        confirmButtonColor: '#18181b',
+        confirmButtonColor: '#e11d48',
         confirmButtonText: 'Oke',
       })
     } else if (cleanCode === 'DISKON50') {
@@ -145,7 +201,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
         title: 'Voucher Berhasil!',
         text: 'Diskon 50% (Maks. Rp50.000) telah diterapkan.',
         icon: 'success',
-        confirmButtonColor: '#18181b',
+        confirmButtonColor: '#e11d48',
         confirmButtonText: 'Oke',
       })
     } else {
@@ -153,7 +209,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
         title: 'Voucher Tidak Valid',
         text: 'Kode voucher salah atau tidak berlaku.',
         icon: 'error',
-        confirmButtonColor: '#18181b',
+        confirmButtonColor: '#e11d48',
         confirmButtonText: 'Oke',
       })
     }
@@ -177,7 +233,16 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // 1. Show processing loader modal
+    if (!selectedCourier) {
+      Swal.fire({
+        title: 'Kurir Belum Dipilih',
+        text: 'Silakan pilih opsi pengiriman terlebih dahulu.',
+        icon: 'warning',
+        confirmButtonColor: '#e11d48',
+      })
+      return
+    }
+
     Swal.fire({
       title: 'Memproses Pesanan...',
       html: 'Sedang membuat pesanan Anda, mohon tunggu sebentar.',
@@ -189,27 +254,23 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
       }
     })
 
-    // Simulate server processing (1.5 seconds)
     setTimeout(() => {
-      // Build confirmation message template for WhatsApp
       let confirmMessage = `Halo *${settings.name}*, saya ingin melakukan konfirmasi pembayaran untuk pesanan saya:\n\n`
       confirmMessage += `*Rincian Pesanan:*\n`
       checkedItems.forEach((item, index) => {
         confirmMessage += `${index + 1}. ${item.name} (${item.variant}) x${item.quantity}\n`
       })
       confirmMessage += `\n`
+      confirmMessage += `- *Kurir*: ${selectedCourier.name} (${selectedCourier.service})\n`
+      confirmMessage += `- *Alamat*: ${profile?.address || ''}, ${profile?.city || ''}, ${profile?.province || ''}\n`
       confirmMessage += `- *Total Pembayaran: Rp ${grandTotal.toLocaleString('id-ID')}*\n\n`
       confirmMessage += `Berikut bukti transfer pembayaran akan saya lampirkan setelah pesan ini. Mohon segera diproses, terima kasih!`
 
       const waLink = getWhatsAppLink(confirmMessage)
 
-      // Mark order as placed to prevent protective redirects or unmounting
       setIsOrderPlaced(true)
-
-      // Clear items from cart
       clearCheckedItems()
 
-      // 2. Show success alert with bank transfer details and WA button
       Swal.fire({
         icon: 'success',
         title: 'Pemesanan Berhasil!',
@@ -226,21 +287,63 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
             </div>
           </div>
         `,
-        confirmButtonColor: '#10b981', // emerald-500 green color
+        confirmButtonColor: '#10b981',
         confirmButtonText: 'Konfirmasi Pembayaran (WA)',
         allowOutsideClick: false,
         allowEscapeKey: false,
       }).then((result) => {
         if (result.isConfirmed) {
           window.open(waLink, '_blank')
-          router.push('/user/purchase') // Redirect to purchase history
+          router.push('/user/purchase')
         }
       })
     }, 1500)
   }
 
   if (checkedItems.length === 0 && !isOrderPlaced) {
-    return null // Will redirect via useEffect
+    return null
+  }
+
+  if (!user) {
+    return (
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded p-8 text-center max-w-md mx-auto space-y-4">
+        <p className="text-zinc-600 dark:text-zinc-400">Silakan login untuk melanjutkan checkout pesanan Anda.</p>
+        <Link href="/login?next=/checkout" className="inline-block bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-6 rounded text-xs tracking-wider uppercase">
+          Masuk ke Akun
+        </Link>
+      </div>
+    )
+  }
+
+  if (loadingProfile) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-zinc-400">
+        <FiLoader className="h-8 w-8 animate-spin mb-3 opacity-60" />
+        <p className="text-sm">Memuat profil dan ongkir...</p>
+      </div>
+    )
+  }
+
+  const isAddressIncomplete = !profile || !profile.address || !profile.cityId
+
+  if (isAddressIncomplete) {
+    return (
+      <div className="space-y-6 max-w-xl mx-auto">
+        <div className="rounded bg-white dark:bg-zinc-950 p-8 border border-zinc-200 dark:border-zinc-900 text-center space-y-4">
+          <div className="text-rose-500 text-4xl flex justify-center">⚠️</div>
+          <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Alamat Pengiriman Belum Lengkap</h3>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+            Anda harus mengisi alamat lengkap, provinsi, dan kota/kabupaten di profil Anda terlebih dahulu untuk menghitung ongkos kirim.
+          </p>
+          <Link 
+            href="/user/profile"
+            className="inline-block bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-6 rounded text-xs tracking-wider uppercase cursor-pointer"
+          >
+            Lengkapi Alamat Profil
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -264,41 +367,32 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
         {/* Left Side: Address form, Products, Couriers */}
         <div className="lg:col-span-2 space-y-6">
           
-          {/* Address Form Card (Static Hasil) */}
+          {/* Address Form Card */}
           <div className="rounded bg-white dark:bg-zinc-950 p-5 space-y-3">
             <div className="flex items-baseline border-b border-zinc-100 dark:border-zinc-900 pb-3">
               <h3 className="text-base font-bold text-zinc-900 dark:text-white">
                 Alamat Pengiriman
               </h3>
-              <button 
-                type="button" 
+              <Link 
+                href="/user/profile"
                 className="ml-3 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer outline-none"
-                onClick={() => {
-                  Swal.fire({
-                    title: 'Ubah Alamat',
-                    text: 'Fitur ubah alamat pengiriman saat ini menggunakan alamat default Anda.',
-                    icon: 'info',
-                    confirmButtonColor: '#18181b',
-                    confirmButtonText: 'Oke'
-                  })
-                }}
               >
-                Ubah
-              </button>
+                Ubah Alamat
+              </Link>
             </div>
             
             <div className="space-y-1 text-sm text-zinc-800 dark:text-zinc-200">
               <div className="flex items-center gap-2">
-                <span className="font-bold">Ahadi</span>
+                <span className="font-bold">{profile.fullName || user.user_metadata?.full_name}</span>
                 <span className="text-zinc-400 dark:text-zinc-600">|</span>
-                <span className="text-zinc-600 dark:text-zinc-400 font-medium">081234567890</span>
-                <span className="ml-auto text-xs font-medium text-rose-500 tracking-wide px-1.5 py-0.5 border border-rose-500 rounded-sm scale-90">Utama</span>
+                <span className="text-zinc-650 dark:text-zinc-400 font-medium">{profile.phone || '-'}</span>
+                <span className="ml-auto text-[10px] font-bold text-rose-500 tracking-wide px-1.5 py-0.5 border border-rose-500 rounded-sm scale-90">Utama</span>
               </div>
               <p className="text-zinc-600 dark:text-zinc-400 mt-1">
-                Jl. Kemang Raya No. 10, RT 02 / RW 05
+                {profile.address}
               </p>
-              <p className="text-zinc-500 dark:text-zinc-500 text-xs">
-                Kec. Cilandak, Kota Jakarta Selatan, DKI Jakarta, 12430
+              <p className="text-zinc-500 dark:text-zinc-550 text-xs">
+                {profile.city}, {profile.province}, {profile.postalCode}
               </p>
             </div>
           </div>
@@ -348,33 +442,45 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-y border-dashed border-zinc-200 dark:border-zinc-800 py-4">
               <div className="text-sm">
                 <span className="font-bold text-zinc-900 dark:text-white">Opsi Pengiriman:</span>
-                <span className="ml-2 font-medium text-rose-500 dark:text-zinc-200">{selectedCourier.name} ({selectedCourier.service})</span>
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(true)}
-                  className="ml-4 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-                >
-                  Ubah
-                </button>
+                {loadingShipping ? (
+                  <span className="ml-2 text-xs text-rose-500 animate-pulse">Menghitung tarif ongkos kirim...</span>
+                ) : shippingError ? (
+                  <span className="ml-2 text-xs text-red-500 font-medium">Gagal memuat tarif: {shippingError}</span>
+                ) : selectedCourier ? (
+                  <>
+                    <span className="ml-2 font-medium text-rose-500 dark:text-zinc-200">{selectedCourier.name} ({selectedCourier.service})</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(true)}
+                      className="ml-4 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                    >
+                      Ubah
+                    </button>
+                  </>
+                ) : (
+                  <span className="ml-2 text-xs text-rose-500">Opsi pengiriman tidak tersedia.</span>
+                )}
               </div>
               <div className="text-right sm:text-right shrink-0">
                 <span className="text-sm font-bold text-zinc-900 dark:text-white">
-                  Rp {selectedCourier.cost.toLocaleString('id-ID')}
+                  {loadingShipping ? '...' : selectedCourier ? `Rp ${selectedCourier.cost.toLocaleString('id-ID')}` : 'Rp 0'}
                 </span>
               </div>
             </div>
 
             {/* Sub-bar below it */}
-            <div
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 cursor-pointer hover:underline py-1"
-            >
-              <svg className="h-4 w-4 shrink-0 fill-current" viewBox="0 0 24 24">
-                <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm12 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm2-7.5h-3V9h3v2z" />
-              </svg>
-              <span>Garansi tiba {deliveryEstimate.range} dengan {selectedCourier.name}</span>
-              <span className="ml-auto text-zinc-400 dark:text-zinc-500 font-bold">›</span>
-            </div>
+            {!loadingShipping && selectedCourier && (
+              <div
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 cursor-pointer hover:underline py-1"
+              >
+                <svg className="h-4 w-4 shrink-0 fill-current" viewBox="0 0 24 24">
+                  <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm12 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm2-7.5h-3V9h3v2z" />
+                </svg>
+                <span>Garansi tiba {deliveryEstimate.range} dengan {selectedCourier.name}</span>
+                <span className="ml-auto text-zinc-400 dark:text-zinc-500 font-bold">›</span>
+              </div>
+            )}
           </div>
 
         </div>
@@ -415,13 +521,13 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
                     type="text"
                     value={voucherInput}
                     onChange={(e) => setVoucherInput(e.target.value)}
-                    placeholder="LAQZERNEW / DISKON50"
+                    placeholder="Masukkan voucher di sini..."
                     className="flex-1 rounded border border-zinc-200 px-3 py-1.5 text-xs text-zinc-900 placeholder-zinc-400 focus:border-zinc-950 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-white"
                   />
                   <button
                     type="button"
                     onClick={handleApplyVoucher}
-                    className="rounded bg-zinc-950 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-900 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 transition-all cursor-pointer"
+                    className="rounded bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700 transition-all cursor-pointer"
                   >
                     Pakai
                   </button>
@@ -442,7 +548,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
               <div className="flex justify-between text-zinc-500 dark:text-zinc-400">
                 <span>Subtotal Pengiriman (Ongkir)</span>
                 <span className="font-semibold text-zinc-900 dark:text-white">
-                  Rp {shippingCost.toLocaleString('id-ID')}
+                  {loadingShipping ? '...' : `Rp ${shippingCost.toLocaleString('id-ID')}`}
                 </span>
               </div>
 
@@ -466,7 +572,8 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
             {/* Submit Order Button */}
             <button
               type="submit"
-              className="w-full flex  items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white py-3 px-4 text-sm font-semibold tracking-wide transition-all active:scale-[0.99] cursor-pointer"
+              disabled={loadingShipping || !selectedCourier}
+              className="w-full flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white py-3 px-4 text-xs font-bold uppercase tracking-wider transition-all active:scale-[0.99] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <span>Buat Pesanan</span>
             </button>
@@ -474,6 +581,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
         </div>
 
       </form>
+
       {/* Shipping List Selection Modal */}
       <Modal
         isOpen={isModalOpen}
@@ -482,8 +590,9 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
         size="md"
       >
         <div className="space-y-3 px-6 pb-6 pt-2">
-          {COURIER_OPTIONS.map((option) => {
-            const est = getDeliveryEstimate(option.id)
+          {couriers.map((option) => {
+            const est = getDeliveryEstimate(option)
+            const isSelected = selectedCourier ? selectedCourier.id === option.id : false
             return (
               <button
                 key={option.id}
@@ -493,7 +602,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
                   setIsModalOpen(false)
                 }}
                 className={`w-full flex items-center justify-between p-4 rounded text-left border transition-all cursor-pointer ${
-                  selectedCourier.id === option.id
+                  isSelected
                     ? 'border-zinc-950 bg-zinc-50 dark:border-white dark:bg-zinc-900'
                     : 'border-zinc-200 bg-white hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700'
                 }`}

@@ -37,6 +37,7 @@ export function ProductFormModal({
     category: '',
     price: '',
     stock: '',
+    weight: '500',
     description: '',
   })
 
@@ -56,6 +57,7 @@ export function ProductFormModal({
         category: initialData?.category || initialCategories[0]?.id || '',
         price: initialData?.price?.toString() || '',
         stock: initialData?.stock?.toString() || '',
+        weight: initialData?.weight?.toString() || '500',
         description: initialData?.description || '',
       })
 
@@ -153,6 +155,12 @@ export function ProductFormModal({
       return
     }
 
+    const weightNum = Number(formData.weight)
+    if (isNaN(weightNum) || weightNum <= 0) {
+      setError('Berat produk harus berupa angka positif.')
+      return
+    }
+
     const cleanVariants = variants.map(v => v.trim()).filter(v => v.length > 0)
     if (hasVariants && cleanVariants.length === 0) {
       setError('Tambahkan minimal 1 varian produk atau nonaktifkan toggle varian.')
@@ -171,6 +179,7 @@ export function ProductFormModal({
         category: formData.category,
         price: priceNum,
         stock: stockNum,
+        weight: weightNum,
         imageUrl: mainImageUrl,
         images: images.length > 0 ? images : [mainImageUrl],
         description: formData.description.trim(),
@@ -197,6 +206,7 @@ export function ProductFormModal({
     const initCategory = initialData?.category || initialCategories[0]?.id || ''
     const initPrice = initialData?.price?.toString() || ''
     const initStock = initialData?.stock?.toString() || ''
+    const initWeight = initialData?.weight?.toString() || '500'
     const initDesc = initialData?.description || ''
     const initVariants = initialData?.variants && initialData.variants.length > 0 ? initialData.variants : []
 
@@ -210,6 +220,7 @@ export function ProductFormModal({
     if (formData.category !== initCategory) return true
     if (formData.price !== initPrice) return true
     if (formData.stock !== initStock) return true
+    if (formData.weight !== initWeight) return true
     if (formData.description.trim() !== initDesc) return true
     if (JSON.stringify(images) !== JSON.stringify(initImgs)) return true
     if (JSON.stringify(variants.filter(v => v.trim())) !== JSON.stringify(initVariants)) return true
@@ -285,7 +296,7 @@ export function ProductFormModal({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Kategori */}
             <div>
               <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
@@ -326,6 +337,22 @@ export function ProductFormModal({
                 value={formData.stock}
                 onChange={handleChange}
                 placeholder="Contoh: 50"
+                className="w-full rounded border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
+                required
+              />
+            </div>
+
+            {/* Berat Produk (gram) */}
+            <div>
+              <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
+                Berat (gram) <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="number"
+                name="weight"
+                value={formData.weight}
+                onChange={handleChange}
+                placeholder="Contoh: 500"
                 className="w-full rounded border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
                 required
               />

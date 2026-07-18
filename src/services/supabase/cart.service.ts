@@ -27,7 +27,8 @@ export class SupabaseCartService implements ICartService {
           price,
           image_url,
           stock,
-          variants
+          variants,
+          weight
         )
       `)
       .order('created_at', { ascending: false })
@@ -53,6 +54,7 @@ export class SupabaseCartService implements ICartService {
           quantity: item.quantity,
           checked: item.checked,
           stock: p.stock || 99,
+          weight: p.weight !== null && p.weight !== undefined ? Number(p.weight) : 500,
         }
       })
   }

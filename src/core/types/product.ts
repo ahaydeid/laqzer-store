@@ -16,4 +16,5 @@ export interface Product {
   soldProgress?: number // Percentage of stock sold (used for Campaign progress bars, e.g., 85 for 85%)
   isCampaign: boolean
   variants?: string[] // Product variants e.g., ['S', 'M', 'L'] or ['Merah', 'Hitam']
+  weight: number // Weight in grams (default 500)
 }

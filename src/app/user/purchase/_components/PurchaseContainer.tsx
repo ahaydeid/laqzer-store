@@ -381,13 +381,6 @@ export function PurchaseContainer() {
 
   return (
     <div className="space-y-6">
-      {/* Title Header (Sesuai aturan-utama.md: tanpa sub-judul/deskripsi) */}
-      <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800 px-4 sm:px-0">
-        <h2 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-white">
-          Pesanan Saya
-        </h2>
-      </div>
-
       {/* Tab Filter (Rata Tengah X, seperti /admin/order) */}
       <div className="flex justify-center border-b border-zinc-100 dark:border-zinc-800/80">
         <div className="flex items-center gap-1 overflow-x-auto scrollbar-none -mb-px pb-1">

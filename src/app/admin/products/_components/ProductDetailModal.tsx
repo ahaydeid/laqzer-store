@@ -150,8 +150,8 @@ export function ProductDetailModal({
           )}
         </div>
 
-        {/* Info Grid (4 Cards tanpa border dan tanpa icon) */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {/* Info Grid (5 Cards tanpa border dan tanpa icon) */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           <div className="rounded bg-zinc-50 dark:bg-zinc-900/50 p-3.5">
             <div className="text-zinc-400 text-xs mb-1">
               Stok Tersedia
@@ -176,6 +176,15 @@ export function ProductDetailModal({
             </div>
             <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
               {product.rating || 5.0} / 5.0
+            </p>
+          </div>
+
+          <div className="rounded bg-zinc-50 dark:bg-zinc-900/50 p-3.5">
+            <div className="text-zinc-400 text-xs mb-1">
+              Berat Produk
+            </div>
+            <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
+              {product.weight || 500} gram
             </p>
           </div>
 

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { FiSearch, FiShoppingCart, FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import Link from 'next/link'
 import { FaRegUserCircle } from 'react-icons/fa'
+import Avatar from '@/components/ui/Avatar'
 import { StoreSettings } from '@/core/types/store'
 import { Category } from '@/core/types/category'
 import { useCart } from '@/context/CartContext'
@@ -24,6 +25,7 @@ export function Navbar({ settings, categories }: NavbarProps) {
   const [showDropdown, setShowDropdown] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
+
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -191,22 +193,18 @@ export function Navbar({ settings, categories }: NavbarProps) {
                 onMouseEnter={() => setIsProfileOpen(true)}
                 onMouseLeave={() => setIsProfileOpen(false)}
               >
-                <button
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                <Link
+                  href="/user/profile"
                   className="flex items-center gap-2 p-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                   aria-label="Menu Profil"
                 >
-                  {user.user_metadata?.avatar_url ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={user.user_metadata.avatar_url}
-                      alt={user.user_metadata.full_name || 'User'}
-                      className="h-7 w-7 rounded-full object-cover border border-zinc-200 dark:border-zinc-700"
-                    />
-                  ) : (
-                    <FaRegUserCircle className="h-5 w-5 text-zinc-700 dark:text-zinc-300" />
-                  )}
-                </button>
+                  <Avatar
+                    photo={user.user_metadata?.avatar_url}
+                    name={user.user_metadata?.full_name}
+                    size="small"
+                    className="border border-zinc-200 dark:border-zinc-700"
+                  />
+                </Link>
 
                 {/* Dropdown Menu */}
                 <div 
@@ -220,14 +218,18 @@ export function Navbar({ settings, categories }: NavbarProps) {
                   <div className="absolute right-4 top-1 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white dark:border-b-zinc-950" />
                   
                   <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded mt-1.5 shadow-lg overflow-hidden">
-                    <div className="px-4 py-2 border-b border-zinc-100 dark:border-zinc-900">
+                    <Link
+                      href="/user/profile"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="block px-4 py-2 border-b border-zinc-100 dark:border-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors cursor-pointer text-left"
+                    >
                       <span className="block text-xs font-bold text-zinc-800 dark:text-zinc-200 truncate">
                         {user.user_metadata?.full_name || user.email?.split('@')[0]}
                       </span>
                       <span className="block text-[10px] text-zinc-400 truncate">
                         {user.email}
                       </span>
-                    </div>
+                    </Link>
 
                     <Link
                       href="/user/purchase"

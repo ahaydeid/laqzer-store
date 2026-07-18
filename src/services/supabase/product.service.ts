@@ -54,6 +54,7 @@ export class SupabaseProductService implements IProductService {
       soldProgress: data.sold_progress ? Number(data.sold_progress) : 0,
       isCampaign: Boolean(data.is_campaign),
       variants: Array.isArray(data.variants) ? data.variants : [],
+      weight: data.weight !== null && data.weight !== undefined ? Number(data.weight) : 500,
     }
   }
 
@@ -72,6 +73,7 @@ export class SupabaseProductService implements IProductService {
     if (product.soldProgress !== undefined) payload.sold_progress = product.soldProgress
     if (product.isCampaign !== undefined) payload.is_campaign = product.isCampaign
     if (product.variants !== undefined) payload.variants = product.variants
+    if (product.weight !== undefined) payload.weight = product.weight
     return payload
   }
 

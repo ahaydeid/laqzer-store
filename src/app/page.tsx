@@ -27,7 +27,7 @@ const getCachedCategories = unstable_cache(
 const getCachedProducts = unstable_cache(
   () => services.products.getProducts(),
   ['products'],
-  { revalidate: 60 }
+  { revalidate: 60, tags: ['products'] }
 )
 
 /**

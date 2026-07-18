@@ -1,6 +1,8 @@
 import { getServices } from '@/services'
 import { ProductManagement } from './_components/ProductManagement'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Kelola Produk | Laqzer Admin',
   description: 'Daftar produk dan opsi manajemen katalog',
