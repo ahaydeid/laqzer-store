@@ -606,8 +606,6 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               <ul className="list-disc pl-5 space-y-1 text-sm">
                 <li>Layanan Pelanggan responsif dan terpercaya via WhatsApp</li>
                 <li>Jaminan kualitas barang lokal premium buatan anak bangsa</li>
-                <li>Sistem pengiriman bebas biaya & dukungan pembayaran COD</li>
-                <li>Garansi retur gratis jika produk tidak sesuai deskripsi</li>
               </ul>
             </div>
           ) : (
