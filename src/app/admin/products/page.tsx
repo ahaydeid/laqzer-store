@@ -8,7 +8,10 @@ export const metadata = {
 
 export default async function AdminProductsPage() {
   const services = getServices()
-  const products = await services.products.getProducts()
+  const [products, categories] = await Promise.all([
+    services.products.getProducts(),
+    services.categories.getCategories(),
+  ])
 
-  return <ProductManagement initialProducts={products} />
+  return <ProductManagement initialProducts={products} categories={categories} />
 }

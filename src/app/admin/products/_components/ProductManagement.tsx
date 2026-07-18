@@ -1,23 +1,59 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
-import { FiPlus, FiMinus, FiSave, FiEdit3, FiTrash2, FiChevronLeft, FiChevronRight, FiX, FiBox, FiAlertTriangle, FiXCircle } from "react-icons/fi";
+import { 
+  FiPlus, 
+  FiMinus, 
+  FiSave, 
+  FiEdit3, 
+  FiTrash2, 
+  FiChevronLeft, 
+  FiChevronRight, 
+  FiX, 
+  FiBox, 
+  FiAlertTriangle, 
+  FiXCircle,
+  FiEye
+} from "react-icons/fi";
 import Swal from "sweetalert2";
 import { Product } from "@/core/types/product";
+import { Category } from "@/core/types/category";
 import { AdminSearchFilter } from "./AdminSearchFilter";
+import { ProductFormModal } from "./ProductFormModal";
+import { ProductDetailModal } from "./ProductDetailModal";
 import { playSwalSound } from "@/utils/sound";
 import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from "@/components/ui/Table";
 import { ActionButton } from "@/components/ui/ActionButton";
+import { Button } from "@/components/ui/Button";
+
+const DEFAULT_CATEGORIES: Category[] = [
+  { id: 'shirt', name: 'Kemeja', iconName: 'Shirt' },
+  { id: 't-shirt', name: 'T-Shirt', iconName: 'Shirt' },
+  { id: 'jacket', name: 'Jaket', iconName: 'Jacket' },
+  { id: 'shoes', name: 'Sepatu', iconName: 'Shoes' },
+  { id: 'bag', name: 'Tas', iconName: 'Bag' },
+  { id: 'cap', name: 'Topi', iconName: 'Cap' },
+  { id: 'jeans', name: 'Jeans', iconName: 'Jeans' },
+  { id: 'watches', name: 'Jam Tangan', iconName: 'Watch' },
+]
 
 interface ProductManagementProps {
   initialProducts: Product[];
+  categories?: Category[];
 }
 
-export function ProductManagement({ initialProducts }: ProductManagementProps) {
+export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGORIES }: ProductManagementProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
-  
+
+  // Form Modal state (Create & Edit)
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  // Detail Modal state
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedDetailProduct, setSelectedDetailProduct] = useState<Product | null>(null);
+
   // Track draft stock values in a key-value object { [productId]: stockValue }
   const [draftStocks, setDraftStocks] = useState<Record<string, number>>(() => {
     const initialDrafts: Record<string, number> = {};
@@ -89,9 +125,58 @@ export function ProductManagement({ initialProducts }: ProductManagementProps) {
     });
   };
 
+  // Open Form Modal for Creating new Product
+  const handleOpenCreateModal = () => {
+    setEditingProduct(null);
+    setIsFormModalOpen(true);
+  };
+
+  // Open Form Modal for Editing existing Product
+  const handleOpenEditModal = (product: Product) => {
+    setEditingProduct(product);
+    setIsFormModalOpen(true);
+  };
+
+  // Open Detail Modal for viewing Product Info
+  const handleOpenDetailModal = (product: Product) => {
+    setSelectedDetailProduct(product);
+    setIsDetailModalOpen(true);
+  };
+
+  // Handle saving product from Form Modal
+  const handleSaveProduct = (savedData: Partial<Product>) => {
+    if (savedData.id) {
+      // Update existing product
+      setProducts(prev =>
+        prev.map(p => (p.id === savedData.id ? ({ ...p, ...savedData } as Product) : p))
+      );
+    } else {
+      // Create new product
+      const newProduct: Product = {
+        id: `p-${Date.now()}`,
+        name: savedData.name || 'Produk Baru',
+        description: savedData.description || '',
+        price: savedData.price || 0,
+        originalPrice: savedData.originalPrice,
+        imageUrl: savedData.imageUrl || 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600',
+        category: savedData.category || categories[0]?.id || 'general',
+        rating: 5.0,
+        soldCount: 0,
+        stock: savedData.stock || 0,
+        isCampaign: savedData.isCampaign || false,
+      };
+      setProducts(prev => [newProduct, ...prev]);
+    }
+  };
+
   const outOfStock = products.filter((p) => p.stock === 0).length;
   const lowStock = products.filter((p) => p.stock > 0 && p.stock <= 5).length;
   const totalStock = products.reduce((acc, p) => acc + p.stock, 0);
+
+  const getCategoryName = (catId: string) => {
+    const found = categories.find(c => c.id === catId);
+    return found ? found.name : catId;
+  };
 
   return (
     <div className="space-y-6">
@@ -99,7 +184,6 @@ export function ProductManagement({ initialProducts }: ProductManagementProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Total Unit Stok */}
         <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 p-5 flex flex-col justify-end relative overflow-hidden h-28">
-          {/* Background Icon Circle in Top-Left */}
           <div className="absolute -top-24 -left-24 w-56 h-56 rounded-full bg-sky-100/80 dark:bg-sky-900/30 flex items-center justify-center text-white pointer-events-none">
             <FiBox className="w-14 h-14 translate-x-10 translate-y-10" />
           </div>
@@ -119,7 +203,6 @@ export function ProductManagement({ initialProducts }: ProductManagementProps) {
 
         {/* Stok Menipis */}
         <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 p-5 flex flex-col justify-end relative overflow-hidden h-28">
-          {/* Background Icon Circle in Top-Left */}
           <div className="absolute -top-24 -left-24 w-56 h-56 rounded-full bg-amber-100/80 dark:bg-amber-900/30 flex items-center justify-center text-white pointer-events-none">
             <FiAlertTriangle className="w-14 h-14 translate-x-10 translate-y-10" />
           </div>
@@ -139,7 +222,6 @@ export function ProductManagement({ initialProducts }: ProductManagementProps) {
 
         {/* Stok Habis */}
         <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-100 dark:border-zinc-800/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 p-5 flex flex-col justify-end relative overflow-hidden h-28">
-          {/* Background Icon Circle in Top-Left */}
           <div className="absolute -top-24 -left-24 w-56 h-56 rounded-full bg-rose-100/80 dark:bg-rose-900/30 flex items-center justify-center text-white pointer-events-none">
             <FiXCircle className="w-14 h-14 translate-x-10 translate-y-10" />
           </div>
@@ -164,13 +246,10 @@ export function ProductManagement({ initialProducts }: ProductManagementProps) {
           <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">Kelola Produk</h1>
         </div>
         <div>
-          <Link
-            href="/admin/products/new"
-          className="inline-flex items-center gap-2 rounded bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 cursor-pointer"
-          >
+          <Button variant="primary" size="sm" onClick={handleOpenCreateModal}>
             <FiPlus className="h-4 w-4" />
             Tambah Produk
-          </Link>
+          </Button>
         </div>
       </div>
 
@@ -187,7 +266,7 @@ export function ProductManagement({ initialProducts }: ProductManagementProps) {
               <TableHeaderCell scope="col">Kategori</TableHeaderCell>
               <TableHeaderCell scope="col">Harga</TableHeaderCell>
               <TableHeaderCell scope="col" className="w-64">Stok</TableHeaderCell>
-              <TableHeaderCell scope="col" className="text-center w-28">Aksi</TableHeaderCell>
+              <TableHeaderCell scope="col" className="text-center w-32">Aksi</TableHeaderCell>
             </tr>
           </TableHead>
           <TableBody>
@@ -209,17 +288,24 @@ export function ProductManagement({ initialProducts }: ProductManagementProps) {
                       <img
                         src={product.imageUrl || '/img/placeholder.jpg'}
                         alt={product.name}
-                        className="h-9 w-9 rounded-lg object-cover bg-zinc-50 dark:bg-zinc-900"
+                        className="h-9 w-9 rounded-lg object-cover bg-zinc-50 dark:bg-zinc-900 flex-shrink-0"
                       />
-                      <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                        {product.name}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                          {product.name}
+                        </span>
+                        {product.isCampaign && (
+                          <span className="text-[10px] text-purple-600 dark:text-purple-400 font-semibold">
+                            Campaign Promo
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </TableCell>
 
                   {/* Kategori */}
                   <TableCell className="text-zinc-500 dark:text-zinc-400 text-xs">
-                    {product.category}
+                    {getCategoryName(product.category)}
                   </TableCell>
 
                   {/* Harga */}
@@ -309,18 +395,33 @@ export function ProductManagement({ initialProducts }: ProductManagementProps) {
 
                   {/* Aksi */}
                   <TableCell className="text-center">
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {/* Lihat Detail */}
+                      <ActionButton
+                        variant="detail"
+                        onClick={() => handleOpenDetailModal(product)}
+                        title="Lihat Detail Produk"
+                        className="cursor-pointer"
+                      >
+                        <FiEye className="h-4 w-4" />
+                      </ActionButton>
+
+                      {/* Edit Detail Produk */}
                       <ActionButton
                         variant="edit"
-                        href={`/admin/products/${product.id}/edit`}
+                        onClick={() => handleOpenEditModal(product)}
                         title="Edit Detail Produk"
+                        className="cursor-pointer"
                       >
                         <FiEdit3 className="h-4 w-4 text-white" />
                       </ActionButton>
+
+                      {/* Hapus Produk */}
                       <ActionButton
                         variant="delete"
                         onClick={() => handleDeleteClick(product.id, product.name)}
                         title="Hapus Produk"
+                        className="cursor-pointer"
                       >
                         <FiTrash2 className="h-4 w-4 text-white" />
                       </ActionButton>
@@ -353,6 +454,23 @@ export function ProductManagement({ initialProducts }: ProductManagementProps) {
           </button>
         </div>
       </div>
+
+      {/* MODAL FORM (CREATE & EDIT) */}
+      <ProductFormModal
+        isOpen={isFormModalOpen}
+        onClose={() => setIsFormModalOpen(false)}
+        categories={categories}
+        initialData={editingProduct}
+        onSave={handleSaveProduct}
+      />
+
+      {/* MODAL DETAIL PRODUK */}
+      <ProductDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        product={selectedDetailProduct}
+        categoryName={selectedDetailProduct ? getCategoryName(selectedDetailProduct.category) : undefined}
+      />
     </div>
   );
 }
