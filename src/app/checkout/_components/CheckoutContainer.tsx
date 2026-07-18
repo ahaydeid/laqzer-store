@@ -82,7 +82,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
 
   // 3. Fetch Shipping Cost from RajaOngkir
   useEffect(() => {
-    const destinationId = profile?.subdistrictId || profile?.cityId
+    const destinationId = profile?.subdistrictId
     if (!profile || !destinationId || checkedItems.length === 0) return
 
     // Hitung total berat belanjaan berdasarkan berat produk asli

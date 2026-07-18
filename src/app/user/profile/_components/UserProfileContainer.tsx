@@ -40,11 +40,9 @@ export function UserProfileContainer() {
 
   // Alamat states (diset lewat autocomplete search)
   const [province, setProvince] = useState('')
-  const [provinceId, setProvinceId] = useState('')
   const [city, setCity] = useState('')
-  const [cityId, setCityId] = useState('')
   const [subdistrict, setSubdistrict] = useState('')
-  const [subdistrictId, setSubdistrictId] = useState('')
+  const [subdistrictId, setSubdistrictId] = useState('') // Satu-satunya ID yang dipakai untuk ongkir
   const [postalCode, setPostalCode] = useState('')
 
   // Autocomplete search states
@@ -75,9 +73,7 @@ export function UserProfileContainer() {
       setAddress(defaultProf.address || '')
       
       setProvince(defaultProf.province || '')
-      setProvinceId(defaultProf.provinceId || '')
       setCity(defaultProf.city || '')
-      setCityId(defaultProf.cityId || '')
       setSubdistrict(defaultProf.subdistrict || '')
       setSubdistrictId(defaultProf.subdistrictId || '')
       setPostalCode(defaultProf.postalCode || '')
@@ -156,9 +152,7 @@ export function UserProfileContainer() {
   const handleSelectLocation = (loc: SearchResult) => {
     setIsLocationSelected(true) // Kunci agar useEffect tidak re-fetch setelah memilih
     setProvince(loc.province_name)
-    setProvinceId('') // Tidak wajib di-set karena ongkir menggunakan subdistrictId
     setCity(loc.city_name)
-    setCityId(loc.id) // Map ke ID Komerce yang valid
 
     // Gabungkan Kecamatan dan Desa agar sangat spesifik (cth: BALARAJA, SAGA)
     const subdistrictLabel = loc.district_name === loc.subdistrict_name
@@ -166,7 +160,7 @@ export function UserProfileContainer() {
       : `${loc.district_name}, ${loc.subdistrict_name}`
     setSubdistrict(subdistrictLabel)
     
-    setSubdistrictId(loc.id) // Map ke ID destinasi Komerce yang valid
+    setSubdistrictId(loc.id) // Satu-satunya ID yang disimpan: ID destinasi Komerce
     setPostalCode(loc.zip_code)
     
     setSearchQuery(loc.label) // Gunakan label bawaan Komerce yang lengkap
@@ -184,9 +178,7 @@ export function UserProfileContainer() {
       setBirthDate(initialProfile.birthDate || '')
       setAddress(initialProfile.address || '')
       setProvince(initialProfile.province || '')
-      setProvinceId(initialProfile.provinceId || '')
       setCity(initialProfile.city || '')
-      setCityId(initialProfile.cityId || '')
       setSubdistrict(initialProfile.subdistrict || '')
       setSubdistrictId(initialProfile.subdistrictId || '')
       setPostalCode(initialProfile.postalCode || '')
@@ -242,11 +234,9 @@ export function UserProfileContainer() {
       birthDate: birthDate || undefined,
       address,
       province,
-      provinceId,
       city,
-      cityId,
       subdistrict,
-      subdistrictId,
+      subdistrictId, // Satu-satunya ID yang digunakan untuk menghitung ongkir
       postalCode,
     }
 
