@@ -113,7 +113,7 @@ export function Modal({
             </div>
           )}
 
-          <div className={`min-h-0 flex-1 overflow-y-auto ${bodyClassName}`}>{children}</div>
+          <div className={`min-h-0 flex-1 overflow-y-auto thin-scroll ${bodyClassName}`}>{children}</div>
 
           {footer ? <div className={`border-t border-zinc-100 dark:border-zinc-800/80 px-4 py-3 ${footerClassName}`}>{footer}</div> : null}
         </div>
