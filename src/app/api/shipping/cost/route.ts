@@ -1,12 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SupabaseShippingSettingsService } from '@/services/supabase/shipping-settings.service'
 import { classifyShippingService } from '@/utils/shipping-classifier'
+import { checkRateLimit } from '@/utils/rate-limiter'
 
 // Cache memori server-side untuk ongkos kirim (TTL 3 jam)
 const costCache = new Map<string, { data: any; expiry: number }>()
 const CACHE_TTL = 3 * 60 * 60 * 1000 // 3 jam dalam milidetik
 
 export async function POST(request: NextRequest) {
+  // ── Proteksi Rate Limiter per IP (Maks 15 req/menit) ──────────────────
+  const rateLimit = checkRateLimit(request, 15, 60 * 1000)
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Terlalu banyak permintaan pengiriman dari perangkat Anda. Silakan coba lagi sebentar.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000).toString(),
+          'X-RateLimit-Limit': '15',
+          'X-RateLimit-Remaining': '0',
+        },
+      }
+    )
+  }
+
   try {
     const { destinationCityId, weightInGrams } = await request.json()
     const apiKey = process.env.RAJAONGKIR_API_KEY

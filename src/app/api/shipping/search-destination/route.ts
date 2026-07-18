@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit } from '@/utils/rate-limiter'
 
 // =====================================================================
 // Server-side In-Memory Cache
@@ -10,6 +11,22 @@ const serverCache = new Map<string, { results: any[]; expiresAt: number }>()
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000 // 24 jam
 
 export async function GET(request: NextRequest) {
+  // ── Proteksi Rate Limiter per IP (Maks 15 req/menit) ──────────────────
+  const rateLimit = checkRateLimit(request, 15, 60 * 1000)
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Terlalu banyak pencarian lokasi dari perangkat Anda. Silakan tunggu beberapa saat.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000).toString(),
+          'X-RateLimit-Limit': '15',
+          'X-RateLimit-Remaining': '0',
+        },
+      }
+    )
+  }
+
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('q')?.toLowerCase().trim() ?? ''
   const apiKey = process.env.RAJAONGKIR_API_KEY
