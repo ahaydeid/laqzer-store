@@ -94,13 +94,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
   useEffect(() => {
     const fetchUnreadChatCount = async () => {
       try {
-        const { data, error } = await supabase
+        const { count, error } = await supabase
           .from("chat_rooms")
-          .select("unread_count_admin");
+          .select("*", { count: "exact", head: true })
+          .gt("unread_count_admin", 0);
         
-        if (!error && data) {
-          const totalUnread = data.reduce((acc, r) => acc + (r.unread_count_admin || 0), 0);
-          setUnreadCount(totalUnread);
+        if (!error && count !== null) {
+          setUnreadCount(count);
         }
       } catch (err) {
         console.error("Gagal memuat unread chat count:", err);
