@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, useEffect, useCallback, Rea
 import { CartItem } from '@/core/types/cart'
 import { getServices } from '@/services'
 
+import { useAuth } from '@/components/providers/AuthProvider'
+
 interface CartContextProps {
   items: CartItem[]
   loading: boolean
@@ -22,6 +24,7 @@ const CartContext = createContext<CartContextProps | undefined>(undefined)
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState<boolean>(true)
+  const { user } = useAuth()
 
   // Use the service client-side
   const cartService = getServices().cart
@@ -55,7 +58,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false
     }
-  }, [cartService])
+  }, [cartService, user])
 
 
   const addToCart = async (productId: string, variant: string, quantity: number) => {

@@ -7,12 +7,12 @@ import { ICartService } from '@/core/interfaces/cart.interface'
 // Mock Implementations
 import { MockStoreService } from './mock/store.service'
 import { MockCategoryService } from './mock/category.service'
-import { MockCartService } from './mock/cart.service'
 
 // Supabase Implementations
 import { SupabaseStoreService } from './supabase/store.service'
 import { SupabaseProductService } from './supabase/product.service'
 import { SupabaseCategoryService } from './supabase/category.service'
+import { SupabaseCartService } from './supabase/cart.service'
 
 type ProviderType = 'mock' | 'supabase'
 
@@ -31,7 +31,7 @@ export const SERVICE_PROVIDERS: {
   store: 'mock',
   products: 'supabase',
   categories: 'mock',
-  cart: 'mock',
+  cart: 'supabase',
 }
 
 export interface AppServices {
@@ -59,7 +59,7 @@ export function getServices(supabaseClient?: SupabaseClient): AppServices {
       SERVICE_PROVIDERS.categories === 'supabase'
         ? new SupabaseCategoryService(supabaseClient)
         : new MockCategoryService(),
-    cart: new MockCartService(), // Always use MockCartService for now as per user instruction
+    cart: new SupabaseCartService(),
   }
 }
 
