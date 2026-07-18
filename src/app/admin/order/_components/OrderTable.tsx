@@ -100,8 +100,9 @@ export default function OrderTable({
                   </ActionButton>
                   <ActionButton
                     variant="edit"
-                    onClick={() => onOpenEdit(order)}
-                    title="Edit Pesanan"
+                    onClick={() => order.status !== "Selesai" && onOpenEdit(order)}
+                    title={order.status === "Selesai" ? "Pesanan sudah selesai, tidak dapat diubah" : "Edit Pesanan"}
+                    className={order.status === "Selesai" ? "opacity-30 cursor-not-allowed pointer-events-none" : ""}
                   >
                     <FiEdit2 className="h-4 w-4" />
                   </ActionButton>

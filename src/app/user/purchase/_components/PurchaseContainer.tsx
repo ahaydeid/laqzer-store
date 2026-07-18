@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { FiSearch, FiShoppingBag, FiX, FiLoader, FiCheckCircle, FiPackage, FiTruck, FiCreditCard } from 'react-icons/fi'
+import { FiSearch, FiShoppingBag, FiX, FiLoader, FiCheckCircle, FiPackage, FiTruck, FiCreditCard, FiXCircle } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseOrderService } from '@/services/supabase/order.service'
@@ -128,7 +128,42 @@ export function PurchaseContainer() {
     }
   }
 
-  const handleConfirmPaymentWA = (order: OrderRecord) => {
+  const handleCancelOrder = async (orderId: string, orderNumber: string) => {
+    playSwalSound('confirm')
+    const res = await Swal.fire({
+      title: 'Batalkan Pesanan?',
+      text: `Pesanan ${orderNumber} akan dibatalkan. Tindakan ini tidak dapat diurungkan.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e11d48',
+      cancelButtonColor: '#71717a',
+      confirmButtonText: 'Ya, Batalkan',
+      cancelButtonText: 'Tidak',
+    })
+
+    if (!res.isConfirmed) return
+
+    try {
+      await orderService.updateOrderStatus(orderId, 'cancelled')
+      playSwalSound('success')
+      Swal.fire({
+        title: 'Pesanan Dibatalkan',
+        text: 'Pesanan Anda telah berhasil dibatalkan.',
+        icon: 'success',
+        confirmButtonColor: '#10b981',
+      })
+      mutate()
+    } catch (err: any) {
+      Swal.fire({
+        title: 'Gagal',
+        text: err?.message || 'Gagal membatalkan pesanan.',
+        icon: 'error',
+        confirmButtonColor: '#e11d48',
+      })
+    }
+  }
+
+  const handleConfirmPaymentWA = async (order: OrderRecord) => {
     let confirmMessage = `Halo Admin Laqzer, saya ingin konfirmasi pembayaran untuk pesanan saya:\n\n`
     confirmMessage += `*Nomor Invoice:* ${order.orderNumber}\n`
     confirmMessage += `*Total Pembayaran: Rp ${order.totalAmount.toLocaleString('id-ID')}*\n`
@@ -337,13 +372,22 @@ export function PurchaseContainer() {
 
                   {/* Actions */}
                   {order.status === 'unpaid' && (
-                    <button
-                      onClick={() => handleConfirmPaymentWA(order)}
-                      className="px-3.5 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
-                    >
-                      <FiCreditCard className="w-4 h-4" />
-                      <span>Konfirmasi Pembayaran (WA)</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleCancelOrder(order.id, order.orderNumber)}
+                        className="px-3.5 py-2 rounded border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-medium text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <FiXCircle className="w-4 h-4" />
+                        <span>Batalkan</span>
+                      </button>
+                      <button
+                        onClick={() => handleConfirmPaymentWA(order)}
+                        className="px-3.5 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <FiCreditCard className="w-4 h-4" />
+                        <span>Konfirmasi Pembayaran (WA)</span>
+                      </button>
+                    </div>
                   )}
 
                   {order.status === 'shipped' && (
