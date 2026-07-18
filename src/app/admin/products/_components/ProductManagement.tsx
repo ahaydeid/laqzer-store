@@ -163,7 +163,7 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
         rating: 5.0,
         soldCount: 0,
         stock: savedData.stock || 0,
-        isCampaign: savedData.isCampaign || false,
+        isCampaign: false,
       };
       setProducts(prev => [newProduct, ...prev]);
     }

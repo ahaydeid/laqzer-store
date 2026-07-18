@@ -1,14 +1,13 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Swal from 'sweetalert2'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
-import Toggle from '@/components/ui/Toggle'
 import { Category } from '@/core/types/category'
 import { Product } from '@/core/types/product'
 import { playSwalSound } from '@/utils/sound'
-import { FiSave, FiAlertCircle } from 'react-icons/fi'
+import { FiSave, FiAlertCircle, FiUploadCloud, FiX, FiImage } from 'react-icons/fi'
 
 interface ProductFormModalProps {
   isOpen: boolean
@@ -26,18 +25,18 @@ export function ProductFormModal({
   onSave,
 }: ProductFormModalProps) {
   const isEdit = !!initialData
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState({
     name: '',
     category: '',
     price: '',
-    originalPrice: '',
     stock: '',
     imageUrl: '',
     description: '',
-    isCampaign: false,
   })
 
+  const [imagePreview, setImagePreview] = useState<string>('')
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -45,16 +44,16 @@ export function ProductFormModal({
   useEffect(() => {
     if (isOpen) {
       setError('')
+      const initialImg = initialData?.imageUrl || ''
       setFormData({
         name: initialData?.name || '',
         category: initialData?.category || categories[0]?.id || '',
         price: initialData?.price?.toString() || '',
-        originalPrice: initialData?.originalPrice?.toString() || '',
         stock: initialData?.stock?.toString() || '',
-        imageUrl: initialData?.imageUrl || '',
+        imageUrl: initialImg,
         description: initialData?.description || '',
-        isCampaign: initialData?.isCampaign || false,
       })
+      setImagePreview(initialImg)
     }
   }, [isOpen, initialData, categories])
 
@@ -63,6 +62,38 @@ export function ProductFormModal({
   ) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  // Handle Image File Upload via FileReader
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setError('File yang diunggah harus berupa gambar (JPEG, PNG, WEBP, dll).')
+        return
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Ukuran gambar tidak boleh melebihi 5MB.')
+        return
+      }
+
+      setError('')
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const result = reader.result as string
+        setImagePreview(result)
+        setFormData((prev) => ({ ...prev, imageUrl: result }))
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setImagePreview('')
+    setFormData((prev) => ({ ...prev, imageUrl: '' }))
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -86,12 +117,6 @@ export function ProductFormModal({
       return
     }
 
-    const origPriceNum = formData.originalPrice ? Number(formData.originalPrice) : undefined
-    if (origPriceNum !== undefined && (isNaN(origPriceNum) || origPriceNum < 0)) {
-      setError('Harga asli/coret harus berupa angka positif.')
-      return
-    }
-
     setIsSubmitting(true)
 
     setTimeout(() => {
@@ -101,11 +126,9 @@ export function ProductFormModal({
         name: formData.name.trim(),
         category: formData.category,
         price: priceNum,
-        originalPrice: origPriceNum,
         stock: stockNum,
         imageUrl: formData.imageUrl.trim() || 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600',
         description: formData.description.trim(),
-        isCampaign: formData.isCampaign,
       })
 
       playSwalSound('success')
@@ -145,7 +168,7 @@ export function ProductFormModal({
     >
       <div className="p-5 space-y-5">
         {error && (
-          <div className="flex items-center gap-2 rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs text-rose-800 dark:bg-rose-950/20 dark:border-rose-900/40 dark:text-rose-400">
+          <div className="flex items-center gap-2 rounded-lg bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800 dark:bg-rose-950/20 dark:border-rose-900/40 dark:text-rose-400">
             <FiAlertCircle className="h-4 w-4 flex-shrink-0" />
             <span>{error}</span>
           </div>
@@ -163,12 +186,12 @@ export function ProductFormModal({
               value={formData.name}
               onChange={handleChange}
               placeholder="Contoh: Jaket Denim Kasual"
-              className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
+              className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
               required
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Kategori */}
             <div>
               <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
@@ -178,7 +201,7 @@ export function ProductFormModal({
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
+                className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
               >
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
@@ -186,6 +209,22 @@ export function ProductFormModal({
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Harga Satuan */}
+            <div>
+              <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
+                Harga Satuan (Rp) <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="Contoh: 150000"
+                className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
+                required
+              />
             </div>
 
             {/* Stok Produk */}
@@ -199,78 +238,67 @@ export function ProductFormModal({
                 value={formData.stock}
                 onChange={handleChange}
                 placeholder="Contoh: 50"
-                className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
+                className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
                 required
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Harga Satuan */}
-            <div>
-              <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
-                Harga Satuan (Rp) <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                placeholder="Contoh: 150000"
-                className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
-                required
-              />
-            </div>
-
-            {/* Harga Asli / Coret */}
-            <div>
-              <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
-                Harga Coret / Diskon (Rp) <span className="text-zinc-400 font-normal">(Opsional)</span>
-              </label>
-              <input
-                type="number"
-                name="originalPrice"
-                value={formData.originalPrice}
-                onChange={handleChange}
-                placeholder="Contoh: 200000"
-                className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
-              />
-            </div>
-          </div>
-
-          {/* Status Campaign Promo */}
-          <div className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/60 dark:bg-zinc-900/40 p-3">
-            <div>
-              <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                Status Campaign Promo
-              </p>
-              <p className="text-[11px] text-zinc-400">
-                Aktifkan jika produk ini masuk dalam program promo campaign
-              </p>
-            </div>
-            <Toggle
-              leftLabel="Aktif"
-              rightLabel="Nonaktif"
-              checked={formData.isCampaign}
-              onChange={(val) => setFormData((prev) => ({ ...prev, isCampaign: val }))}
-              activeColorClass="bg-emerald-600"
-              className="w-36"
-            />
-          </div>
-
-          {/* URL Gambar */}
+          {/* Upload Gambar Produk */}
           <div>
             <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
-              URL Gambar Produk
+              Upload Gambar Produk
             </label>
+            
             <input
-              type="text"
-              name="imageUrl"
-              value={formData.imageUrl}
-              onChange={handleChange}
-              placeholder="https://images.unsplash.com/..."
-              className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+              id="product-image-upload"
             />
+
+            {imagePreview ? (
+              <div className="relative rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 overflow-hidden aspect-video max-h-48 flex items-center justify-center group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imagePreview}
+                  alt="Preview Produk"
+                  className="object-contain w-full h-full p-2"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-3 py-1.5 rounded-lg bg-white/90 text-zinc-900 text-xs font-semibold hover:bg-white transition"
+                  >
+                    Ganti Gambar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="p-1.5 rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition"
+                    title="Hapus Gambar"
+                  >
+                    <FiX className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600 rounded-lg p-6 bg-zinc-50/50 dark:bg-zinc-900/30 cursor-pointer transition-colors"
+              >
+                <FiUploadCloud className="h-8 w-8 text-zinc-400 mb-2" />
+                <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                  Klik atau seret file gambar ke sini untuk mengunggah
+                </p>
+                <p className="text-[11px] text-zinc-400">
+                  Format gambar: PNG, JPG, WEBP (Maksimal 5MB)
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Deskripsi */}
@@ -284,7 +312,7 @@ export function ProductFormModal({
               onChange={handleChange}
               placeholder="Jelaskan detail spesifikasi produk..."
               rows={4}
-              className="w-full rounded-xl border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60 resize-none"
+              className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60 resize-none"
               required
             />
           </div>
