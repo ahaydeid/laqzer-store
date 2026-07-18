@@ -264,7 +264,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
                 className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
               >
                 {/* Kartu Produk (jika ada) */}
-                {msg.productMetadata ? (
+                {msg.productMetadata && (
                   <Link
                     href={`/product/${msg.productMetadata.id}`}
                     target="_blank"
@@ -293,7 +293,10 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
                       </p>
                     </div>
                   </Link>
-                ) : isUser ? (
+                )}
+
+                {/* Bubble Teks (jika ada teks) */}
+                {msg.text && isUser && (
                   <div className="flex items-start max-w-[75%] justify-end">
                     <div className="bg-emerald-200 text-zinc-950 rounded-l-xl rounded-b-xl px-4 py-2.5 text-sm shadow-xs">
                       <p className="leading-relaxed break-words">{msg.text}</p>
@@ -305,7 +308,8 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
                       <path d="M0 0 L10 0 L0 10 Z" />
                     </svg>
                   </div>
-                ) : (
+                )}
+                {msg.text && !isUser && (
                   <div className="flex items-start max-w-[75%]">
                     <svg className="w-2 h-2 text-slate-100 dark:text-zinc-800 fill-current shrink-0 -mr-[0.5px]" viewBox="0 0 10 10">
                       <path d="M10 0 L0 0 L10 10 Z" />
@@ -317,6 +321,13 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
                       </span>
                     </div>
                   </div>
+                )}
+
+                {/* Timestamp-only jika hanya ada produk tanpa teks */}
+                {!msg.text && msg.productMetadata && (
+                  <span className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+                    {new Date(msg.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 )}
               </div>
             )
