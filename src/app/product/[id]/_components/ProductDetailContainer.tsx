@@ -38,6 +38,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
   const [isFavorited, setIsFavorited] = useState(false)
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false)
+  const [favoriteCount, setFavoriteCount] = useState<number>(0)
   const [isCopied, setIsCopied] = useState(false)
   const [showAddSuccess, setShowAddSuccess] = useState(false)
   const [animateAddSuccess, setAnimateAddSuccess] = useState(false)
@@ -177,8 +178,10 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
     }
   }
 
-  // Load status favorit dari Supabase saat mount
+  // Load status favorit dan jumlah favorit dari Supabase saat mount
   useEffect(() => {
+    wishlistService.getWishlistCount(String(product.id)).then(setFavoriteCount).catch(() => {})
+
     if (!user?.id) return
     wishlistService.isFavorited(user.id, String(product.id)).then(setIsFavorited).catch(() => {})
   }, [user?.id, product.id, wishlistService])
@@ -191,6 +194,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
     try {
       const nowFav = await wishlistService.toggle(user.id, String(product.id))
       setIsFavorited(nowFav)
+      setFavoriteCount((prev) => Math.max(0, nowFav ? prev + 1 : prev - 1))
       Swal.fire({
         toast: true,
         position: 'top-end',
@@ -468,7 +472,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               ) : (
                 <FiHeart className="h-5.5 w-5.5 text-rose-500" />
               )}
-              <span>Favorit</span>
+              <span>Favorit ({favoriteCount})</span>
             </button>
           </div>
 

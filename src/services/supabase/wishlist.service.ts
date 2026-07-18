@@ -91,4 +91,18 @@ export class SupabaseWishlistService {
       weight: data.weight !== null && data.weight !== undefined ? Number(data.weight) : 500,
     }))
   }
+
+  async getWishlistCount(productId: string): Promise<number> {
+    const supabase = this.getClient()
+    const { count, error } = await supabase
+      .from('wishlists')
+      .select('*', { count: 'exact', head: true })
+      .eq('product_id', productId)
+
+    if (error) {
+      console.error('Error getting wishlist count:', error)
+      return 0
+    }
+    return count || 0
+  }
 }
