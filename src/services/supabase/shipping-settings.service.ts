@@ -1,6 +1,8 @@
 import { createClient } from './client'
+import { ShippingTierConfig, DEFAULT_SHIPPING_TIER_CONFIG } from '@/core/types/shipping-tier'
 
 const SHIPPING_COURIERS_KEY = 'shipping_couriers'
+const SHIPPING_TIERS_KEY = 'shipping_tiers'
 
 export interface CourierConfig {
   id: string
@@ -87,4 +89,37 @@ export class SupabaseShippingSettingsService {
       throw new Error(`Gagal menyimpan konfigurasi ekspedisi: ${error.message}`)
     }
   }
+
+  async getShippingTierConfig(): Promise<ShippingTierConfig> {
+    const supabase = this.getClient()
+    const { data, error } = await supabase
+      .from('store_settings')
+      .select('value')
+      .eq('key', SHIPPING_TIERS_KEY)
+      .maybeSingle()
+
+    if (error || !data?.value) {
+      return DEFAULT_SHIPPING_TIER_CONFIG
+    }
+
+    return {
+      ...DEFAULT_SHIPPING_TIER_CONFIG,
+      ...(data.value as Partial<ShippingTierConfig>),
+    }
+  }
+
+  async saveShippingTierConfig(config: ShippingTierConfig): Promise<void> {
+    const supabase = this.getClient()
+    const { error } = await supabase
+      .from('store_settings')
+      .upsert(
+        { key: SHIPPING_TIERS_KEY, value: config },
+        { onConflict: 'key' }
+      )
+
+    if (error) {
+      throw new Error(`Gagal menyimpan konfigurasi tier pengiriman: ${error.message}`)
+    }
+  }
 }
+

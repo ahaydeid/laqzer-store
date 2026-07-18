@@ -41,19 +41,39 @@ export const EkspedisiTab: React.FC<EkspedisiTabProps> = ({
   
   // State untuk melacak status aktif/nonaktif masing-masing kurir
   const [courierStates, setCourierStates] = useState<Record<string, boolean>>({});
-  // State cadangan untuk melacak perubahan (isDirty check)
   const [savedCourierStates, setSavedCourierStates] = useState<Record<string, boolean>>({});
+
+  // State untuk melacak konfigurasi Tier Pengiriman (Reguler, Express, Kargo, Hemat)
+  const [tierConfig, setTierConfig] = useState({
+    regular: true,
+    express: true,
+    cargo: false,
+    economy: true,
+    minCargoWeightGrams: 5000,
+  });
+  const [savedTierConfig, setSavedTierConfig] = useState({
+    regular: true,
+    express: true,
+    cargo: false,
+    economy: true,
+    minCargoWeightGrams: 5000,
+  });
 
   // 1. Ambil konfigurasi dari database
   useEffect(() => {
     setLoading(true);
-    service.getCouriersConfig()
-      .then(config => {
-        setCourierStates(config);
-        setSavedCourierStates(config);
+    Promise.all([
+      service.getCouriersConfig(),
+      service.getShippingTierConfig(),
+    ])
+      .then(([couriers, tiers]) => {
+        setCourierStates(couriers);
+        setSavedCourierStates(couriers);
+        setTierConfig(tiers);
+        setSavedTierConfig(tiers);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Gagal memuat konfigurasi ekspedisi:", err);
         setLoading(false);
       });
@@ -61,18 +81,21 @@ export const EkspedisiTab: React.FC<EkspedisiTabProps> = ({
 
   // Deteksi jika ada perubahan status toggle dibanding data tersimpan
   const isDirty = useMemo(() => {
-    return JSON.stringify(courierStates) !== JSON.stringify(savedCourierStates);
-  }, [courierStates, savedCourierStates]);
+    const couriersChanged = JSON.stringify(courierStates) !== JSON.stringify(savedCourierStates);
+    const tiersChanged = JSON.stringify(tierConfig) !== JSON.stringify(savedTierConfig);
+    return couriersChanged || tiersChanged;
+  }, [courierStates, savedCourierStates, tierConfig, savedTierConfig]);
 
   // Batalkan seluruh perubahan
   const handleCancel = () => {
     setCourierStates(savedCourierStates);
+    setTierConfig(savedTierConfig);
   };
 
   // Simpan konfigurasi kurir ke database
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validasi: minimal harus ada 1 kurir yang aktif
     const activeCount = Object.values(courierStates).filter(Boolean).length;
     if (activeCount === 0) {
@@ -88,19 +111,23 @@ export const EkspedisiTab: React.FC<EkspedisiTabProps> = ({
 
     setSaving(true);
     try {
-      await service.saveCouriersConfig(courierStates);
-      
+      await Promise.all([
+        service.saveCouriersConfig(courierStates),
+        service.saveShippingTierConfig(tierConfig),
+      ]);
+
       // Update saved state
       setSavedCourierStates(courierStates);
-      
+      setSavedTierConfig(tierConfig);
+
       // Trigger revalidation cache di home/katalog agar data ter-sync
-      fetch('/api/revalidate?path=/').catch(err => 
+      fetch('/api/revalidate?path=/').catch((err) =>
         console.error('Failed to trigger products cache revalidation after courier update:', err)
       );
 
       onShowSuccessAlert(
         "Disimpan!",
-        "Pilihan jasa ekspedisi pengiriman berhasil diperbarui."
+        "Konfigurasi ekspedisi dan tier pengiriman berhasil diperbarui."
       );
     } catch (err: any) {
       console.error(err);
@@ -148,6 +175,91 @@ export const EkspedisiTab: React.FC<EkspedisiTabProps> = ({
           <p className="text-xs text-zinc-400 dark:text-zinc-500">
             Aktifkan kurir pengiriman yang ingin Anda sediakan untuk pembeli di halaman checkout toko Anda.
           </p>
+        </div>
+
+        {/* Tier Pengiriman Controls */}
+        <div className="pt-5 space-y-4">
+          <div className="space-y-1">
+            <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+              Kategori Tier Pengiriman Toko
+            </span>
+            <p className="text-xs text-zinc-400 dark:text-zinc-500">
+              Batasi jenis/tipe layanan yang ingin Anda terima di checkout (misal matikan Kargo jika tidak bisa mengirim barang besar).
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            {/* Reguler */}
+            <div className="flex items-center justify-between p-3.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40">
+              <div>
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 block">Layanan Reguler</span>
+                <span className="text-[11px] text-zinc-400 dark:text-zinc-500">JNE REG, SiCepat REG, J&T EZ, dll.</span>
+              </div>
+              <Switch
+                checked={tierConfig.regular}
+                onChange={(val) => setTierConfig(prev => ({ ...prev, regular: val }))}
+              />
+            </div>
+
+            {/* Express */}
+            <div className="flex items-center justify-between p-3.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40">
+              <div>
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 block">Layanan Express / Next Day</span>
+                <span className="text-[11px] text-zinc-400 dark:text-zinc-500">JNE YES, SiCepat BEST, Anteraja ND, dll.</span>
+              </div>
+              <Switch
+                checked={tierConfig.express}
+                onChange={(val) => setTierConfig(prev => ({ ...prev, express: val }))}
+              />
+            </div>
+
+            {/* Hemat / Economy */}
+            <div className="flex items-center justify-between p-3.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40">
+              <div>
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 block">Layanan Hemat / Economy</span>
+                <span className="text-[11px] text-zinc-400 dark:text-zinc-500">JNE OKE, SiCepat HALU, J&T Eco, dll.</span>
+              </div>
+              <Switch
+                checked={tierConfig.economy}
+                onChange={(val) => setTierConfig(prev => ({ ...prev, economy: val }))}
+              />
+            </div>
+
+            {/* Kargo */}
+            <div className="flex items-center justify-between p-3.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40">
+              <div>
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 block">Layanan Kargo / Truk</span>
+                <span className="text-[11px] text-zinc-400 dark:text-zinc-500">JNE JTR, SiCepat GOKIL/Cargo, dll.</span>
+              </div>
+              <Switch
+                checked={tierConfig.cargo}
+                onChange={(val) => setTierConfig(prev => ({ ...prev, cargo: val }))}
+              />
+            </div>
+          </div>
+
+          {/* Ambang Batas Berat Kargo */}
+          {tierConfig.cargo && (
+            <div className="pt-2">
+              <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5 block">
+                Minimal Berat Belanjaan untuk Opsi Kargo (Kilogram)
+              </label>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                value={tierConfig.minCargoWeightGrams / 1000}
+                onChange={(e) => {
+                  const kg = Math.max(1, parseInt(e.target.value) || 1);
+                  setTierConfig(prev => ({ ...prev, minCargoWeightGrams: kg * 1000 }));
+                }}
+                className="w-full max-w-xs rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3 py-2 text-xs font-medium text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+              />
+              <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">
+                Opsi Kargo hanya akan ditampilkan jika total berat belanjaan di checkout minimal mencapai angka ini.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Courier Toggles List */}

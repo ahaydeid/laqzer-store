@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SupabaseShippingSettingsService } from '@/services/supabase/shipping-settings.service'
+import { classifyShippingService } from '@/utils/shipping-classifier'
 
 // Cache memori server-side untuk ongkos kirim (TTL 3 jam)
 const costCache = new Map<string, { data: any; expiry: number }>()
@@ -92,22 +93,46 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Map respon Komerce ke format kurir di frontend
-    const formattedResults = results.map((c: any) => {
-      // Dapatkan kode kurir singkat untuk label
+    // Ambil konfigurasi Tier Pengiriman (Reguler, Express, Kargo, Hemat)
+    let tierConfig = await settingsService.getShippingTierConfig().catch(() => null)
+
+    // Map respon Komerce ke format kurir di frontend & lakukan filtering Tier
+    const formattedResults: any[] = []
+    
+    for (const c of results) {
       const courierCode = c.code || 'jne'
-      return {
-        id: `${courierCode}-${c.service.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
+      const serviceName = c.service || ''
+      
+      // Klasifikasikan layanan ke Tier internal (regular, express, cargo, economy)
+      const serviceTier = classifyShippingService(courierCode, serviceName)
+
+      // Cek apakah Tier ini diizinkan berdasarkan konfigurasi toko
+      if (tierConfig) {
+        // Cek status keaktifan Tier secara eksplisit
+        const isTierActive = tierConfig[serviceTier]
+        if (!isTierActive) {
+          continue // Lewati layanan yang Tier-nya dinonaktifkan toko
+        }
+
+        // Khusus Tier Kargo: Cek batas minimal berat belanjaan (misal min 5kg)
+        if (serviceTier === 'cargo' && rawWeight < (tierConfig.minCargoWeightGrams || 5000)) {
+          continue // Lewati layanan Kargo jika berat belanjaan di bawah ambang batas
+        }
+      }
+
+      formattedResults.push({
+        id: `${courierCode}-${serviceName.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
         name: courierCode.toUpperCase(),
-        service: c.service,
+        service: serviceName,
+        serviceTier, // Informasi tier untuk keperluan UI jika dibutuhkan
         cost: c.cost || 0,
         etd: c.etd 
           ? c.etd.toLowerCase().includes('day') 
             ? c.etd.toLowerCase().replace('day', 'Hari').trim()
             : `${c.etd} Hari`
           : '2-3 Hari'
-      }
-    })
+      })
+    }
 
     const responsePayload = {
       rajaongkir: {
