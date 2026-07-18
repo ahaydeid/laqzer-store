@@ -9,6 +9,8 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseChatService } from '@/services/supabase/chat.service'
 import { ChatMessageRecord, ProductAttachment } from '@/core/types/chat'
 
+import { SupabaseProfileService } from '@/services/supabase/profile.service'
+
 interface ChatWidgetProps {
   settings: StoreSettings
 }
@@ -17,6 +19,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
   const pathname = usePathname()
   const { user } = useAuth()
   const chatService = useMemo(() => new SupabaseChatService(), [])
+  const profileService = useMemo(() => new SupabaseProfileService(), [])
 
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [inputText, setInputText] = useState('')
@@ -33,38 +36,50 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
 
     let isMounted = true
 
-    chatService
-      .getOrCreateRoom(user?.id, { 
-        name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pembeli',
-        avatarUrl: user?.user_metadata?.avatar_url || null
-      })
-      .then(async (room) => {
-        if (!isMounted) return
-        setRoomId(room.id)
+    const initRoom = async () => {
+      let buyerName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pembeli'
+      let buyerAvatar = user?.user_metadata?.avatar_url || null
 
-        const history = await chatService.getRoomMessages(room.id)
-        if (!isMounted) return
+      if (user?.id) {
+        try {
+          const profile = await profileService.getProfile(user.id)
+          if (profile?.fullName) buyerName = profile.fullName
+          if (profile?.avatarUrl) buyerAvatar = profile.avatarUrl
+        } catch (_) {}
+      }
 
-        if (history.length === 0) {
-          await chatService.sendMessage(
-            room.id,
-            'admin',
-            `Halo! Selamat datang di ${settings.name || 'Laqzer Store'}. Ada yang bisa kami bantu hari ini?`
-          )
-          const updatedHistory = await chatService.getRoomMessages(room.id)
-          setMessages(updatedHistory)
-        } else {
-          setMessages(history)
-        }
+      const room = await chatService.getOrCreateRoom(user?.id, { 
+        name: buyerName,
+        avatarUrl: buyerAvatar
       })
-      .catch((err) => {
-        console.error('Gagal inisialisasi chat room:', err)
-      })
+
+      if (!isMounted) return
+      setRoomId(room.id)
+
+      const history = await chatService.getRoomMessages(room.id)
+      if (!isMounted) return
+
+      if (history.length === 0) {
+        await chatService.sendMessage(
+          room.id,
+          'admin',
+          `Halo! Selamat datang di ${settings.name || 'Laqzer Store'}. Ada yang bisa kami bantu hari ini?`
+        )
+        const updatedHistory = await chatService.getRoomMessages(room.id)
+        setMessages(updatedHistory)
+      } else {
+        setMessages(history)
+      }
+    }
+
+    initRoom().catch((err) => {
+      console.error('Gagal inisialisasi chat room:', err)
+    })
 
     return () => {
       isMounted = false
     }
-  }, [isChatOpen, user, chatService, settings.name])
+  }, [isChatOpen, user, chatService, profileService, settings.name])
 
   // Subskripsi Supabase Realtime Listener
   useEffect(() => {
