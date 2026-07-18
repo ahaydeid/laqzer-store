@@ -39,7 +39,7 @@ export function ProductDetailModal({
 
   const footer = (
     <div className="flex justify-end">
-      <Button variant="outline" size="sm" onClick={onClose}>
+      <Button variant="secondary" size="sm" onClick={onClose}>
         Tutup
       </Button>
     </div>

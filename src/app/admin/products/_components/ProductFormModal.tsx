@@ -148,7 +148,7 @@ export function ProductFormModal({
 
   const footer = (
     <div className="flex justify-end gap-3">
-      <Button variant="outline" size="sm" onClick={onClose} disabled={isSubmitting}>
+      <Button variant="secondary" size="sm" onClick={onClose} disabled={isSubmitting}>
         Batal
       </Button>
       <Button variant="primary" size="sm" onClick={handleSubmit} disabled={isSubmitting}>
