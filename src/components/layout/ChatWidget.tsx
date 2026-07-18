@@ -223,7 +223,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     <>
       {/* Container Chat Widget Slide Up Panel (Strictly Asli UI) */}
       <div
-        className={`fixed inset-0 sm:inset-auto sm:bottom-0 sm:right-6 z-40 w-full sm:w-[380px] h-full sm:h-[520px] bg-white dark:bg-zinc-950 rounded-none sm:rounded-t-xl border-none sm:border sm:border-zinc-200 dark:sm:border-zinc-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.4)] flex flex-col transition-all duration-300 origin-bottom sm:origin-bottom-right transform ${
+        className={`fixed inset-0 sm:inset-auto sm:bottom-0 sm:right-6 z-[60] w-full sm:w-[380px] h-full sm:h-[520px] bg-white dark:bg-zinc-950 rounded-none sm:rounded-t-xl border-none sm:border sm:border-zinc-200 dark:sm:border-zinc-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.4)] flex flex-col transition-all duration-300 origin-bottom sm:origin-bottom-right transform ${
           isChatOpen
             ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
             : 'opacity-0 scale-95 translate-y-12 pointer-events-none'
