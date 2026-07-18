@@ -112,10 +112,13 @@ export class SupabaseChatService {
     product?: ProductAttachment | null,
     senderId?: string | null
   ): Promise<ChatMessageRecord> {
+    const isUUID = (str?: string | null) =>
+      Boolean(str && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str))
+
     const messagePayload = {
       room_id: roomId,
       sender_type: senderType,
-      sender_id: senderId || null,
+      sender_id: isUUID(senderId) ? senderId : null,
       text: text.trim(),
       product_metadata: product || null,
     }
