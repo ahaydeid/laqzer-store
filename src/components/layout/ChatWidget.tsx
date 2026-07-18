@@ -223,14 +223,14 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     <>
       {/* Container Chat Widget Slide Up Panel (Strictly Asli UI) */}
       <div
-        className={`fixed bottom-0 right-3 sm:right-6 z-40 w-[340px] sm:w-[380px] h-[480px] sm:h-[520px] bg-white dark:bg-zinc-950 rounded-t-xl border border-zinc-200 dark:border-zinc-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.4)] flex flex-col transition-all duration-300 origin-bottom-right transform ${
+        className={`fixed inset-0 sm:inset-auto sm:bottom-0 sm:right-6 z-40 w-full sm:w-[380px] h-full sm:h-[520px] bg-white dark:bg-zinc-950 rounded-none sm:rounded-t-xl border-none sm:border sm:border-zinc-200 dark:sm:border-zinc-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.4)] flex flex-col transition-all duration-300 origin-bottom sm:origin-bottom-right transform ${
           isChatOpen
             ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
             : 'opacity-0 scale-95 translate-y-12 pointer-events-none'
         }`}
       >
         {/* Header Widget */}
-        <div className="px-4 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 rounded-t-xl flex items-center justify-between shrink-0">
+        <div className="px-4 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 rounded-none sm:rounded-t-xl flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             {/* Logo Laqzer */}
             <div className="w-8 h-8 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-200/50 dark:border-zinc-700/50">
