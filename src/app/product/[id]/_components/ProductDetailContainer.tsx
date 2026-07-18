@@ -595,7 +595,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                 className="flex items-center justify-center cursor-pointer gap-1.5 rounded bg-zinc-100 dark:bg-zinc-800 py-2.5 px-2 text-xs font-semibold tracking-wide hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all text-zinc-700 dark:text-zinc-200 active:scale-[0.99]"
               >
                 <FiShoppingCart className="h-4 w-4" />
-                <span>Masukkan Keranjang</span>
+                <span>+Keranjang</span>
               </button>
 
               <button 
