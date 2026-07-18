@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { StoreSettings } from '@/core/types/store'
-import { FiChevronDown, FiSend, FiX, FiPackage, FiLoader } from 'react-icons/fi'
+import { FiChevronDown, FiSend, FiX } from 'react-icons/fi'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
@@ -23,7 +23,6 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
   const [pendingProduct, setPendingProduct] = useState<ProductAttachment | null>(null)
   const [roomId, setRoomId] = useState<string | null>(null)
   const [messages, setMessages] = useState<ChatMessageRecord[]>([])
-  const [loadingChat, setLoadingChat] = useState(false)
 
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -33,7 +32,6 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     if (!isChatOpen) return
 
     let isMounted = true
-    setLoadingChat(true)
 
     chatService
       .getOrCreateRoom(user?.id, { name: user?.user_metadata?.full_name || 'Pembeli' })
@@ -41,12 +39,10 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
         if (!isMounted) return
         setRoomId(room.id)
 
-        // Ambil riwayat pesan yang sudah ada dari Supabase
         const history = await chatService.getRoomMessages(room.id)
         if (!isMounted) return
 
         if (history.length === 0) {
-          // Buat pesan sambutan otomatis pertama kali
           await chatService.sendMessage(
             room.id,
             'admin',
@@ -57,11 +53,9 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
         } else {
           setMessages(history)
         }
-        setLoadingChat(false)
       })
       .catch((err) => {
         console.error('Gagal inisialisasi chat room:', err)
-        setLoadingChat(false)
       })
 
     return () => {
@@ -69,13 +63,12 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     }
   }, [isChatOpen, user, chatService, settings.name])
 
-  // Subskripsi Supabase Realtime Listener untuk pesan baru secara instan
+  // Subskripsi Supabase Realtime Listener
   useEffect(() => {
     if (!roomId || !isChatOpen) return
 
     const subscription = chatService.subscribeToRoomMessages(roomId, (newMessage) => {
       setMessages((prev) => {
-        // Cegah pesan duplikat di state
         if (prev.some((m) => m.id === newMessage.id)) return prev
         return [...prev, newMessage]
       })
@@ -86,7 +79,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     }
   }, [roomId, isChatOpen, chatService])
 
-  // Auto-focus input field saat widget chat terbuka
+  // Auto-focus input field
   useEffect(() => {
     if (isChatOpen) {
       const timer = setTimeout(() => {
@@ -96,7 +89,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     }
   }, [isChatOpen])
 
-  // Listen to open-chat-widget global event (Tombol "Chat Admin" di halaman detail produk)
+  // Listen to open-chat-widget global event
   useEffect(() => {
     const handleOpenChat = (e: Event) => {
       const customEvent = e as CustomEvent<{ product?: ProductAttachment }>
@@ -112,7 +105,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     }
   }, [])
 
-  // Auto-scroll ke pesan terbawah
+  // Auto-scroll ke bawah
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' })
@@ -131,7 +124,6 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     const currentText = inputText.trim()
     const currentProduct = pendingProduct
 
-    // Reset input state instan untuk pengalaman responsif
     setInputText('')
     setPendingProduct(null)
 
@@ -144,165 +136,204 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
 
   return (
     <>
-      {/* Floating Chat Button Toggle */}
-      {!isChatOpen && (
-        <button
-          onClick={() => setIsChatOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-rose-600 px-5 py-3.5 text-xs font-bold text-white shadow-xl hover:bg-rose-700 active:scale-95 transition-all cursor-pointer"
-        >
-          <div className="relative">
-            <FiSend className="h-4 w-4" />
-          </div>
-          <span>Chat Admin</span>
-        </button>
-      )}
-
-      {/* Chat Box Popup Panel */}
-      {isChatOpen && (
-        <div className="fixed bottom-6 right-6 z-50 flex h-[520px] w-[360px] sm:w-[390px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-950 transition-all animate-in fade-in slide-in-from-bottom-5 duration-200">
-          {/* Header Panel */}
-          <div className="flex items-center justify-between bg-zinc-900 px-4 py-3.5 text-white dark:bg-zinc-900">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-600 text-white font-bold text-sm">
-                  L
-                </div>
-                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-zinc-900" />
-              </div>
-              <div>
-                <h3 className="text-xs font-bold leading-tight">{settings.name || 'Laqzer Customer Care'}</h3>
-                <p className="text-[10px] text-zinc-400">Biasanya membalas dalam beberapa menit</p>
+      {/* Container Chat Widget Slide Up Panel (Strictly Asli UI) */}
+      <div
+        className={`fixed bottom-0 right-3 sm:right-6 z-40 w-[340px] sm:w-[380px] h-[480px] sm:h-[520px] bg-white dark:bg-zinc-950 rounded-t-xl border border-zinc-200 dark:border-zinc-800 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.4)] flex flex-col transition-all duration-300 origin-bottom-right transform ${
+          isChatOpen
+            ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+            : 'opacity-0 scale-95 translate-y-12 pointer-events-none'
+        }`}
+      >
+        {/* Header Widget */}
+        <div className="px-4 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 rounded-t-xl flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3">
+            {/* Logo Laqzer */}
+            <div className="w-8 h-8 rounded-full overflow-hidden bg-white dark:bg-zinc-950 flex items-center justify-center p-1 border border-zinc-200 dark:border-zinc-800 shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/img/logo-laqzer-transparan.png"
+                alt="L"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-zinc-900 dark:text-white leading-tight">
+                {settings.name || 'Laqzer Customer Care'}
+              </h4>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-none">
+                  online
+                </span>
               </div>
             </div>
+          </div>
+          <div className="flex items-center gap-3 text-zinc-400 dark:text-zinc-500">
             <button
               onClick={() => setIsChatOpen(false)}
-              className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+              className="hover:text-red-500 transition-colors cursor-pointer"
             >
-              <FiX className="h-4 w-4" />
+              <FiChevronDown className="h-5 w-5" />
             </button>
           </div>
-
-          {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 thin-scroll bg-zinc-50/50 dark:bg-zinc-950">
-            {loadingChat ? (
-              <div className="flex h-full flex-col items-center justify-center text-zinc-400 gap-2">
-                <FiLoader className="h-6 w-6 animate-spin text-rose-500" />
-                <span className="text-xs">Memuat obrolan...</span>
-              </div>
-            ) : (
-              messages.map((msg) => {
-                const isUser = msg.senderType === 'user'
-                return (
-                  <div
-                    key={msg.id}
-                    className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
-                  >
-                    {/* Attachment Kartu Produk (jika ada) */}
-                    {msg.productMetadata && (
-                      <div className="mb-1.5 w-64 overflow-hidden rounded-xl border border-zinc-200 bg-white p-2.5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-                        <div className="flex gap-2.5">
-                          <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={msg.productMetadata.imageUrl}
-                              alt={msg.productMetadata.name}
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-xs font-bold text-zinc-900 dark:text-white truncate">
-                              {msg.productMetadata.name}
-                            </h4>
-                            {msg.productMetadata.variant && (
-                              <p className="text-[10px] text-zinc-400">{msg.productMetadata.variant}</p>
-                            )}
-                            <p className="text-xs font-extrabold text-rose-600 dark:text-rose-400 mt-0.5">
-                              Rp {msg.productMetadata.price.toLocaleString('id-ID')}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Teks Pesan Chat */}
-                    {msg.text && (
-                      <div
-                        className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed ${
-                          isUser
-                            ? 'bg-rose-600 text-white rounded-br-none'
-                            : 'bg-white text-zinc-800 border border-zinc-200/80 shadow-xs dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 rounded-bl-none'
-                        }`}
-                      >
-                        <p className="whitespace-pre-wrap">{msg.text}</p>
-                      </div>
-                    )}
-
-                    <span className="mt-1 text-[9px] text-zinc-400 px-1">
-                      {new Date(msg.createdAt).toLocaleTimeString('id-ID', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
-                )
-              })
-            )}
-            <div ref={chatEndRef} />
-          </div>
-
-          {/* Pending Product Attachment Banner (Preview sebelum dikirim) */}
-          {pendingProduct && (
-            <div className="flex items-center justify-between border-t border-zinc-200 bg-rose-50/70 p-2.5 dark:border-zinc-800 dark:bg-rose-950/30 shrink-0">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="h-9 w-9 shrink-0 overflow-hidden rounded bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={pendingProduct.imageUrl}
-                    alt={pendingProduct.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <span className="block text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-                    Lampiran Produk
-                  </span>
-                  <p className="text-xs font-semibold text-zinc-900 dark:text-white truncate">
-                    {pendingProduct.name}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setPendingProduct(null)}
-                className="rounded-full p-1 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-700 dark:hover:bg-zinc-800 cursor-pointer"
-              >
-                <FiX className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
-          {/* Footer Input Area */}
-          <form
-            onSubmit={handleSendMessage}
-            className="flex items-center gap-2 border-t border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900 shrink-0"
-          >
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Tulis pesan Anda..."
-              className="flex-1 rounded-xl bg-zinc-100 px-3.5 py-2 text-xs text-zinc-900 placeholder-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500/50 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500 dark:focus:bg-zinc-950"
-            />
-            <button
-              type="submit"
-              disabled={!inputText.trim() && !pendingProduct}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-40 disabled:hover:bg-rose-600 transition-all cursor-pointer shrink-0"
-            >
-              <FiSend className="h-4 w-4" />
-            </button>
-          </form>
         </div>
-      )}
+
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white dark:bg-zinc-950 thin-scroll">
+          {messages.map((msg) => {
+            const isUser = msg.senderType === 'user'
+            return (
+              <div
+                key={msg.id}
+                className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
+              >
+                {/* Kartu Produk (jika ada) */}
+                {msg.productMetadata ? (
+                  <Link
+                    href={`/product/${msg.productMetadata.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mb-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-2.5 flex gap-3 w-[260px] text-left hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={msg.productMetadata.imageUrl}
+                      alt={msg.productMetadata.name}
+                      className="w-12 h-12 rounded-sm object-cover bg-white dark:bg-zinc-950 shrink-0"
+                    />
+                    <div className="flex flex-col min-w-0 justify-between">
+                      <div>
+                        <h5 className="text-[11px] font-semibold text-zinc-850 dark:text-zinc-200 truncate leading-tight" title={msg.productMetadata.name}>
+                          {msg.productMetadata.name}
+                        </h5>
+                        {msg.productMetadata.variant && (
+                          <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                            Varian: {msg.productMetadata.variant}
+                          </p>
+                        )}
+                      </div>
+                      <p className="text-xs font-bold text-rose-500 dark:text-rose-400 mt-1">
+                        Rp {msg.productMetadata.price.toLocaleString('id-ID')}
+                      </p>
+                    </div>
+                  </Link>
+                ) : isUser ? (
+                  <div className="flex items-start max-w-[75%] justify-end">
+                    <div className="bg-emerald-200 text-zinc-950 rounded-l-xl rounded-b-xl px-4 py-2.5 text-sm shadow-xs">
+                      <p className="leading-relaxed break-words">{msg.text}</p>
+                      <span className="text-[9px] block text-right mt-1.5 text-zinc-600">
+                        {new Date(msg.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <svg className="w-2 h-2 text-emerald-200 fill-current shrink-0 -ml-[0.5px]" viewBox="0 0 10 10">
+                      <path d="M0 0 L10 0 L0 10 Z" />
+                    </svg>
+                  </div>
+                ) : (
+                  <div className="flex items-start max-w-[75%]">
+                    <svg className="w-2 h-2 text-slate-100 dark:text-zinc-800 fill-current shrink-0 -mr-[0.5px]" viewBox="0 0 10 10">
+                      <path d="M10 0 L0 0 L10 10 Z" />
+                    </svg>
+                    <div className="bg-slate-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-r-xl rounded-b-xl px-4 py-2.5 text-sm shadow-xs">
+                      <p className="leading-relaxed break-words">{msg.text}</p>
+                      <span className="text-[9px] block text-right mt-1.5 text-zinc-400 dark:text-zinc-500">
+                        {new Date(msg.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+          <div ref={chatEndRef} />
+        </div>
+
+        {/* Pending Product Attachment Card */}
+        {pendingProduct && (
+          <div className="px-3.5 py-2 bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 text-xs shrink-0">
+            <div className="flex items-center gap-2 min-w-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={pendingProduct.imageUrl} className="w-8 h-8 rounded object-cover shrink-0" alt="" />
+              <div className="truncate">
+                <p className="font-semibold text-zinc-800 dark:text-zinc-200 truncate">{pendingProduct.name}</p>
+                <p className="text-[10px] text-zinc-500">Rp {pendingProduct.price.toLocaleString('id-ID')}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setPendingProduct(null)}
+              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 cursor-pointer"
+            >
+              <FiX className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Input Bar */}
+        <form
+          onSubmit={handleSendMessage}
+          className="p-3.5 bg-white border-t border-zinc-100 dark:bg-zinc-950 dark:border-zinc-800 flex items-center gap-2 shrink-0"
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Tulis pesan..."
+            className="flex-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-sm px-4 py-2 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20"
+          />
+          <button
+            type="submit"
+            disabled={!inputText.trim() && !pendingProduct}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-500 text-white hover:bg-rose-600 active:scale-95 disabled:opacity-50 disabled:pointer-events-none transition-all flex-shrink-0 cursor-pointer"
+          >
+            <FiSend className="h-5 w-5 ml-0.5" />
+          </button>
+        </form>
+      </div>
+
+      {/* Floating Chat Widget Toggle Button (Strictly Asli UI) */}
+      <button
+        onClick={() => setIsChatOpen(true)}
+        className={`fixed bottom-0 right-3 z-30 flex items-center gap-2.5 rounded-t-lg bg-white p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.25)] dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 active:scale-95 transition-all duration-300 group cursor-pointer origin-bottom-right transform ${
+          isChatOpen
+            ? 'opacity-0 scale-90 translate-y-8 pointer-events-none'
+            : 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+        }`}
+      >
+        {/* Rose Chat Bubble Icon */}
+        <div className="relative h-7 w-7">
+          {/* Back bubble */}
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="absolute right-0 bottom-0 h-5 w-5 opacity-30 text-rose-300 dark:text-rose-900"
+          >
+            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+          </svg>
+          {/* Front bubble */}
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="absolute left-0 top-0 h-5.5 w-5.5 text-rose-500 dark:text-rose-400"
+          >
+            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+            {/* Smile Mouth */}
+            <path
+              d="M9 10c0 0 1 2 3 2s3-2 3-2"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              fill="none"
+            />
+          </svg>
+        </div>
+
+        {/* Label */}
+        <span className="text-lg font-bold tracking-wide text-rose-500 dark:text-rose-400">
+          Chat
+        </span>
+      </button>
     </>
   )
 }
