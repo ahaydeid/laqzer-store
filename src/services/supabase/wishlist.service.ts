@@ -1,4 +1,5 @@
 import { createClient } from './client'
+import { Product } from '@/core/types/product'
 
 export class SupabaseWishlistService {
   private getClient() {
@@ -44,5 +45,50 @@ export class SupabaseWishlistService {
       .eq('user_id', userId)
 
     return (data || []).map((row) => row.product_id)
+  }
+
+  async getFavoriteProducts(userId: string): Promise<Product[]> {
+    const supabase = this.getClient()
+
+    // Ambil semua product_id dari wishlist user, urut terbaru
+    const { data: wishlistRows } = await supabase
+      .from('wishlists')
+      .select('product_id, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+
+    if (!wishlistRows || wishlistRows.length === 0) return []
+
+    const productIds = wishlistRows.map((r) => r.product_id)
+
+    const { data: products } = await supabase
+      .from('products')
+      .select('*')
+      .in('id', productIds)
+
+    if (!products) return []
+
+    // Urutkan sesuai urutan wishlist (terbaru = pertama)
+    const ordered = productIds
+      .map((id) => products.find((p) => String(p.id) === String(id)))
+      .filter(Boolean) as any[]
+
+    return ordered.map((data) => ({
+      id: data.id,
+      name: data.name,
+      description: data.description || '',
+      price: Number(data.price),
+      originalPrice: data.original_price ? Number(data.original_price) : undefined,
+      imageUrl: data.image_url,
+      images: Array.isArray(data.images) ? data.images : [],
+      category: data.category,
+      rating: data.rating !== null && data.rating !== undefined ? Number(data.rating) : 5.0,
+      soldCount: data.sold_count ? Number(data.sold_count) : 0,
+      stock: Number(data.stock || 0),
+      soldProgress: data.sold_progress ? Number(data.sold_progress) : 0,
+      isCampaign: Boolean(data.is_campaign),
+      variants: Array.isArray(data.variants) ? data.variants : [],
+      weight: data.weight !== null && data.weight !== undefined ? Number(data.weight) : 500,
+    }))
   }
 }

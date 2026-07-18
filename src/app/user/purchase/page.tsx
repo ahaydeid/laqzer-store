@@ -40,6 +40,12 @@ export default async function PurchasePage() {
             >
               Pesanan Saya
             </Link>
+            <Link
+              href="/user/favorit"
+              className="px-4 py-2.5 font-medium text-zinc-500 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-500 rounded cursor-pointer transition-colors"
+            >
+              Favorit Saya
+            </Link>
           </div>
 
           {/* Konten Kanan */}
