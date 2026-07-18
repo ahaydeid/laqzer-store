@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       }
     }, {
       headers: {
-        'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=600'
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
       }
     })
   } catch (error: any) {
