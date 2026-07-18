@@ -1,14 +1,16 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
 import { useCart } from '@/context/CartContext'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { FiPlus, FiMinus, FiShoppingBag, FiArrowLeft, FiChevronDown } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 
 export function CartContainer() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const {
     items,
     loading,
@@ -17,6 +19,20 @@ export function CartContainer() {
     toggleCheckItem,
     toggleAllCheck,
   } = useCart()
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login?next=/cart')
+    }
+  }, [user, authLoading, router])
+
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <p className="text-xs text-zinc-400">Memeriksa status login...</p>
+      </div>
+    )
+  }
 
 
 
