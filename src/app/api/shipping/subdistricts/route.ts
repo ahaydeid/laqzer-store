@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const res = await fetch(`https://rajaongkir.komerce.id/api/v1/destination/sub-district/${cityId}`, {
+    const res = await fetch(`https://rajaongkir.komerce.id/api/v1/destination/district/${cityId}`, {
       headers: {
         key: apiKey
       },

@@ -130,7 +130,7 @@ export function UserProfileContainer() {
       return
     }
 
-    const cacheKey = `cached_subdistricts_${cId}`
+    const cacheKey = `cached_districts_v2_${cId}`
     const cachedSubs = sessionStorage.getItem(cacheKey)
     if (cachedSubs) {
       try {
