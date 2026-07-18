@@ -96,11 +96,13 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   }
 
   const handleChatWA = () => {
+    if (!requireAuth('menghubungi penjual via WhatsApp')) return
     const text = `Halo ${settings.name}, saya ingin bertanya mengenai produk "${product.name}" (Varian: ${selectedVariant}). Apakah produk ini ready stok?`
     window.open(getWhatsAppLink(text), '_blank')
   }
 
   const handleBuyNow = async () => {
+    if (!requireAuth('melakukan pembelian langsung')) return
     try {
       // 1. Uncheck all other items in the cart to isolate this purchase
       await toggleAllCheck(false)
@@ -121,6 +123,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   }
 
   const handleChatAdmin = () => {
+    if (!requireAuth('memulai percakapan chat')) return
     const event = new CustomEvent('open-chat-widget', {
       detail: {
         product: {
@@ -129,8 +132,8 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
           price: product.price,
           imageUrl: product.imageUrl,
           variant: selectedVariant,
-        }
-      }
+        },
+      },
     })
     window.dispatchEvent(event)
   }
