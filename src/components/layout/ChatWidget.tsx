@@ -8,8 +8,8 @@ import { usePathname } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseChatService } from '@/services/supabase/chat.service'
 import { ChatMessageRecord, ProductAttachment } from '@/core/types/chat'
-
 import { SupabaseProfileService } from '@/services/supabase/profile.service'
+import { SupabaseWelcomeMessageService } from '@/services/supabase/welcome-message.service'
 
 interface ChatWidgetProps {
   settings: StoreSettings
@@ -20,6 +20,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
   const { user } = useAuth()
   const chatService = useMemo(() => new SupabaseChatService(), [])
   const profileService = useMemo(() => new SupabaseProfileService(), [])
+  const welcomeService = useMemo(() => new SupabaseWelcomeMessageService(), [])
 
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [inputText, setInputText] = useState('')
@@ -73,11 +74,15 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
       if (!isMounted) return
 
       if (history.length === 0) {
-        await chatService.sendMessage(
-          room.id,
-          'admin',
-          `Halo! Selamat datang di ${settings.name || 'Laqzer Store'}. Ada yang bisa kami bantu hari ini?`
-        )
+        const welcomeConfig = await welcomeService.getConfig()
+
+        if (welcomeConfig.enabled) {
+          const welcomeMsg = welcomeConfig.text ||
+            `Halo! Selamat datang di ${settings.name || 'Laqzer Store'}. Ada yang bisa kami bantu hari ini?`
+
+          await chatService.sendMessage(room.id, 'admin', welcomeMsg)
+        }
+
         const updatedHistory = await chatService.getRoomMessages(room.id)
         setMessages(updatedHistory)
       } else {

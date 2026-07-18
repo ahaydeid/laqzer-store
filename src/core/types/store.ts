@@ -9,4 +9,7 @@ export interface StoreSettings {
   currency: string;
   address?: string;
   phone?: string;
+  welcomeMessage?: string;
+  welcomeMessageEnabled?: boolean;
 }
+

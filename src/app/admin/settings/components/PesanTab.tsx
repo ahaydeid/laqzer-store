@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Swal from "sweetalert2";
 import { Button } from "@/components/ui/Button";
 import { playSwalSound } from "@/utils/sound";
+import { SupabaseWelcomeMessageService } from "@/services/supabase/welcome-message.service";
 
 interface PesanTabProps {
   onShowSuccessAlert: (title: string, text: string) => void;
@@ -30,24 +31,30 @@ const Switch: React.FC<{
 };
 
 export const PesanTab: React.FC<PesanTabProps> = ({ onShowSuccessAlert }) => {
-  const defaultReplyActive = true;
-  const defaultReplyText = "Halo, terima kasih telah menghubungi toko kami. Pesan kamu telah kami terima dan tim kami akan segera membalasnya.";
+  const service = useMemo(() => new SupabaseWelcomeMessageService(), []);
 
-  const [replyActive, setReplyActive] = useState(defaultReplyActive);
-  const [replyText, setReplyText] = useState(defaultReplyText);
+  const [replyActive, setReplyActive] = useState(true);
+  const [replyText, setReplyText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [savedText, setSavedText] = useState("");
 
-  const [savedSettings, setSavedSettings] = useState({
-    replyActive: defaultReplyActive,
-    replyText: defaultReplyText,
-  });
+  // Load dari Supabase saat mount
+  useEffect(() => {
+    service.getConfig().then((config) => {
+      setReplyActive(config.enabled);
+      setReplyText(config.text);
+      setSavedText(config.text);
+      setIsLoading(false);
+    }).catch(() => setIsLoading(false));
+  }, [service]);
 
   const handleToggleActive = (val: boolean) => {
     playSwalSound("confirm");
     Swal.fire({
       title: val ? "Aktifkan Balasan Otomatis?" : "Nonaktifkan Balasan Otomatis?",
-      text: val 
-        ? "Apakah kamu yakin ingin mengaktifkan fitur balas pesan otomatis?" 
+      text: val
+        ? "Apakah kamu yakin ingin mengaktifkan fitur balas pesan otomatis?"
         : "Apakah kamu yakin ingin menonaktifkan fitur balas pesan otomatis?",
       icon: "warning",
       showCancelButton: true,
@@ -55,20 +62,20 @@ export const PesanTab: React.FC<PesanTabProps> = ({ onShowSuccessAlert }) => {
       cancelButtonColor: "#ef4444",
       confirmButtonText: "Ya, Ubah",
       cancelButtonText: "Batal",
-      customClass: {
-        popup: "swal2-popup",
-      }
-    }).then((result) => {
+      customClass: { popup: "swal2-popup" },
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setReplyActive(val);
-        setSavedSettings((prev) => ({ ...prev, replyActive: val }));
-        if (!val) {
-          setIsEditing(false);
+        try {
+          await service.saveConfig({ enabled: val, text: replyText });
+          setReplyActive(val);
+          if (!val) setIsEditing(false);
+          onShowSuccessAlert(
+            "Berhasil!",
+            val ? "Balasan otomatis diaktifkan." : "Balasan otomatis dinonaktifkan."
+          );
+        } catch {
+          Swal.fire({ title: "Gagal", text: "Terjadi kesalahan saat menyimpan.", icon: "error", confirmButtonColor: "#18181b" });
         }
-        onShowSuccessAlert(
-          "Berhasil!",
-          val ? "Balasan otomatis diaktifkan." : "Balasan otomatis dinonaktifkan."
-        );
       }
     });
   };
@@ -84,25 +91,29 @@ export const PesanTab: React.FC<PesanTabProps> = ({ onShowSuccessAlert }) => {
       cancelButtonColor: "#ef4444",
       confirmButtonText: "Ya, Simpan",
       cancelButtonText: "Batal",
-      customClass: {
-        popup: "swal2-popup",
-      }
-    }).then((result) => {
+      customClass: { popup: "swal2-popup" },
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setSavedSettings((prev) => ({ ...prev, replyText }));
-        setIsEditing(false);
-        onShowSuccessAlert(
-          "Disimpan!",
-          "Template balasan pesan berhasil diperbarui."
-        );
+        try {
+          await service.saveConfig({ enabled: replyActive, text: replyText });
+          setSavedText(replyText);
+          setIsEditing(false);
+          onShowSuccessAlert("Disimpan!", "Template balasan pesan berhasil diperbarui.");
+        } catch {
+          Swal.fire({ title: "Gagal", text: "Terjadi kesalahan saat menyimpan.", icon: "error", confirmButtonColor: "#18181b" });
+        }
       }
     });
   };
 
   const handleCancelEdit = () => {
-    setReplyText(savedSettings.replyText);
+    setReplyText(savedText);
     setIsEditing(false);
   };
+
+  if (isLoading) {
+    return <div className="text-sm text-zinc-400 py-6 text-center">Memuat pengaturan...</div>;
+  }
 
   return (
     <div className="space-y-6">
