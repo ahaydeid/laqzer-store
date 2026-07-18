@@ -180,6 +180,21 @@ export class SupabaseChatService {
       .single()
 
     if (error || !data) return null
+
+    // Jika room terhubung ke registered user, enrich data dari tabel profiles
+    if (data.user_id) {
+      const { data: profile } = await this.supabase
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .eq('id', data.user_id)
+        .maybeSingle()
+
+      if (profile) {
+        if (profile.avatar_url) data.user_avatar_url = profile.avatar_url
+        if (profile.full_name) data.user_name = profile.full_name
+      }
+    }
+
     return this.mapRoomRecord(data)
   }
 
@@ -197,7 +212,30 @@ export class SupabaseChatService {
       return []
     }
 
-    return (data || []).map(this.mapRoomRecord)
+    const rooms = data || []
+    
+    // Collect all unique user_ids
+    const userIds = rooms.map(r => r.user_id).filter(Boolean) as string[]
+
+    if (userIds.length > 0) {
+      const { data: profiles } = await this.supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', userIds)
+
+      if (profiles && profiles.length > 0) {
+        const profileMap = new Map(profiles.map(p => [p.id, p]))
+        for (const room of rooms) {
+          if (room.user_id && profileMap.has(room.user_id)) {
+            const p = profileMap.get(room.user_id)!
+            if (p.avatar_url) room.user_avatar_url = p.avatar_url
+            if (p.full_name) room.user_name = p.full_name
+          }
+        }
+      }
+    }
+
+    return rooms.map(this.mapRoomRecord)
   }
 
   /**
