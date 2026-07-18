@@ -30,6 +30,12 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  // Reset room & messages jika akun pengguna berganti
+  useEffect(() => {
+    setRoomId(null)
+    setMessages([])
+  }, [user?.id])
+
   // Inisialisasi Room Chat Supabase saat widget dibuka
   useEffect(() => {
     if (!isChatOpen) return
