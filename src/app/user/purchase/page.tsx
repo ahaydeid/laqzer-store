@@ -44,9 +44,6 @@ export default async function PurchasePage() {
 
           {/* Konten Kanan */}
           <div className="md:col-span-3">
-            <h1 className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-6">
-              Pesanan Saya
-            </h1>
             <PurchaseContainer />
           </div>
         </div>

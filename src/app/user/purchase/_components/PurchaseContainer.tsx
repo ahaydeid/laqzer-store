@@ -132,9 +132,6 @@ export function PurchaseContainer() {
       {/* Header */}
       <div>
         <h1 className="text-xl font-extrabold text-zinc-900 dark:text-white">Pembelian Saya</h1>
-        <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
-          Kelola dan pantau seluruh status pesanan Anda.
-        </p>
       </div>
 
       {/* Tabs */}
