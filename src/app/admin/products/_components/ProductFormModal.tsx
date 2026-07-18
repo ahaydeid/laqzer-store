@@ -259,46 +259,39 @@ export function ProductFormModal({
               id="product-image-upload"
             />
 
-            {imagePreview ? (
-              <div className="relative rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 overflow-hidden aspect-video max-h-48 flex items-center justify-center group">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imagePreview}
-                  alt="Preview Produk"
-                  className="object-contain w-full h-full p-2"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="px-3 py-1.5 rounded bg-white/90 text-zinc-900 text-xs font-semibold hover:bg-white transition"
-                  >
-                    Ganti Gambar
-                  </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded border border-zinc-200 bg-white hover:bg-zinc-50 text-xs font-semibold text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              >
+                <FiUploadCloud className="h-4 w-4 text-zinc-400" />
+                <span>{imagePreview ? 'Ganti Gambar' : 'Pilih Gambar'}</span>
+              </button>
+
+              {imagePreview ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-9 w-9 rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 flex-shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={handleRemoveImage}
-                    className="p-1.5 rounded bg-rose-600 text-white hover:bg-rose-700 transition"
+                    className="p-1 text-rose-500 hover:text-rose-700 transition-colors cursor-pointer text-xs"
                     title="Hapus Gambar"
                   >
                     <FiX className="h-4 w-4" />
                   </button>
                 </div>
-              </div>
-            ) : (
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600 rounded p-6 bg-zinc-50/50 dark:bg-zinc-900/30 cursor-pointer transition-colors"
-              >
-                <FiUploadCloud className="h-8 w-8 text-zinc-400 mb-2" />
-                <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  Klik atau seret file gambar ke sini untuk mengunggah
-                </p>
-                <p className="text-[11px] text-zinc-400">
-                  Format gambar: PNG, JPG, WEBP (Maksimal 5MB)
-                </p>
-              </div>
-            )}
+              ) : (
+                <span className="text-xs text-zinc-400">Belum ada file dipilih</span>
+              )}
+            </div>
           </div>
 
           {/* Deskripsi */}
