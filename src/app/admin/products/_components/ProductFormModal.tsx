@@ -302,7 +302,7 @@ export function ProductFormModal({
                   key={idx}
                   className={`relative h-16 w-16 rounded overflow-hidden bg-zinc-100 dark:bg-zinc-900 group flex-shrink-0 ${
                     idx === 0
-                      ? 'ring-2 ring-zinc-900 dark:ring-zinc-100 border-transparent'
+                      ? 'ring-2 ring-sky-500 dark:ring-sky-400 border-transparent'
                       : 'border border-zinc-200 dark:border-zinc-800'
                   }`}
                 >
