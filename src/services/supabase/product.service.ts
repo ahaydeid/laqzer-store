@@ -2,6 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { IProductService } from '@/core/interfaces/product.interface'
 import { Product } from '@/core/types/product'
 import { createClient as createBrowserClient } from './client'
+import { uploadBase64ToProductStorage } from './storage.service'
 
 /**
  * Supabase-backed implementation of IProductService.
@@ -17,6 +18,24 @@ export class SupabaseProductService implements IProductService {
   private getClient() {
     if (this.supabaseClient) return this.supabaseClient
     return createBrowserClient()
+  }
+
+  private async processImagesUpload(productData: Partial<Product>): Promise<Partial<Product>> {
+    const updatedData = { ...productData }
+
+    if (updatedData.images && updatedData.images.length > 0) {
+      const uploadedImages = await Promise.all(
+        updatedData.images.map((img: string) => uploadBase64ToProductStorage(img))
+      )
+      updatedData.images = uploadedImages
+      updatedData.imageUrl = uploadedImages[0]
+    } else if (updatedData.imageUrl && updatedData.imageUrl.startsWith('data:image/')) {
+      const uploadedUrl = await uploadBase64ToProductStorage(updatedData.imageUrl)
+      updatedData.imageUrl = uploadedUrl
+      updatedData.images = [uploadedUrl]
+    }
+
+    return updatedData
   }
 
   private mapToProduct(data: any): Product {
@@ -67,7 +86,7 @@ export class SupabaseProductService implements IProductService {
       return []
     }
 
-    return (data || []).map((row) => this.mapToProduct(row))
+    return (data || []).map((row: any) => this.mapToProduct(row))
   }
 
   async getProducts(category?: string): Promise<Product[]> {
@@ -89,7 +108,7 @@ export class SupabaseProductService implements IProductService {
       return []
     }
 
-    return (data || []).map((row) => this.mapToProduct(row))
+    return (data || []).map((row: any) => this.mapToProduct(row))
   }
 
   async getProductById(id: string): Promise<Product | null> {
@@ -110,7 +129,8 @@ export class SupabaseProductService implements IProductService {
 
   async createProduct(productData: Partial<Product>): Promise<Product> {
     const supabase = this.getClient()
-    const dbPayload = this.mapToDbPayload(productData)
+    const processedData = await this.processImagesUpload(productData)
+    const dbPayload = this.mapToDbPayload(processedData)
 
     const { data, error } = await supabase
       .from('products')
@@ -128,7 +148,8 @@ export class SupabaseProductService implements IProductService {
 
   async updateProduct(id: string, productData: Partial<Product>): Promise<Product> {
     const supabase = this.getClient()
-    const dbPayload = this.mapToDbPayload(productData)
+    const processedData = await this.processImagesUpload(productData)
+    const dbPayload = this.mapToDbPayload(processedData)
     dbPayload.updated_at = new Date().toISOString()
 
     const { data, error } = await supabase
