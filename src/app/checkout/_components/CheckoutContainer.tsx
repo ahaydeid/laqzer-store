@@ -83,13 +83,34 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
     })
   }, [user, profileService])
 
-  // 3. Fetch Shipping Cost from RajaOngkir
+  // 3. Fetch Shipping Cost dengan Browser-Side SessionStorage Caching
   useEffect(() => {
     const destinationId = profile?.subdistrictId
     if (!profile || !destinationId || checkedItems.length === 0) return
 
     // Hitung total berat belanjaan berdasarkan berat produk asli
     const totalWeight = checkedItems.reduce((acc, item) => acc + ((item.weight || 500) * item.quantity), 0)
+    
+    // Kunci cache unik browser (berdasarkan ID Destinasi + Total Berat)
+    const browserCacheKey = `shipping_cost_v1_${destinationId}_${totalWeight}`
+    
+    // ── CEK BROWSER SESSIONSTORAGE TERLEBIH DAHULU ──
+    try {
+      const cachedBrowserData = sessionStorage.getItem(browserCacheKey)
+      if (cachedBrowserData) {
+        const parsed = JSON.parse(cachedBrowserData)
+        setCouriers(parsed)
+        if (parsed.length > 0) {
+          setSelectedCourier(parsed[0])
+        } else {
+          setSelectedCourier(null)
+        }
+        setLoadingShipping(false)
+        setShippingError(null)
+        return // 🛑 HENTIKAN FETCH SAMASEKALI KARENA ADA DI CACHE BROWSER
+      }
+    } catch (_) {}
+
     setLoadingShipping(true)
     setShippingError(null)
 
@@ -116,6 +137,14 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
       } else {
         setSelectedCourier(null)
       }
+      
+      // Simpan ke SessionStorage Browser agar jika pindah halaman/refresh tidak re-fetch
+      try {
+        if (list.length > 0) {
+          sessionStorage.setItem(browserCacheKey, JSON.stringify(list))
+        }
+      } catch (_) {}
+
       setLoadingShipping(false)
     })
     .catch(err => {
