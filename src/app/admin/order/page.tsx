@@ -1,24 +1,77 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { FiSearch, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { useState, useEffect, useMemo } from "react";
+import { FiSearch, FiX, FiChevronLeft, FiChevronRight, FiLoader } from "react-icons/fi";
 import Swal from "sweetalert2";
 import { playSwalSound } from "@/utils/sound";
 import { Order } from "./_components/types";
-import { INITIAL_ORDERS } from "./_components/mockData";
 import OrderTable from "./_components/OrderTable";
 import OrderDetailModal from "./_components/OrderDetailModal";
 import OrderEditModal from "./_components/OrderEditModal";
+import { SupabaseOrderService } from "@/services/supabase/order.service";
+import { OrderRecord, OrderStatus } from "@/core/types/order";
+import useSWR from "swr";
+
+const DB_STATUS_TO_UI: Record<OrderStatus, Order["status"]> = {
+  unpaid: "Belum Dibayar",
+  processing: "Sedang Diproses",
+  shipped: "Dikirim",
+  completed: "Selesai",
+  cancelled: "Dibatalkan",
+};
+
+const UI_STATUS_TO_DB: Record<Order["status"], OrderStatus> = {
+  "Belum Dibayar": "unpaid",
+  "Sedang Diproses": "processing",
+  "Dikirim": "shipped",
+  "Selesai": "completed",
+  "Dibatalkan": "cancelled",
+};
 
 export default function OrderPage() {
-  const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
+  const orderService = useMemo(() => new SupabaseOrderService(), []);
+  
+  // Fetch real orders from Supabase using useSWR
+  const { data: rawOrders = [], isLoading, mutate } = useSWR<OrderRecord[]>(
+    "admin-orders-list",
+    () => orderService.getAllOrdersAdmin(),
+    {
+      revalidateOnFocus: true,
+      dedupingInterval: 5000,
+    }
+  );
+
+  // Map Supabase OrderRecord to Admin Table UI Order format
+  const orders: Order[] = useMemo(() => {
+    return rawOrders.map((rec) => ({
+      id: rec.orderNumber, // Tampilkan Nomor Invoice unik (misal ORD-20260718-xxxx)
+      realDbId: rec.id, // simpan UUID asli untuk update
+      customerName: rec.shippingAddress?.recipientName || "Pembeli",
+      total: rec.totalAmount,
+      paymentMethod: rec.paymentMethod || "-",
+      status: DB_STATUS_TO_UI[rec.status] || "Belum Dibayar",
+      date: new Date(rec.createdAt).toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      items: (rec.items || []).map((i) => ({
+        name: i.productName,
+        price: i.price,
+        quantity: i.quantity,
+      })),
+      address: `${rec.shippingAddress?.fullAddress || ""}, ${rec.shippingAddress?.subdistrict || ""}, ${rec.shippingAddress?.city || ""}, ${rec.shippingAddress?.province || ""} (${rec.shippingAddress?.phone || ""})`,
+      discount: rec.discount,
+    }));
+  }, [rawOrders]);
+
   const [searchValue, setSearchValue] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua");
   const [isFocused, setIsFocused] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [editingOrderForStatus, setEditingOrderForStatus] = useState<Order | null>(null);
   const [selectedNewStatus, setSelectedNewStatus] = useState<Order["status"]>("Belum Dibayar");
-  const [selectedNewPaymentMethod, setSelectedNewPaymentMethod] = useState<string>("Transfer BCA");
+  const [selectedNewPaymentMethod, setSelectedNewPaymentMethod] = useState<string>("-");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -31,37 +84,38 @@ export default function OrderPage() {
     setSelectedNewPaymentMethod(order.paymentMethod);
   };
 
-  const handleSaveStatus = () => {
+  const handleSaveStatus = async () => {
     if (!editingOrderForStatus) return;
 
-    const updatedStatus = selectedNewStatus;
-    const updatedPaymentMethod = selectedNewPaymentMethod;
-    const orderId = editingOrderForStatus.id;
+    const realDbId = (editingOrderForStatus as any).realDbId;
+    const dbStatus = UI_STATUS_TO_DB[selectedNewStatus];
+    const newPaymentMethod = selectedNewPaymentMethod;
 
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id === orderId) {
-          return { ...o, status: updatedStatus, paymentMethod: updatedPaymentMethod };
-        }
-        return o;
-      })
-    );
+    try {
+      await Promise.all([
+        orderService.updateOrderStatus(realDbId, dbStatus),
+        orderService.updatePaymentMethod(realDbId, newPaymentMethod),
+      ]);
 
-    setSelectedOrder((prev) => {
-      if (prev && prev.id === orderId) {
-        return { ...prev, status: updatedStatus, paymentMethod: updatedPaymentMethod };
-      }
-      return prev;
-    });
+      playSwalSound("success");
+      Swal.fire({
+        title: "Berhasil!",
+        text: `Data pesanan #${editingOrderForStatus.id} berhasil diperbarui.`,
+        icon: "success",
+        confirmButtonColor: "#0369a1",
+      });
 
-    setEditingOrderForStatus(null);
-    playSwalSound("success");
-    Swal.fire({
-      title: "Berhasil!",
-      text: `Data pesanan #${orderId} berhasil diperbarui.`,
-      icon: "success",
-      confirmButtonColor: "#0369a1",
-    });
+      setEditingOrderForStatus(null);
+      mutate();
+    } catch (err: any) {
+      console.error("Gagal mengupdate pesanan:", err);
+      Swal.fire({
+        title: "Gagal",
+        text: err?.message || "Terjadi kesalahan saat memperbarui pesanan.",
+        icon: "error",
+        confirmButtonColor: "#0369a1",
+      });
+    }
   };
 
   const handleClearSearch = () => {

@@ -26,6 +26,7 @@ export const STATUS_STEPS: { value: Order["status"]; label: string }[] = [
 ];
 
 export const PAYMENT_METHOD_OPTIONS = [
+  "-",
   "Transfer BCA",
   "Transfer Bank Mandiri",
   "GoPay",

@@ -8,6 +8,7 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { StoreSettings } from '@/core/types/store'
 import { SupabaseProfileService } from '@/services/supabase/profile.service'
 import { SupabaseVoucherService } from '@/services/supabase/voucher.service'
+import { SupabaseOrderService } from '@/services/supabase/order.service'
 import { UserProfile } from '@/core/types/profile'
 import { FiChevronLeft, FiTag, FiLoader } from 'react-icons/fi'
 import Swal from 'sweetalert2'
@@ -29,8 +30,8 @@ interface CourierOption {
 export function CheckoutContainer({ settings }: CheckoutContainerProps) {
   const router = useRouter()
   const { user } = useAuth()
-  const { items, clearCheckedItems } = useCart()
-  
+  const { items, clearCheckedItems, removeFromCart } = useCart()
+
   const profileService = useMemo(() => new SupabaseProfileService(), [])
 
   // 1. Get checked items from cart
@@ -239,10 +240,13 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
     return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(messageText)}`
   }
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
+  const orderService = useMemo(() => new SupabaseOrderService(), [])
+
+  const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!selectedCourier) {
+      playSwalSound('confirm')
       Swal.fire({
         title: 'Kurir Belum Dipilih',
         text: 'Silakan pilih opsi pengiriman terlebih dahulu.',
@@ -252,6 +256,17 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
       return
     }
 
+    if (!user?.id) {
+      Swal.fire({
+        title: 'Gagal',
+        text: 'Sesi login Anda tidak valid. Silakan login kembali.',
+        icon: 'error',
+        confirmButtonColor: '#e11d48',
+      })
+      return
+    }
+
+    playSwalSound('confirm')
     Swal.fire({
       title: 'Memproses Pesanan...',
       html: 'Sedang membuat pesanan Anda, mohon tunggu sebentar.',
@@ -263,50 +278,73 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
       }
     })
 
-    setTimeout(() => {
-      let confirmMessage = `Halo *${settings.name}*, saya ingin melakukan konfirmasi pembayaran untuk pesanan saya:\n\n`
-      confirmMessage += `*Rincian Pesanan:*\n`
-      checkedItems.forEach((item, index) => {
-        confirmMessage += `${index + 1}. ${item.name} (${item.variant}) x${item.quantity}\n`
+    try {
+      const shippingAddressData = {
+        recipientName: profile?.fullName || user.email || 'Pembeli',
+        phone: profile?.phone || '',
+        fullAddress: profile?.address || 'Alamat belum diatur',
+        province: profile?.province || '',
+        city: profile?.city || '',
+        subdistrict: profile?.subdistrict || '',
+        postalCode: profile?.postalCode || '',
+      }
+
+      const orderItemsData = checkedItems.map(item => ({
+        productId: item.productId,
+        variantId: undefined,
+        productName: item.name,
+        productImage: item.imageUrl,
+        variantLabel: item.variant,
+        price: item.price,
+        quantity: item.quantity,
+      }))
+
+      // 1. Simpan Pesanan Baru ke Supabase
+      const newOrder = await orderService.createOrder({
+        userId: user.id,
+        shippingCourier: `${selectedCourier.name} (${selectedCourier.service})`,
+        shippingCost,
+        subtotal: productSubtotal,
+        discount,
+        totalAmount: grandTotal,
+        shippingAddress: shippingAddressData,
+        items: orderItemsData,
       })
-      confirmMessage += `\n`
-      confirmMessage += `- *Kurir*: ${selectedCourier.name} (${selectedCourier.service})\n`
-      confirmMessage += `- *Alamat*: ${profile?.address || ''}, ${profile?.city || ''}, ${profile?.province || ''}\n`
-      confirmMessage += `- *Total Pembayaran: Rp ${grandTotal.toLocaleString('id-ID')}*\n\n`
-      confirmMessage += `Berikut bukti transfer pembayaran akan saya lampirkan setelah pesan ini. Mohon segera diproses, terima kasih!`
 
-      const waLink = getWhatsAppLink(confirmMessage)
+      // 2. Hapus barang-barang yang baru saja di-checkout dari keranjang Supabase & lokal
+      for (const item of checkedItems) {
+        if (item.id) {
+          try {
+            await removeFromCart(item.id)
+          } catch (err) {
+            console.error('Error removing cart item:', err)
+          }
+        }
+      }
 
-      setIsOrderPlaced(true)
+      // Bersihkan keranjang lokal
       clearCheckedItems()
+      setIsOrderPlaced(true)
 
+      playSwalSound('success')
       Swal.fire({
         icon: 'success',
-        title: 'Pemesanan Berhasil!',
-        html: `
-          <div class="text-center font-sans">
-            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
-              Silakan lakukan pembayaran transfer bank sesuai instruksi, kemudian kirim bukti pembayaran Anda melalui WhatsApp.
-            </p>
-            <div class="bg-zinc-50 dark:bg-zinc-900/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 text-left text-xs space-y-1 mb-4">
-              <p class="font-bold text-zinc-800 dark:text-zinc-200">Rincian Pembayaran:</p>
-              <p class="text-zinc-600 dark:text-zinc-400">Total Tagihan: <span class="font-bold text-rose-500">Rp ${grandTotal.toLocaleString('id-ID')}</span></p>
-              <p class="text-zinc-600 dark:text-zinc-400">Transfer BCA: <span class="font-bold">8415-1290-88</span> (a.n. Puspa Meylinia Inakhota)</p>
-              <p class="text-zinc-600 dark:text-zinc-400">Transfer Mandiri: <span class="font-bold">137-002-199-2831</span> (a.n. Puspa Meylinia Inakhota)</p>
-            </div>
-          </div>
-        `,
-        confirmButtonColor: '#10b981',
-        confirmButtonText: 'Konfirmasi Pembayaran (WA)',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.open(waLink, '_blank')
-          router.push('/user/purchase')
-        }
+        title: 'Pesanan Berhasil Dibuat!',
+        text: `Nomor Invoice Anda: ${newOrder.orderNumber}. Silakan cek status di menu Pembelian Saya.`,
+        confirmButtonColor: '#e11d48',
+        confirmButtonText: 'Lihat Pembelian Saya',
+      }).then(() => {
+        router.push('/user/purchase')
       })
-    }, 1500)
+    } catch (err: any) {
+      console.error('Gagal membuat pesanan:', err)
+      Swal.fire({
+        title: 'Gagal Membuat Pesanan',
+        text: err?.message || 'Terjadi kesalahan saat memproses pesanan Anda.',
+        icon: 'error',
+        confirmButtonColor: '#e11d48',
+      })
+    }
   }
 
   if (checkedItems.length === 0 && !isOrderPlaced) {
