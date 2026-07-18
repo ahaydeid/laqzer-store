@@ -11,6 +11,8 @@ import { Product } from '@/core/types/product'
 import { playSwalSound } from '@/utils/sound'
 import { FiSave, FiAlertCircle, FiPlus, FiX } from 'react-icons/fi'
 
+import { compressImage, readFileAsDataURL } from '@/utils/imageCompression'
+
 interface ProductFormModalProps {
   isOpen: boolean
   onClose: () => void
@@ -72,8 +74,8 @@ export function ProductFormModal({
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Handle Multi-file Upload (Up to 10 photos total)
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle Multi-file Upload (Up to 10 photos total) with Automatic Image Compression
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
 
@@ -84,28 +86,35 @@ export function ProductFormModal({
 
     setError('')
 
-    files.forEach((file) => {
+    for (const file of files) {
       if (!file.type.startsWith('image/')) {
         setError('File yang diunggah harus berupa gambar (JPEG, PNG, WEBP, dll).')
-        return
+        continue
       }
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Ukuran gambar tidak boleh melebihi 5MB per file.')
-        return
+      if (file.size > 15 * 1024 * 1024) {
+        setError('Ukuran gambar tidak boleh melebihi 15MB per file.')
+        continue
       }
 
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const result = reader.result as string
+      try {
+        // Compress image client-side before reading
+        const compressedFile = await compressImage(file, {
+          maxWidth: 900,
+          maxHeight: 900,
+          maxSizeKB: 180,
+        })
+        const resultDataUrl = await readFileAsDataURL(compressedFile)
+
         setImages((prev) => {
           if (prev.length < 10) {
-            return [...prev, result]
+            return [...prev, resultDataUrl]
           }
           return prev
         })
+      } catch (err) {
+        console.error('Failed to compress image:', err)
       }
-      reader.readAsDataURL(file)
-    })
+    }
 
     // Reset file input value
     if (fileInputRef.current) {
