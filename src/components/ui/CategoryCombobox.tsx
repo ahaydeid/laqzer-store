@@ -112,8 +112,8 @@ export function CategoryCombobox({
                 }}
                 className="w-full flex items-center gap-2 px-3 py-2 rounded text-left text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 font-semibold transition-colors cursor-pointer mb-1"
               >
-                <FiPlus className="h-3.5 w-3.5" />
-                <span>Buat Kategori Baru: &quot;{query.trim()}&quot;</span>
+                <FiPlus className="h-3.5 w-3.5 flex-shrink-0" />
+                <span>&quot;{query.trim()}&quot;</span>
               </button>
             )}
 
