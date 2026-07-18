@@ -6,8 +6,8 @@ import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "Laqzer Store - UMKM Digital",
-  description: "Platform Toko Digital UMKM Indonesia Hemat Biaya",
+  title: "Laqzer Store - Official Store Laqzer Indonesia",
+  description: "Official Store Laqzer Indonesia Hemat Biaya",
 };
 
 export default async function RootLayout({

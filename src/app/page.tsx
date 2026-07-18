@@ -1,24 +1,48 @@
 import { getServices } from '@/services'
+import { unstable_cache } from 'next/cache'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { HeroCarousel } from './_components/HeroCarousel'
 import { CatalogContainer } from './_components/CatalogContainer'
 import { StoreHighlights } from './_components/StoreHighlights'
+import { PopupAd } from './_components/PopupAd'
+
+const services = getServices()
+
+// Cache store settings selama 1 jam — jarang berubah
+const getCachedSettings = unstable_cache(
+  () => services.store.getSettings(),
+  ['store-settings'],
+  { revalidate: 3600 }
+)
+
+// Cache categories selama 1 jam
+const getCachedCategories = unstable_cache(
+  () => services.categories.getCategories(),
+  ['categories'],
+  { revalidate: 3600 }
+)
+
+// Cache products selama 60 detik — bisa berubah saat admin update
+const getCachedProducts = unstable_cache(
+  () => services.products.getProducts(),
+  ['products'],
+  { revalidate: 60 }
+)
 
 /**
  * Main E-commerce Home Page (Server Component)
- * 
+ *
  * Fetches all necessary data on the server side using the Service Factory
  * and renders a high-performance, SEO-friendly, cost-optimized homepage.
+ * Data di-cache oleh Next.js Data Cache agar tidak hit Supabase setiap request.
  */
 export default async function Home() {
-  const services = getServices()
-
-  // Load all initial store, category, and product data concurrently on the server
+  // Load all initial store, category, and product data concurrently (from cache)
   const [storeSettings, categories, initialProducts] = await Promise.all([
-    services.store.getSettings(),
-    services.categories.getCategories(),
-    services.products.getProducts(),
+    getCachedSettings(),
+    getCachedCategories(),
+    getCachedProducts(),
   ])
 
   return (
@@ -42,6 +66,9 @@ export default async function Home() {
 
       {/* Footer layout */}
       <Footer settings={storeSettings} />
+
+      {/* Popup Iklan — muncul sekali per sesi, hanya di halaman ini */}
+      <PopupAd />
     </div>
   )
 }

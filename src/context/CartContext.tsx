@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react'
 import { CartItem } from '@/core/types/cart'
 import { getServices } from '@/services'
 
@@ -26,8 +26,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true)
   const { user } = useAuth()
 
-  // Use the service client-side
-  const cartService = getServices().cart
+  // Memoize cartService to prevent new object on every render (would cause infinite loop)
+  const cartService = useMemo(() => getServices().cart, [])
 
   const refreshCart = useCallback(async () => {
     try {
@@ -150,7 +150,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   // Count represents the sum of all item quantities in the cart
-  const cartCount = items.reduce((acc, item) => acc + item.quantity, 0)
+  const cartCount = items.length
 
   return (
     <CartContext.Provider

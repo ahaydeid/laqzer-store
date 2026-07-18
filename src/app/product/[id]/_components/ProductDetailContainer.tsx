@@ -22,19 +22,16 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const { addToCart, toggleAllCheck } = useCart()
   const { requireAuth } = useAuth()
   
-  // Generate 6 distinct simulated images representing fashion/subscription mocks
-  const galleryImages = [
-    product.imageUrl,
-    'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=600',
-    'https://images.unsplash.com/photo-1534215754734-18e55d13e346?auto=format&fit=crop&q=80&w=600',
-    'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600',
-    'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=600',
-    'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=600',
-  ]
+  // Use real product images, falling back to single imageUrl
+  const galleryImages = product.images && product.images.length > 0
+    ? product.images
+    : [product.imageUrl]
+
+  const productVariants = product.variants && product.variants.length > 0 ? product.variants : []
 
   const [virtualIdx, setVirtualIdx] = useState(0) // start at index 0 (first copy)
   const [isTransitioning, setIsTransitioning] = useState(true)
-  const [selectedVariant, setSelectedVariant] = useState('Hitam')
+  const [selectedVariant, setSelectedVariant] = useState(productVariants[0] ?? '')
   const [quantity] = useState(1)
   const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
   const [isFavorited, setIsFavorited] = useState(false)
@@ -44,7 +41,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
 
   const activeImageIdx = (virtualIdx % galleryImages.length + galleryImages.length) % galleryImages.length
 
-  const hasDiscount = product.originalPrice && product.originalPrice > product.price
+  const hasDiscount = product.isCampaign && product.originalPrice && product.originalPrice > product.price
   const discountPercentage = hasDiscount 
     ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
     : 0
@@ -532,26 +529,28 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               </div>
 
               {/* Varian Row */}
-              <div className="flex items-center gap-4">
-                <span className="w-20 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                  Varian
-                </span>
-                <div className="flex-1 flex items-center gap-2.5 flex-wrap">
-                  {['Hitam', 'Merah'].map((v) => (
-                    <button
-                      key={v}
-                      onClick={() => setSelectedVariant(v)}
-                      className={`rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide transition-all border outline-none ${
-                        selectedVariant === v
-                          ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-zinc-900 dark:border-white'
-                          : 'bg-white text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
-                      }`}
-                    >
-                      {v}
-                    </button>
-                  ))}
+              {productVariants.length > 0 && (
+                <div className="flex items-center gap-4">
+                  <span className="w-20 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                    Varian
+                  </span>
+                  <div className="flex-1 flex items-center gap-2.5 flex-wrap">
+                    {productVariants.map((v) => (
+                      <button
+                        key={v}
+                        onClick={() => setSelectedVariant(v)}
+                        className={`rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide transition-all border outline-none ${
+                          selectedVariant === v
+                            ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-zinc-900 dark:border-white'
+                            : 'bg-white text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
+                        }`}
+                      >
+                        {v}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -605,7 +604,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
           {activeTab === 'desc' ? (
             <div className="prose dark:prose-invert max-w-none text-zinc-600 dark:text-zinc-300 text-sm leading-relaxed whitespace-pre-line space-y-4">
               <h3 className="text-zinc-900 dark:text-white font-extrabold text-base">
-                {product.name} - Premium Quality Product
+                {product.name}
               </h3>
               <p>{product.description}</p>
               
@@ -745,7 +744,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
             {relatedProducts.map((p) => {
-              const pHasDiscount = p.originalPrice && p.originalPrice > p.price
+              const pHasDiscount = p.isCampaign && p.originalPrice && p.originalPrice > p.price
               const pDiscountPct = pHasDiscount
                 ? Math.round(((p.originalPrice! - p.price) / p.originalPrice!) * 100)
                 : 0

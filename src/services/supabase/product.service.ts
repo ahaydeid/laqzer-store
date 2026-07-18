@@ -53,6 +53,7 @@ export class SupabaseProductService implements IProductService {
       stock: Number(data.stock || 0),
       soldProgress: data.sold_progress ? Number(data.sold_progress) : 0,
       isCampaign: Boolean(data.is_campaign),
+      variants: Array.isArray(data.variants) ? data.variants : [],
     }
   }
 
@@ -70,6 +71,7 @@ export class SupabaseProductService implements IProductService {
     if (product.stock !== undefined) payload.stock = product.stock
     if (product.soldProgress !== undefined) payload.sold_progress = product.soldProgress
     if (product.isCampaign !== undefined) payload.is_campaign = product.isCampaign
+    if (product.variants !== undefined) payload.variants = product.variants
     return payload
   }
 
@@ -89,12 +91,26 @@ export class SupabaseProductService implements IProductService {
     return (data || []).map((row: any) => this.mapToProduct(row))
   }
 
+  async getAllProducts(): Promise<Product[]> {
+    const supabase = this.getClient()
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching all products from Supabase:', error)
+      return []
+    }
+
+    return (data || []).map((row: any) => this.mapToProduct(row))
+  }
+
   async getProducts(category?: string): Promise<Product[]> {
     const supabase = this.getClient()
     let query = supabase
       .from('products')
       .select('*')
-      .eq('is_campaign', false)
       .order('created_at', { ascending: false })
 
     if (category && category !== 'all') {

@@ -40,6 +40,8 @@ export function ProductFormModal({
     description: '',
   })
 
+  const [hasVariants, setHasVariants] = useState(false)
+  const [variants, setVariants] = useState<string[]>([''])
   const [images, setImages] = useState<string[]>([])
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -56,6 +58,10 @@ export function ProductFormModal({
         stock: initialData?.stock?.toString() || '',
         description: initialData?.description || '',
       })
+
+      const initVariants = initialData?.variants && initialData.variants.length > 0 ? initialData.variants : []
+      setHasVariants(initVariants.length > 0)
+      setVariants(initVariants.length > 0 ? initVariants : [''])
 
       if (initialData?.images && initialData.images.length > 0) {
         setImages(initialData.images)
@@ -147,6 +153,12 @@ export function ProductFormModal({
       return
     }
 
+    const cleanVariants = variants.map(v => v.trim()).filter(v => v.length > 0)
+    if (hasVariants && cleanVariants.length === 0) {
+      setError('Tambahkan minimal 1 varian produk atau nonaktifkan toggle varian.')
+      return
+    }
+
     const mainImageUrl = images[0] || 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600'
 
     setIsSubmitting(true)
@@ -162,6 +174,7 @@ export function ProductFormModal({
         imageUrl: mainImageUrl,
         images: images.length > 0 ? images : [mainImageUrl],
         description: formData.description.trim(),
+        variants: hasVariants ? cleanVariants : [],
       })
 
       playSwalSound('success')
@@ -185,6 +198,7 @@ export function ProductFormModal({
     const initPrice = initialData?.price?.toString() || ''
     const initStock = initialData?.stock?.toString() || ''
     const initDesc = initialData?.description || ''
+    const initVariants = initialData?.variants && initialData.variants.length > 0 ? initialData.variants : []
 
     const initImgs = initialData?.images && initialData.images.length > 0
       ? initialData.images
@@ -198,6 +212,7 @@ export function ProductFormModal({
     if (formData.stock !== initStock) return true
     if (formData.description.trim() !== initDesc) return true
     if (JSON.stringify(images) !== JSON.stringify(initImgs)) return true
+    if (JSON.stringify(variants.filter(v => v.trim())) !== JSON.stringify(initVariants)) return true
 
     return false
   }
@@ -376,6 +391,71 @@ export function ProductFormModal({
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Toggle Varian Produk */}
+          <div className="border border-zinc-200 dark:border-zinc-800 rounded p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Varian Produk</span>
+                <p className="text-[10px] text-zinc-400 mt-0.5">Contoh: Ukuran (S, M, L) atau Warna (Merah, Hitam)</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setHasVariants(!hasVariants)
+                  if (!hasVariants) setVariants([''])
+                }}
+                className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+                  hasVariants ? 'bg-zinc-900 dark:bg-white' : 'bg-zinc-200 dark:bg-zinc-700'
+                }`}
+                role="switch"
+                aria-checked={hasVariants}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-zinc-900 shadow transition-transform duration-200 ${
+                    hasVariants ? 'translate-x-4' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {hasVariants && (
+              <div className="space-y-2">
+                {variants.map((variant, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={variant}
+                      onChange={(e) => {
+                        const updated = [...variants]
+                        updated[idx] = e.target.value
+                        setVariants(updated)
+                      }}
+                      placeholder={`Varian ${idx + 1} (contoh: M, Merah, 250ml)`}
+                      className="flex-1 rounded border border-zinc-200 bg-zinc-50/50 py-2 px-3 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
+                    />
+                    {variants.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setVariants(variants.filter((_, i) => i !== idx))}
+                        className="p-1.5 rounded text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer"
+                      >
+                        <FiX className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setVariants([...variants, ''])}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors mt-1 cursor-pointer"
+                >
+                  <FiPlus className="h-3.5 w-3.5" />
+                  Tambah Varian
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Deskripsi (Tiptap Rich Text Editor) */}

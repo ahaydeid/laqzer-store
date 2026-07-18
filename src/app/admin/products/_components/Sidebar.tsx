@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/services/supabase/client";
 import { 
   HiOutlineHome, 
   HiOutlineUser, 
@@ -53,11 +54,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const supabase = useMemo(() => createClient(), []);
 
-  const [profile] = useState({
+  const [profile, setProfile] = useState({
     name: "Admin Utama",
-    email: "admin@laqzer.com"
+    email: "admin@laqzer.com",
+    avatarUrl: ""
   });
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setProfile({
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || "Admin Utama",
+          email: session.user.email || "admin@laqzer.com",
+          avatarUrl: session.user.user_metadata?.avatar_url || ""
+        })
+      }
+    })
+  }, [supabase])
 
   // Click outside to close profile dropdown
   useEffect(() => {
@@ -101,8 +116,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (confirm("Apakah Anda yakin ingin keluar?")) {
+      await supabase.auth.signOut();
       router.push("/");
     }
   };
@@ -326,16 +342,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
               <HiOutlineUser className="h-4 w-4 shrink-0 text-zinc-500" />
               <span>Profil Saya</span>
             </button>
-            <button
-              onClick={() => {
-                setIsProfileOpen(false);
-                alert("Menuju halaman pengaturan... (Simulasi)");
-              }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg font-medium cursor-pointer transition-colors outline-none justify-start text-left"
-            >
-              <HiOutlineCog6Tooth className="h-4 w-4 shrink-0 text-zinc-500" />
-              <span>Pengaturan</span>
-            </button>
             <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-0.5" />
             <button
               onClick={() => {
@@ -356,9 +362,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
           className={`w-full flex items-center rounded-xl ${config.sidebarProfileHoverClass} active:scale-98 transition-all duration-300 cursor-pointer outline-none justify-between p-2 text-left`}
         >
           <div className="flex items-center min-w-0 flex-1">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-800 dark:bg-zinc-200 text-zinc-100 dark:text-zinc-900 font-bold text-sm">
-              AU
-            </div>
+            {profile.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img 
+                src={profile.avatarUrl} 
+                alt="Profile" 
+                className="h-9 w-9 shrink-0 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-850 dark:bg-zinc-800 text-white font-bold text-xs uppercase border border-zinc-700/50">
+                {profile.name.substring(0, 2)}
+              </div>
+            )}
             <div className={`min-w-0 flex-1 transition-all duration-300 whitespace-nowrap overflow-hidden ${isCollapsed ? "max-w-0 opacity-0 ml-0" : "max-w-40 opacity-100 ml-3"}`}>
               <p className={`text-sm font-medium truncate text-white leading-tight`} title={profile.name}>
                 {profile.name}

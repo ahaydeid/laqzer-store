@@ -24,7 +24,7 @@ export function ProductSection({ products }: ProductSectionProps) {
       case 'best-seller':
         return products.filter((p) => p.soldCount >= 500)
       case 'promo':
-        return products.filter((p) => p.originalPrice && p.originalPrice > p.price)
+        return products.filter((p) => p.isCampaign && p.originalPrice && p.originalPrice > p.price)
       case 'new':
         return products.slice(0, 4) // simulate new items
       default:
@@ -64,7 +64,7 @@ export function ProductSection({ products }: ProductSectionProps) {
       {/* Product grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
         {filteredProducts.map((product) => {
-          const hasDiscount = product.originalPrice && product.originalPrice > product.price
+          const hasDiscount = product.isCampaign && product.originalPrice && product.originalPrice > product.price
           const discountPercentage = hasDiscount 
             ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
             : 0

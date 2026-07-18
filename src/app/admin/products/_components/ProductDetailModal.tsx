@@ -189,6 +189,25 @@ export function ProductDetailModal({
           </div>
         </div>
 
+        {/* Varian Produk */}
+        {product.variants && product.variants.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              Varian Produk
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {product.variants.map((variant, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50 px-3 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300"
+                >
+                  {variant}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Deskripsi Lengkap (Rich Text / Plain Text HTML Renderer) */}
         <div className="space-y-2">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">

@@ -3,6 +3,7 @@ import { IStoreService } from '@/core/interfaces/store.interface'
 import { IProductService } from '@/core/interfaces/product.interface'
 import { ICategoryService } from '@/core/interfaces/category.interface'
 import { ICartService } from '@/core/interfaces/cart.interface'
+import { ICampaignService } from '@/core/interfaces/campaign.interface'
 
 // Mock Implementations
 import { MockStoreService } from './mock/store.service'
@@ -13,6 +14,7 @@ import { SupabaseStoreService } from './supabase/store.service'
 import { SupabaseProductService } from './supabase/product.service'
 import { SupabaseCategoryService } from './supabase/category.service'
 import { SupabaseCartService } from './supabase/cart.service'
+import { SupabaseCampaignService } from './supabase/campaign.service'
 
 type ProviderType = 'mock' | 'supabase'
 
@@ -39,6 +41,7 @@ export interface AppServices {
   products: IProductService
   categories: ICategoryService
   cart: ICartService
+  campaigns: ICampaignService
 }
 
 /**
@@ -60,6 +63,7 @@ export function getServices(supabaseClient?: SupabaseClient): AppServices {
         ? new SupabaseCategoryService(supabaseClient)
         : new MockCategoryService(),
     cart: new SupabaseCartService(),
+    campaigns: new SupabaseCampaignService(),
   }
 }
 

@@ -21,6 +21,11 @@ export interface IProductService {
   getProductById(id: string): Promise<Product | null>
 
   /**
+   * Fetches ALL products regardless of is_campaign flag. Used in admin selectors.
+   */
+  getAllProducts(): Promise<Product[]>
+
+  /**
    * Creates a new product.
    */
   createProduct(product: Partial<Product>): Promise<Product>

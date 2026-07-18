@@ -26,8 +26,8 @@ export class SupabaseCartService implements ICartService {
           name,
           price,
           image_url,
-          variants,
-          is_active
+          stock,
+          variants
         )
       `)
       .order('created_at', { ascending: false })
@@ -40,7 +40,7 @@ export class SupabaseCartService implements ICartService {
     if (!data) return []
 
     return data
-      .filter((item: any) => item.products && item.products.is_active !== false)
+      .filter((item: any) => item.products)
       .map((item: any) => {
         const p = item.products
         return {
@@ -52,7 +52,7 @@ export class SupabaseCartService implements ICartService {
           variant: item.variant,
           quantity: item.quantity,
           checked: item.checked,
-          stock: 99,
+          stock: p.stock || 99,
         }
       })
   }
