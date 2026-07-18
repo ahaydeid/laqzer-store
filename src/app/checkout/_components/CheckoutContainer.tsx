@@ -355,14 +355,51 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
       clearCheckedItems()
       setIsOrderPlaced(true)
 
+      // Buat draf pesan WhatsApp
+      let confirmMessage = `Halo *${settings.name}*, saya ingin melakukan konfirmasi pembayaran untuk pesanan saya:\n\n`
+      confirmMessage += `*Nomor Invoice:* ${newOrder.orderNumber}\n`
+      confirmMessage += `*Rincian Pesanan:*\n`
+      checkedItems.forEach((item, index) => {
+        confirmMessage += `${index + 1}. ${item.name} (${item.variant}) x${item.quantity}\n`
+      })
+      confirmMessage += `\n`
+      confirmMessage += `- *Kurir*: ${selectedCourier.name} (${selectedCourier.service})\n`
+      confirmMessage += `- *Alamat*: ${profile?.address || ''}, ${profile?.city || ''}, ${profile?.province || ''}\n`
+      confirmMessage += `- *Total Pembayaran: Rp ${grandTotal.toLocaleString('id-ID')}*\n\n`
+      confirmMessage += `Berikut bukti transfer pembayaran akan saya lampirkan setelah pesan ini. Mohon segera diproses, terima kasih!`
+
+      const waLink = getWhatsAppLink(confirmMessage)
+
       playSwalSound('success')
       Swal.fire({
         icon: 'success',
-        title: 'Pesanan Berhasil Dibuat!',
-        text: `Nomor Invoice Anda: ${newOrder.orderNumber}. Silakan cek status di menu Pembelian Saya.`,
-        confirmButtonColor: '#e11d48',
-        confirmButtonText: 'Lihat Pembelian Saya',
-      }).then(() => {
+        title: 'Pemesanan Berhasil!',
+        html: `
+          <div class="text-center font-sans">
+            <p class="text-xs text-zinc-600 dark:text-zinc-400 mb-3">
+              Nomor Invoice: <strong class="text-zinc-900 dark:text-white font-mono">${newOrder.orderNumber}</strong><br/>
+              Silakan lakukan pembayaran transfer bank sesuai rincian di bawah ini:
+            </p>
+            <div class="bg-zinc-50 dark:bg-zinc-900/80 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 text-left text-xs space-y-1 mb-2">
+              <p class="font-bold text-zinc-800 dark:text-zinc-200">Instruksi Pembayaran:</p>
+              <p class="text-zinc-600 dark:text-zinc-400">Total Tagihan: <span class="font-bold text-rose-500">Rp ${grandTotal.toLocaleString('id-ID')}</span></p>
+              <p class="text-zinc-600 dark:text-zinc-400">BCA: <span class="font-bold font-mono">8415-1290-88</span> (a.n. Puspa Meylinia Inakhota)</p>
+              <p class="text-zinc-600 dark:text-zinc-400">Mandiri: <span class="font-bold font-mono">137-002-199-2831</span> (a.n. Puspa Meylinia Inakhota)</p>
+            </div>
+            <p class="text-[11px] text-zinc-400">Kirimkan bukti transfer via WhatsApp untuk mempercepat verifikasi admin.</p>
+          </div>
+        `,
+        confirmButtonColor: '#10b981',
+        confirmButtonText: 'Konfirmasi Pembayaran (WA)',
+        showCancelButton: true,
+        cancelButtonText: 'Ke Pembelian Saya',
+        cancelButtonColor: '#6b7280',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.open(waLink, '_blank')
+        }
         router.push('/user/purchase')
       })
     } catch (err: any) {

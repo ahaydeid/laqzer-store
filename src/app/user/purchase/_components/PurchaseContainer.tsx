@@ -127,6 +127,44 @@ export function PurchaseContainer() {
     }
   }
 
+  const handleConfirmPaymentWA = (order: OrderRecord) => {
+    let confirmMessage = `Halo Admin Laqzer, saya ingin konfirmasi pembayaran untuk pesanan saya:\n\n`
+    confirmMessage += `*Nomor Invoice:* ${order.orderNumber}\n`
+    confirmMessage += `*Total Pembayaran: Rp ${order.totalAmount.toLocaleString('id-ID')}*\n`
+    confirmMessage += `- *Kurir*: ${order.shippingCourier}\n\n`
+    confirmMessage += `Berikut bukti transfer pembayaran akan saya lampirkan setelah pesan ini. Mohon segera diperiksa, terima kasih!`
+
+    const waLink = `https://wa.me/6281234567890?text=${encodeURIComponent(confirmMessage)}`
+
+    playSwalSound('confirm')
+    Swal.fire({
+      icon: 'info',
+      title: 'Instruksi Pembayaran',
+      html: `
+        <div class="text-center font-sans">
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 mb-3">
+            Nomor Invoice: <strong class="text-zinc-900 dark:text-white font-mono">${order.orderNumber}</strong><br/>
+            Silakan lakukan transfer bank sebesar <strong class="text-rose-500">Rp ${order.totalAmount.toLocaleString('id-ID')}</strong>:
+          </p>
+          <div class="bg-zinc-50 dark:bg-zinc-900/80 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 text-left text-xs space-y-1 mb-2">
+            <p class="text-zinc-600 dark:text-zinc-400">BCA: <span class="font-bold font-mono">8415-1290-88</span> (a.n. Puspa Meylinia Inakhota)</p>
+            <p class="text-zinc-600 dark:text-zinc-400">Mandiri: <span class="font-bold font-mono">137-002-199-2831</span> (a.n. Puspa Meylinia Inakhota)</p>
+          </div>
+          <p class="text-[11px] text-zinc-400">Tekan tombol di bawah untuk mengirimkan bukti transfer via WhatsApp.</p>
+        </div>
+      `,
+      confirmButtonColor: '#10b981',
+      confirmButtonText: 'Konfirmasi Pembayaran (WA)',
+      showCancelButton: true,
+      cancelButtonText: 'Tutup',
+      cancelButtonColor: '#6b7280',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.open(waLink, '_blank')
+      }
+    })
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -292,6 +330,16 @@ export function PurchaseContainer() {
                   </div>
 
                   {/* Actions */}
+                  {order.status === 'unpaid' && (
+                    <button
+                      onClick={() => handleConfirmPaymentWA(order)}
+                      className="px-3.5 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      <FiCreditCard className="w-4 h-4" />
+                      <span>Konfirmasi Pembayaran (WA)</span>
+                    </button>
+                  )}
+
                   {order.status === 'shipped' && (
                     <button
                       onClick={() => handleMarkAsCompleted(order.id, order.orderNumber)}
