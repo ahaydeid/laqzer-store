@@ -37,8 +37,15 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     let isMounted = true
 
     const initRoom = async () => {
-      let buyerName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pembeli'
-      let buyerAvatar = user?.user_metadata?.avatar_url || null
+      let buyerName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Pembeli'
+      
+      // Ambil foto profil dari Google OAuth (berbagai opsi key Supabase Google Provider)
+      let buyerAvatar = 
+        user?.user_metadata?.avatar_url ||
+        user?.user_metadata?.picture ||
+        (user?.identities && user.identities[0]?.identity_data?.avatar_url) ||
+        (user?.identities && user.identities[0]?.identity_data?.picture) ||
+        null
 
       if (user?.id) {
         try {
