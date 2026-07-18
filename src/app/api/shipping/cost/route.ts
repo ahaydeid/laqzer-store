@@ -34,14 +34,19 @@ export async function POST(request: NextRequest) {
     }
     const weight = roundedWeightKg * 1000
 
-    // Kota asal default toko (Saga, Balaraja, Kab. Tangerang: ID 73361)
-    const originCityId = '73361'
-    
-    // Ambil status keaktifan kurir secara dinamis dari database
+    // Ambil setting lokasi origin dan status keaktifan kurir dari Supabase
     const settingsService = new SupabaseShippingSettingsService()
+    let originCityId = '73361'
     let courierList = 'jne:sicepat:jnt:tiki:pos:anteraja:lion:ninja:ide:sap:ncs:rex:rpx:sentral:star:wahana:dse'
+
     try {
-      const activeCouriers = await settingsService.getCouriersConfig()
+      const [originConfig, activeCouriers] = await Promise.all([
+        settingsService.getStoreOrigin(),
+        settingsService.getCouriersConfig(),
+      ])
+      if (originConfig?.id) {
+        originCityId = originConfig.id
+      }
       const enabledList = Object.keys(activeCouriers).filter(key => activeCouriers[key])
       if (enabledList.length > 0) {
         courierList = enabledList.join(':')
@@ -49,7 +54,7 @@ export async function POST(request: NextRequest) {
         courierList = 'jne'
       }
     } catch (err) {
-      console.error('Error fetching enabled couriers from Supabase, using default:', err)
+      console.error('Error fetching shipping settings from Supabase, using defaults:', err)
     }
 
     // Check Cache Terlebih Dahulu (sertakan courierList ke key cache agar aman dari tabrakan perubahan setting)

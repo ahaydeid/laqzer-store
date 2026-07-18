@@ -3,6 +3,25 @@ import { ShippingTierConfig, DEFAULT_SHIPPING_TIER_CONFIG } from '@/core/types/s
 
 const SHIPPING_COURIERS_KEY = 'shipping_couriers'
 const SHIPPING_TIERS_KEY = 'shipping_tiers'
+const STORE_ORIGIN_KEY = 'store_origin'
+
+export interface StoreOriginLocation {
+  id: string
+  label: string
+  subdistrictName: string
+  cityName: string
+  provinceName: string
+  postalCode?: string
+}
+
+export const DEFAULT_STORE_ORIGIN: StoreOriginLocation = {
+  id: '73361',
+  label: 'SAGA, BALARAJA, TANGERANG, BANTEN, 15610',
+  subdistrictName: 'BALARAJA, SAGA',
+  cityName: 'TANGERANG',
+  provinceName: 'BANTEN',
+  postalCode: '15610'
+}
 
 export interface CourierConfig {
   id: string
@@ -119,6 +138,38 @@ export class SupabaseShippingSettingsService {
 
     if (error) {
       throw new Error(`Gagal menyimpan konfigurasi tier pengiriman: ${error.message}`)
+    }
+  }
+
+  async getStoreOrigin(): Promise<StoreOriginLocation> {
+    const supabase = this.getClient()
+    const { data, error } = await supabase
+      .from('store_settings')
+      .select('value')
+      .eq('key', STORE_ORIGIN_KEY)
+      .maybeSingle()
+
+    if (error || !data?.value) {
+      return DEFAULT_STORE_ORIGIN
+    }
+
+    return {
+      ...DEFAULT_STORE_ORIGIN,
+      ...(data.value as Partial<StoreOriginLocation>),
+    }
+  }
+
+  async saveStoreOrigin(location: StoreOriginLocation): Promise<void> {
+    const supabase = this.getClient()
+    const { error } = await supabase
+      .from('store_settings')
+      .upsert(
+        { key: STORE_ORIGIN_KEY, value: location },
+        { onConflict: 'key' }
+      )
+
+    if (error) {
+      throw new Error(`Gagal menyimpan lokasi asal pengiriman toko: ${error.message}`)
     }
   }
 }
