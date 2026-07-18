@@ -162,31 +162,20 @@ export const EkspedisiTab: React.FC<EkspedisiTabProps> = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-6 divide-y divide-zinc-100 dark:divide-zinc-800/60">
         {/* Section Heading */}
-        <div className="pt-0 space-y-3">
-          <label className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">
-            Jasa Ekspedisi RajaOngkir
-          </label>
-          <div className="flex items-center gap-3 py-1">
+        <div className="pt-0">
+          <div className="flex items-center gap-2.5">
             <FiTruck className="w-5 h-5 text-sky-600 dark:text-zinc-400" />
-            <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-              Konfigurasi Ekspedisi Pengiriman Aktif
+            <span className="text-base font-semibold text-zinc-800 dark:text-zinc-200">
+              Konfigurasi Ekspedisi Pengiriman
             </span>
           </div>
-          <p className="text-xs text-zinc-400 dark:text-zinc-500">
-            Aktifkan kurir pengiriman yang ingin Anda sediakan untuk pembeli di halaman checkout toko Anda.
-          </p>
         </div>
 
         {/* Tier Pengiriman Controls */}
-        <div className="pt-5 space-y-4">
-          <div className="space-y-1">
-            <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-              Kategori Tier Pengiriman Toko
-            </span>
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">
-              Batasi jenis/tipe layanan yang ingin Anda terima di checkout (misal matikan Kargo jika tidak bisa mengirim barang besar).
-            </p>
-          </div>
+        <div className="pt-5 space-y-3">
+          <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 block">
+            Kategori Tier Pengiriman Toko
+          </span>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             {/* Reguler */}
