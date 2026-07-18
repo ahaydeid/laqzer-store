@@ -268,14 +268,9 @@ export function ProductFormModal({
 
           {/* Upload Gambar Galeri Produk (Maksimal 10) */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                Upload Foto Galeri Produk
-              </label>
-              <span className="text-[11px] text-zinc-400">
-                {images.length}/10 Foto (Foto ke-1 = Sampul)
-              </span>
-            </div>
+            <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
+              Upload Foto Galeri Produk
+            </label>
 
             <input
               type="file"
@@ -305,7 +300,11 @@ export function ProductFormModal({
               {images.map((img, idx) => (
                 <div
                   key={idx}
-                  className="relative h-16 w-16 rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 group flex-shrink-0"
+                  className={`relative h-16 w-16 rounded overflow-hidden bg-zinc-100 dark:bg-zinc-900 group flex-shrink-0 ${
+                    idx === 0
+                      ? 'ring-2 ring-zinc-900 dark:ring-zinc-100 border-transparent'
+                      : 'border border-zinc-200 dark:border-zinc-800'
+                  }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -313,13 +312,6 @@ export function ProductFormModal({
                     alt={`Preview ${idx + 1}`}
                     className="object-cover w-full h-full"
                   />
-
-                  {/* Label Foto Sampul Utama */}
-                  {idx === 0 && (
-                    <span className="absolute bottom-0 inset-x-0 bg-zinc-900/80 dark:bg-zinc-100/90 text-[8px] font-bold text-white dark:text-zinc-900 text-center py-0.5 uppercase tracking-tighter">
-                      Sampul
-                    </span>
-                  )}
 
                   {/* Tombol Hapus */}
                   <button
