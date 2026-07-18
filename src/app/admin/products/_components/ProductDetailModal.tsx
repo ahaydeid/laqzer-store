@@ -70,10 +70,10 @@ export function ProductDetailModal({
     >
       <div className="p-5 space-y-6">
         {/* Header Produk & Media Gallery Preview */}
-        <div className="flex flex-col sm:flex-row gap-5 items-start">
-          {/* Main Image Container */}
-          <div className="w-full sm:w-52 flex-shrink-0 space-y-3">
-            <div className="w-full h-52 rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 relative">
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-5 items-start">
+            {/* Main Image Container */}
+            <div className="w-full sm:w-52 h-52 rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex-shrink-0 relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={activeImage || product.imageUrl}
@@ -85,69 +85,69 @@ export function ProductDetailModal({
               />
             </div>
 
-            {/* Deretan Foto Galeri di Baris Baru bawah Gambar Utama */}
-            {galleryImages.length > 1 && (
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
-                {galleryImages.map((img, idx) => {
-                  const isActive = activeImage === img
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setActiveImage(img)}
-                      className={`h-12 w-12 rounded overflow-hidden transition-all flex-shrink-0 cursor-pointer ${
-                        isActive
-                          ? 'ring-2 ring-sky-500 dark:ring-sky-400 border-transparent'
-                          : 'border border-zinc-200 dark:border-zinc-800 opacity-70 hover:opacity-100'
-                      }`}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={img}
-                        alt={`Galeri ${idx + 1}`}
-                        className="object-cover w-full h-full"
-                      />
-                    </button>
-                  )
-                })}
+            <div className="space-y-3 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                {product.stock === 0 && (
+                  <Badge variant="destructive">Stok Habis</Badge>
+                )}
+                {product.stock > 0 && product.stock <= 5 && (
+                  <Badge variant="warning">Stok Menipis</Badge>
+                )}
+                {product.isCampaign && (
+                  <Badge variant="info">Campaign Promo</Badge>
+                )}
+                {categoryName && (
+                  <span className="text-xs text-zinc-500 font-medium">
+                    {categoryName}
+                  </span>
+                )}
               </div>
-            )}
-          </div>
 
-          <div className="space-y-3 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              {product.stock === 0 && (
-                <Badge variant="destructive">Stok Habis</Badge>
-              )}
-              {product.stock > 0 && product.stock <= 5 && (
-                <Badge variant="warning">Stok Menipis</Badge>
-              )}
-              {product.isCampaign && (
-                <Badge variant="info">Campaign Promo</Badge>
-              )}
-              {categoryName && (
-                <span className="text-xs text-zinc-500 font-medium">
-                  {categoryName}
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
+                {product.name}
+              </h3>
+
+              {/* Pricing Section */}
+              <div className="flex items-baseline gap-2.5">
+                <span className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">
+                  {formatRupiah(product.price)}
                 </span>
-              )}
-            </div>
-
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
-              {product.name}
-            </h3>
-
-            {/* Pricing Section */}
-            <div className="flex items-baseline gap-2.5">
-              <span className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">
-                {formatRupiah(product.price)}
-              </span>
-              {product.originalPrice && product.originalPrice > product.price && (
-                <span className="text-xs text-zinc-400 line-through">
-                  {formatRupiah(product.originalPrice)}
-                </span>
-              )}
+                {product.originalPrice && product.originalPrice > product.price && (
+                  <span className="text-xs text-zinc-400 line-through">
+                    {formatRupiah(product.originalPrice)}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Deretan Foto Galeri di Baris Baru Memanfaatkan Ruang Luas ke Kanan */}
+          {galleryImages.length > 1 && (
+            <div className="flex flex-wrap items-center gap-2.5 pt-1">
+              {galleryImages.map((img, idx) => {
+                const isActive = activeImage === img
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImage(img)}
+                    className={`h-12 w-12 rounded overflow-hidden transition-all flex-shrink-0 cursor-pointer ${
+                      isActive
+                        ? 'ring-2 ring-sky-500 dark:ring-sky-400 border-transparent'
+                        : 'border border-zinc-200 dark:border-zinc-800 opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img}
+                      alt={`Galeri ${idx + 1}`}
+                      className="object-cover w-full h-full"
+                    />
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         {/* Info Grid (4 Cards tanpa border dan tanpa icon) */}
