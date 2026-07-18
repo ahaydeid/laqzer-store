@@ -87,7 +87,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
 
 
   const getWhatsAppLink = (messageText: string) => {
-    const rawPhone = settings.phone || '081234567890'
+    const rawPhone = settings.phone || '085175235717'
     const cleanPhone = rawPhone.replace(/[^0-9]/g, '')
     // Indonesian prefix fix (convert 08 to 628)
     const formattedPhone = cleanPhone.startsWith('0') 

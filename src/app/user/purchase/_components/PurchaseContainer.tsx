@@ -170,7 +170,7 @@ export function PurchaseContainer() {
     confirmMessage += `- *Kurir*: ${order.shippingCourier}\n\n`
     confirmMessage += `Berikut bukti transfer pembayaran akan saya lampirkan setelah pesan ini. Mohon segera diperiksa, terima kasih!`
 
-    const waLink = `https://wa.me/6281234567890?text=${encodeURIComponent(confirmMessage)}`
+    const waLink = `https://wa.me/6285175235717?text=${encodeURIComponent(confirmMessage)}`
 
     playSwalSound('confirm')
     Swal.fire({

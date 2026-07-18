@@ -15,7 +15,7 @@ export class MockStoreService implements IStoreService {
       description: 'Katalog fashion lokal premium buatan anak bangsa dengan harga bersahabat.',
       currency: 'IDR',
       address: 'Permata Balaraja A.85 NO 7, Balaraja Kab Tangerang',
-      phone: '081234567890',
+      phone: '085175235717',
     };
   }
 }
