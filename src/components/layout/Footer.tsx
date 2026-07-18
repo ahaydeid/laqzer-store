@@ -110,7 +110,7 @@ export function Footer({ settings }: FooterProps) {
       </div>
 
       {/* Footer Bottom bar */}
-      <div className="mx-auto max-w-7xl border-t border-zinc-800 mt-12 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
+      <div className="mx-auto max-w-7xl border-t border-zinc-800 mt-12 pt-6 flex flex-col items-center gap-4 text-xs text-center">
         <p>
           &copy; {currentYear} {settings.name}. Hak Cipta Dilindungi. &middot; Dibuat oleh{' '}
           <a
