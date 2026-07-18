@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { SupabaseShippingSettingsService } from '@/services/supabase/shipping-settings.service'
 
 // Cache memori server-side untuk ongkos kirim (TTL 3 jam)
 const costCache = new Map<string, { data: any; expiry: number }>()
@@ -34,10 +35,24 @@ export async function POST(request: NextRequest) {
 
     // Kota asal default toko (Saga, Balaraja, Kab. Tangerang: ID 73361)
     const originCityId = '73361'
-    const courierList = 'jne:sicepat:jnt:tiki:pos:anteraja:lion:ninja:ide:sap:ncs:rex:rpx:sentral:star:wahana:dse'
+    
+    // Ambil status keaktifan kurir secara dinamis dari database
+    const settingsService = new SupabaseShippingSettingsService()
+    let courierList = 'jne:sicepat:jnt:tiki:pos:anteraja:lion:ninja:ide:sap:ncs:rex:rpx:sentral:star:wahana:dse'
+    try {
+      const activeCouriers = await settingsService.getCouriersConfig()
+      const enabledList = Object.keys(activeCouriers).filter(key => activeCouriers[key])
+      if (enabledList.length > 0) {
+        courierList = enabledList.join(':')
+      } else {
+        courierList = 'jne'
+      }
+    } catch (err) {
+      console.error('Error fetching enabled couriers from Supabase, using default:', err)
+    }
 
-    // Check Cache Terlebih Dahulu
-    const cacheKey = `${originCityId}-${destinationCityId}-${weight}`
+    // Check Cache Terlebih Dahulu (sertakan courierList ke key cache agar aman dari tabrakan perubahan setting)
+    const cacheKey = `${originCityId}-${destinationCityId}-${weight}-${courierList}`
     const cachedItem = costCache.get(cacheKey)
     if (cachedItem && cachedItem.expiry > Date.now()) {
       console.log(`[Komerce Cost Cache HIT] Mengembalikan cache untuk key: ${cacheKey}`)

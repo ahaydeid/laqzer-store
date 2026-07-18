@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { FiMessageSquare, FiVolume2, FiChevronLeft } from "react-icons/fi";
+import { FiMessageSquare, FiVolume2, FiChevronLeft, FiTruck } from "react-icons/fi";
 
 import { SidebarMenu } from "./components/SidebarMenu";
 import { SuaraNotifikasiTab } from "./components/SuaraNotifikasiTab";
 import { PesanTab } from "./components/PesanTab";
+import { EkspedisiTab } from "./components/EkspedisiTab";
 import { playSwalSound } from "@/utils/sound";
 
 
@@ -59,6 +60,12 @@ export default function SettingsPage() {
       subtitle: "Atur preferensi suara notifikasi pesanan masuk dan stok",
       icon: FiVolume2,
     },
+    {
+      id: "expedisi" as const,
+      title: "Ekspedisi",
+      subtitle: "Aktifkan atau nonaktifkan pilihan jasa pengiriman toko Anda",
+      icon: FiTruck,
+    },
   ];
 
   return (
@@ -100,6 +107,12 @@ export default function SettingsPage() {
 
             {activeTab === "notifikasi" && (
               <SuaraNotifikasiTab
+                onShowSuccessAlert={showSuccessBanner}
+              />
+            )}
+
+            {activeTab === "expedisi" && (
+              <EkspedisiTab
                 onShowSuccessAlert={showSuccessBanner}
               />
             )}

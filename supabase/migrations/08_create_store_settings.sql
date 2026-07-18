@@ -32,3 +32,11 @@ VALUES (
   }'::jsonb
 )
 ON CONFLICT (key) DO NOTHING;
+
+-- Insert default shipping couriers configuration (6 main couriers enabled by default)
+INSERT INTO public.store_settings (key, value)
+VALUES (
+  'shipping_couriers',
+  '{"jne": true, "sicepat": true, "jnt": true, "tiki": true, "pos": true, "anteraja": true}'::jsonb
+)
+ON CONFLICT (key) DO NOTHING;
