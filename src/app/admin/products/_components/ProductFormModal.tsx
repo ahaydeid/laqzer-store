@@ -332,16 +332,6 @@ export function ProductFormModal({
                   </button>
                 </div>
               ))}
-
-              {images.length === 0 && (
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex-1 min-h-[64px] border-2 border-dashed border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 rounded bg-zinc-50/50 dark:bg-zinc-900/30 flex items-center justify-center gap-2 px-4 py-2 cursor-pointer text-zinc-400 hover:text-zinc-600 transition-colors"
-                >
-                  <FiUploadCloud className="h-4 w-4" />
-                  <span className="text-xs">Klik untuk memilih hingga 10 foto produk</span>
-                </div>
-              )}
             </div>
           </div>
 
