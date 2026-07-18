@@ -6,7 +6,7 @@ const resolvePhotoSrc = (photo: string | null) => photo;
 type AvatarProps = {
   name?: string;
   photo?: string | null;
-  size?: "small" | "medium" | "large";
+  size?: "small" | "smedium" | "medium" | "large";
   className?: string;
   shape?: "circle" | "square";
 };
@@ -26,7 +26,8 @@ export default function Avatar({
   }, [photo]);
 
   const sizeClasses = {
-    small: "w-7 h-7 text-xs", // Sync with small size h-7 w-7 on navbar
+    small: "w-7 h-7 text-xs",   // Sync with small size h-7 w-7 on navbar
+    smedium: "w-9 h-9 text-xs", // Di antara small (w-7) dan medium (w-12)
     medium: "w-12 h-12 text-sm",
     large: "w-32 h-32 text-2xl",
   };
