@@ -144,11 +144,17 @@ export function UserProfileContainer() {
     setProvinceId('') // Tidak wajib di-set karena ongkir menggunakan subdistrictId
     setCity(loc.city_name)
     setCityId(loc.id) // Map ke ID Komerce yang valid
-    setSubdistrict(loc.subdistrict_name)
-    setSubdistrictId(loc.id) // Map ke ID Kecamatan Komerce yang valid
+
+    // Gabungkan Kecamatan dan Desa agar sangat spesifik (cth: BALARAJA, SAGA)
+    const subdistrictLabel = loc.district_name === loc.subdistrict_name
+      ? loc.district_name
+      : `${loc.district_name}, ${loc.subdistrict_name}`
+    setSubdistrict(subdistrictLabel)
+    
+    setSubdistrictId(loc.id) // Map ke ID destinasi Komerce yang valid
     setPostalCode(loc.zip_code)
     
-    setSearchQuery(`${loc.subdistrict_name}, ${loc.city_name}, ${loc.province_name}`)
+    setSearchQuery(loc.label) // Gunakan label bawaan Komerce yang lengkap
     setShowDropdown(false)
   }
 
