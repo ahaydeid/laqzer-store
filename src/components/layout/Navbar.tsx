@@ -254,7 +254,7 @@ export function Navbar({ settings, categories }: NavbarProps) {
             ) : (
               <Link
                 href="/login"
-                className="px-3.5 py-1.5 rounded bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs transition-colors"
+                className="px-3.5 py-1.5 rounded bg-rose-500 hover:bg-rose-600 text-white font-semibold text-xs transition-colors"
               >
                 Masuk
               </Link>

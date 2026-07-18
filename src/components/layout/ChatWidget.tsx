@@ -144,7 +144,36 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
   const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     if (!inputText.trim() && !pendingProduct) return
-    if (!roomId) return
+
+    let activeRoomId = roomId
+
+    if (!activeRoomId) {
+      try {
+        let buyerName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Pembeli'
+        let buyerAvatar = 
+          user?.user_metadata?.avatar_url ||
+          user?.user_metadata?.picture ||
+          null
+
+        if (user?.id) {
+          try {
+            const profile = await profileService.getProfile(user.id)
+            if (profile?.fullName) buyerName = profile.fullName
+            if (profile?.avatarUrl) buyerAvatar = profile.avatarUrl
+          } catch (_) {}
+        }
+
+        const room = await chatService.getOrCreateRoom(user?.id, { 
+          name: buyerName,
+          avatarUrl: buyerAvatar
+        })
+        activeRoomId = room.id
+        setRoomId(room.id)
+      } catch (err) {
+        console.error('Gagal mendapatkan chat room:', err)
+        return
+      }
+    }
 
     const currentText = inputText.trim()
     const currentProduct = pendingProduct
@@ -152,8 +181,21 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     setInputText('')
     setPendingProduct(null)
 
+    // Optimistic UI update
+    const tempId = `temp_${Date.now()}`
+    const tempMsg: ChatMessageRecord = {
+      id: tempId,
+      roomId: activeRoomId,
+      senderType: 'user',
+      senderId: user?.id || null,
+      text: currentText,
+      productMetadata: currentProduct,
+      createdAt: new Date().toISOString()
+    }
+    setMessages((prev) => [...prev, tempMsg])
+
     try {
-      await chatService.sendMessage(roomId, 'user', currentText, currentProduct, user?.id)
+      await chatService.sendMessage(activeRoomId, 'user', currentText, currentProduct, user?.id)
     } catch (err) {
       console.error('Gagal mengirim pesan:', err)
     }
