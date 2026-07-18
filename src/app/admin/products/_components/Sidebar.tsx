@@ -89,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
   }, [isProfileOpen]);
 
   const [unreadCount, setUnreadCount] = useState(0);
-  const [unreadOrderCount] = useState(2);
+  const [unreadOrderCount, setUnreadOrderCount] = useState(0);
 
   useEffect(() => {
     const calcUnread = () => {
@@ -97,14 +97,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
       if (stored) {
         const chats = JSON.parse(stored) as { unreadCount?: number }[];
         const total = chats.reduce((acc, c) => acc + (c.unreadCount || 0), 0);
-        setUnreadCount(total > 0 ? total : 3);
+        setUnreadCount(total);
       } else {
-        setUnreadCount(3); // Default mock unread count
+        setUnreadCount(0);
       }
     };
 
-    // Delay initial read to avoid SSR hydration mismatch
-    const timer = setTimeout(calcUnread, 0);
+    const fetchActiveOrdersCount = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("orders")
+          .select("id", { count: "exact", head: true })
+          .in("status", ["unpaid", "processing", "shipped"]);
+        
+        if (!error && data !== null) {
+          setUnreadOrderCount(data.length);
+        }
+      } catch (err) {
+        console.error("Gagal memuat count pesanan di sidebar:", err);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      calcUnread();
+      fetchActiveOrdersCount();
+    }, 0);
 
     window.addEventListener("chat_updated", calcUnread);
     window.addEventListener("storage", calcUnread);
@@ -114,7 +131,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
       window.removeEventListener("chat_updated", calcUnread);
       window.removeEventListener("storage", calcUnread);
     };
-  }, []);
+  }, [supabase]);
 
   const handleLogout = async () => {
     if (confirm("Apakah Anda yakin ingin keluar?")) {
