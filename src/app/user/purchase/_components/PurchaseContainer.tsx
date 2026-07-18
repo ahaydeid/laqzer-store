@@ -8,6 +8,7 @@ import { SupabaseOrderService } from '@/services/supabase/order.service'
 import { OrderRecord, OrderStatus } from '@/core/types/order'
 import useSWR from 'swr'
 import { playSwalSound } from '@/utils/sound'
+import { Badge } from '@/components/ui/Badge'
 import Link from 'next/link'
 
 type TabType = 'semua' | 'unpaid' | 'processing' | 'shipped' | 'completed' | 'cancelled'
@@ -64,15 +65,15 @@ export function PurchaseContainer() {
   const getStatusBadge = (status: OrderStatus) => {
     switch (status) {
       case 'unpaid':
-        return <span className="px-2.5 py-1 text-[11px] font-bold rounded bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/40">Belum Bayar</span>
+        return <Badge variant="warning" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/40">Belum Bayar</Badge>
       case 'processing':
-        return <span className="px-2.5 py-1 text-[11px] font-bold rounded bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/30 dark:text-sky-400 dark:border-sky-900/40">Sedang Diproses</span>
+        return <Badge variant="info" className="bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/30 dark:text-sky-400 dark:border-sky-900/40">Sedang Diproses</Badge>
       case 'shipped':
-        return <span className="px-2.5 py-1 text-[11px] font-bold rounded bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-950/30 dark:text-indigo-400 dark:border-indigo-900/40">Dikirim</span>
+        return <Badge variant="info" className="bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/30 dark:text-indigo-400 dark:border-indigo-900/40">Dikirim</Badge>
       case 'completed':
-        return <span className="px-2.5 py-1 text-[11px] font-bold rounded bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/40">Selesai</span>
+        return <Badge variant="success" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/40">Selesai</Badge>
       case 'cancelled':
-        return <span className="px-2.5 py-1 text-[11px] font-bold rounded bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/40">Dibatalkan</span>
+        return <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/40">Dibatalkan</Badge>
     }
   }
 
