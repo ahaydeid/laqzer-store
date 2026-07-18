@@ -89,7 +89,7 @@ export function UserProfileContainer() {
       return
     }
 
-    const cacheKey = `cached_cities_${provId}`
+    const cacheKey = `cached_cities_v2_${provId}`
     const cachedCities = sessionStorage.getItem(cacheKey)
     if (cachedCities) {
       try {
