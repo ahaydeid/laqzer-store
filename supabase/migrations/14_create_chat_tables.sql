@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS public.chat_rooms (
   guest_session_id   TEXT NULL,
   user_name          TEXT NOT NULL DEFAULT 'Pengunjung',
   user_email         TEXT NULL,
+  user_avatar_url    TEXT NULL,
   unread_count_admin INT NOT NULL DEFAULT 0,
   unread_count_user  INT NOT NULL DEFAULT 0,
   last_message       TEXT NULL,

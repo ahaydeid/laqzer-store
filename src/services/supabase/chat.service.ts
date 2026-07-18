@@ -7,7 +7,7 @@ export class SupabaseChatService {
   /**
    * Dapatkan atau buat room chat unik untuk pembeli (User Auth atau Guest)
    */
-  async getOrCreateRoom(userId?: string | null, guestInfo?: { name: string; email?: string }): Promise<ChatRoomRecord> {
+  async getOrCreateRoom(userId?: string | null, guestInfo?: { name: string; email?: string; avatarUrl?: string }): Promise<ChatRoomRecord> {
     if (userId) {
       // Cek room yang terhubung ke user id ini
       const { data } = await this.supabase
@@ -18,13 +18,21 @@ export class SupabaseChatService {
         .limit(1)
 
       if (data && data.length > 0) {
-        // Update user_name jika ada nama baru dari profil auth
+        // Update user_name / avatar_url jika ada data baru dari profil auth
+        const updatePayload: any = {}
         if (guestInfo?.name && guestInfo.name !== data[0].user_name) {
+          updatePayload.user_name = guestInfo.name
+          data[0].user_name = guestInfo.name
+        }
+        if (guestInfo?.avatarUrl && guestInfo.avatarUrl !== data[0].user_avatar_url) {
+          updatePayload.user_avatar_url = guestInfo.avatarUrl
+          data[0].user_avatar_url = guestInfo.avatarUrl
+        }
+        if (Object.keys(updatePayload).length > 0) {
           await this.supabase
             .from('chat_rooms')
-            .update({ user_name: guestInfo.name })
+            .update(updatePayload)
             .eq('id', data[0].id)
-          data[0].user_name = guestInfo.name
         }
         return this.mapRoomRecord(data[0])
       }
@@ -56,6 +64,7 @@ export class SupabaseChatService {
       guest_session_id: guestSessionId,
       user_name: guestInfo?.name || (userId ? 'Pembeli' : 'Pengunjung Toko'),
       user_email: guestInfo?.email || null,
+      user_avatar_url: guestInfo?.avatarUrl || null,
       unread_count_admin: 0,
       unread_count_user: 0,
       last_message: 'Memulai percakapan',
@@ -251,6 +260,7 @@ export class SupabaseChatService {
       guestSessionId: row.guest_session_id,
       userName: row.user_name || 'Pembeli',
       userEmail: row.user_email,
+      userAvatarUrl: row.user_avatar_url,
       unreadCountAdmin: row.unread_count_admin || 0,
       unreadCountUser: row.unread_count_user || 0,
       lastMessage: row.last_message,

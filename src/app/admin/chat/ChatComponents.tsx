@@ -29,7 +29,7 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
   const chatService = useMemo(() => new SupabaseChatService(), []);
 
   const [messages, setMessages] = useState<ChatMessageRecord[]>([]);
-  const [roomInfo, setRoomInfo] = useState<{ userName: string } | null>(null);
+  const [roomInfo, setRoomInfo] = useState<{ userName: string; userAvatarUrl?: string | null } | null>(null);
   const [inputText, setInputText] = useState("");
   const [loadingMessages, setLoadingMessages] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
         if (!isMounted) return;
         setMessages(history);
         if (room) {
-          setRoomInfo({ userName: room.userName });
+          setRoomInfo({ userName: room.userName, userAvatarUrl: room.userAvatarUrl });
         }
         setLoadingMessages(false);
       })
@@ -138,13 +138,17 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
               <FiChevronLeft className="h-5 w-5" />
             </button>
           )}
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(roomInfo?.userName || chatId)}`}
-              alt="Avatar"
-              className="h-full w-full object-cover"
-            />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-200/50 dark:border-rose-900/40">
+            {roomInfo?.userAvatarUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={roomInfo.userAvatarUrl}
+                alt="Avatar"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <span>{(roomInfo?.userName || "PB").substring(0, 2).toUpperCase()}</span>
+            )}
           </div>
           <div className="min-w-0 flex flex-col justify-center h-9">
             <span className="font-semibold text-sm leading-none truncate text-zinc-900 dark:text-zinc-100">

@@ -128,13 +128,17 @@ function ChatContent() {
                     }`}
                   >
                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img 
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(chat.userName)}`} 
-                          alt={chat.userName} 
-                          className="h-full w-full object-cover"
-                        />
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-200/50 dark:border-rose-900/40">
+                        {chat.userAvatarUrl ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img 
+                            src={chat.userAvatarUrl} 
+                            alt={chat.userName} 
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span>{chat.userName.substring(0, 2).toUpperCase()}</span>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1">

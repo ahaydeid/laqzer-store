@@ -12,6 +12,7 @@ export interface ChatRoomRecord {
   guestSessionId?: string | null
   userName: string
   userEmail?: string | null
+  userAvatarUrl?: string | null
   unreadCountAdmin: number
   unreadCountUser: number
   lastMessage?: string | null

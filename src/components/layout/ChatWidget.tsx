@@ -34,7 +34,10 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     let isMounted = true
 
     chatService
-      .getOrCreateRoom(user?.id, { name: user?.user_metadata?.full_name || 'Pembeli' })
+      .getOrCreateRoom(user?.id, { 
+        name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pembeli',
+        avatarUrl: user?.user_metadata?.avatar_url || null
+      })
       .then(async (room) => {
         if (!isMounted) return
         setRoomId(room.id)
