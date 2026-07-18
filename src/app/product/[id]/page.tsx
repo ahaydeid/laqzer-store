@@ -30,9 +30,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
   const formattedPrice = `Rp ${product.price.toLocaleString('id-ID')}`
   const promoPrefix = hasDiscount ? `[Diskon ${discountPct}%] ` : ''
-  const pageTitle = `${promoPrefix}Beli ${product.name} seharga ${formattedPrice} | Laqzer Indonesia`
+  const trimmedName = product.name.length > 35 ? `${product.name.slice(0, 35)}...` : product.name
+  const pageTitle = `${promoPrefix}${trimmedName} - ${formattedPrice} | Laqzer Indonesia`
   
-  const pageDescription = `Dapatkan ${product.name} seharga ${formattedPrice}. Promo gratis ongkir, COD, dan jaminan produk berkualitas premium hanya di Laqzer Indonesia!`
+  const pageDescription = `Dapatkan produk berkualitas premium hanya di Laqzer Indonesia!`
 
   return {
     title: pageTitle,
@@ -49,6 +50,12 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
         },
       ],
       type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: pageTitle,
+      description: pageDescription,
+      images: [product.imageUrl],
     },
   }
 }

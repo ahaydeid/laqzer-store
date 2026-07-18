@@ -144,10 +144,15 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const handleShare = (platform: 'wa' | 'fb' | 'ig' | 'tiktok' | 'link') => {
     if (typeof window === 'undefined') return
     const url = window.location.href
-    const text = `Lihat produk menarik ini: ${product.name} di Laqzer Store!`
+    const hasDiscount = product.isCampaign && product.originalPrice && product.originalPrice > product.price
+    const discountPct = hasDiscount
+      ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
+      : 0
+    const promoPrefix = hasDiscount ? `[Diskon ${discountPct}%] ` : ''
+    const text = `${promoPrefix}${product.name} - Rp ${product.price.toLocaleString('id-ID')}`
 
     if (platform === 'wa') {
-      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`, '_blank')
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + '\n\n' + url)}`, '_blank')
     } else if (platform === 'fb') {
       window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank')
     } else if (platform === 'ig') {
