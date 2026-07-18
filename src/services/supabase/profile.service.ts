@@ -17,9 +17,7 @@ export class SupabaseProfileService {
       birthDate: row.birth_date || undefined,
       address: row.address || undefined,
       province: row.province || undefined,
-      provinceId: row.province_id || undefined,
       city: row.city || undefined,
-      cityId: row.city_id || undefined,
       subdistrict: row.subdistrict || undefined,
       subdistrictId: row.subdistrict_id || undefined,
       postalCode: row.postal_code || undefined,
@@ -57,9 +55,7 @@ export class SupabaseProfileService {
     if (data.birthDate !== undefined) payload.birth_date = data.birthDate
     if (data.address !== undefined) payload.address = data.address
     if (data.province !== undefined) payload.province = data.province
-    if (data.provinceId !== undefined) payload.province_id = data.provinceId
     if (data.city !== undefined) payload.city = data.city
-    if (data.cityId !== undefined) payload.city_id = data.cityId
     if (data.subdistrict !== undefined) payload.subdistrict = data.subdistrict
     if (data.subdistrictId !== undefined) payload.subdistrict_id = data.subdistrictId
     if (data.postalCode !== undefined) payload.postal_code = data.postalCode

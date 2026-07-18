@@ -122,7 +122,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
       setSelectedCourier(null)
       setLoadingShipping(false)
     })
-  }, [profile?.cityId, checkedItemsHash])
+  }, [profile?.subdistrictId, checkedItemsHash])
 
   // Delivery Estimate formatter
   const getDeliveryEstimate = (courier: CourierOption | null) => {
@@ -325,7 +325,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
     )
   }
 
-  const isAddressIncomplete = !profile || !profile.address || !profile.cityId
+  const isAddressIncomplete = !profile || !profile.address || !profile.subdistrictId
 
   if (isAddressIncomplete) {
     return (

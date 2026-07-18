@@ -8,11 +8,9 @@ export interface UserProfile {
   birthDate?: string // YYYY-MM-DD
   address?: string
   province?: string
-  provinceId?: string
   city?: string
-  cityId?: string
   subdistrict?: string
-  subdistrictId?: string
+  subdistrictId?: string // ID destinasi Komerce — satu-satunya ID yang digunakan untuk ongkir
   postalCode?: string
   createdAt?: string
 }
