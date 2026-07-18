@@ -585,7 +585,25 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               )}
             </div>
 
-            {/* 5. Contact Buttons (Chat Admin & WA) */}
+            {/* 5. Checkout Buttons */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <button 
+                onClick={handleAddToCart}
+                className="flex items-center justify-center cursor-pointer gap-1.5 rounded bg-zinc-100 dark:bg-zinc-800 py-2.5 px-2 text-xs font-semibold tracking-wide hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all text-zinc-700 dark:text-zinc-200 active:scale-[0.99]"
+              >
+                <FiShoppingCart className="h-4 w-4" />
+                <span>Masukkan Keranjang</span>
+              </button>
+
+              <button 
+                onClick={handleBuyNow}
+                className="flex items-center justify-center cursor-pointer rounded bg-zinc-950 dark:bg-white dark:text-zinc-950 text-white py-2.5 px-2 text-xs font-semibold tracking-wide hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all active:scale-[0.99]"
+              >
+                Beli Sekarang
+              </button>
+            </div>
+
+            {/* 6. Contact Buttons (Chat Admin & WA) */}
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button 
                 onClick={handleChatAdmin}
@@ -601,24 +619,6 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               >
                 <FaWhatsapp className="h-4 w-4 text-green-500" />
                 <span>Chat lewat WA</span>
-              </button>
-            </div>
-
-            {/* 6. Checkout Buttons */}
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <button 
-                onClick={handleAddToCart}
-                className="flex items-center justify-center cursor-pointer gap-1.5 rounded bg-zinc-100 dark:bg-zinc-800 py-2.5 px-2 text-xs font-semibold tracking-wide hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all text-zinc-700 dark:text-zinc-200 active:scale-[0.99]"
-              >
-                <FiShoppingCart className="h-4 w-4" />
-                <span>Masukkan Keranjang</span>
-              </button>
-
-              <button 
-                onClick={handleBuyNow}
-                className="flex items-center justify-center cursor-pointer rounded bg-zinc-950 dark:bg-white dark:text-zinc-950 text-white py-2.5 px-2 text-xs font-semibold tracking-wide hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all active:scale-[0.99]"
-              >
-                Beli Sekarang
               </button>
             </div>
           </div>
