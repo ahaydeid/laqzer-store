@@ -169,14 +169,15 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
             return (
               <div
                 key={msg.id}
-                className={`flex ${isAdmin ? "justify-end" : "justify-start"}`}
+                className={`flex flex-col ${isAdmin ? "items-end" : "items-start"}`}
               >
-                {msg.productMetadata ? (
+                {/* Kartu Produk (jika ada) */}
+                {msg.productMetadata && (
                   <Link
                     href={`/product/${msg.productMetadata.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-2.5 flex gap-3 w-[260px] text-left hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    className="mb-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-2.5 flex gap-3 w-[260px] text-left hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -200,7 +201,10 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
                       </p>
                     </div>
                   </Link>
-                ) : isAdmin ? (
+                )}
+
+                {/* Bubble Teks Admin (jika ada teks) */}
+                {msg.text && isAdmin && (
                   <div className="flex items-start max-w-[70%] justify-end">
                     <div className="bg-emerald-200 text-zinc-950 rounded-l-xl rounded-b-xl px-4 py-2.5 text-sm">
                       <p className="leading-relaxed break-words">{msg.text}</p>
@@ -212,7 +216,10 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
                       <path d="M0 0 L10 0 L0 10 Z" />
                     </svg>
                   </div>
-                ) : (
+                )}
+
+                {/* Bubble Teks Pembeli (jika ada teks) */}
+                {msg.text && !isAdmin && (
                   <div className="flex items-start max-w-[70%]">
                     <svg className="w-2 h-2 text-slate-100 dark:text-zinc-800 fill-current shrink-0 -mr-[0.5px]" viewBox="0 0 10 10">
                       <path d="M10 0 L0 0 L10 10 Z" />
@@ -224,6 +231,13 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
                       </span>
                     </div>
                   </div>
+                )}
+
+                {/* Timestamp-only jika hanya ada produk tanpa teks */}
+                {!msg.text && msg.productMetadata && (
+                  <span className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+                    {new Date(msg.createdAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                  </span>
                 )}
               </div>
             );
