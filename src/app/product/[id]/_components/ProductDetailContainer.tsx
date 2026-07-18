@@ -817,7 +817,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
           </button>
         </div>
 
-        <div className="bg-slate-100/60 dark:bg-zinc-900 rounded-lg dark:border-zinc-800 px-6 pt-6 pb-10">
+        <div className="bg-slate-100/60 dark:bg-zinc-900 -mx-4 md:mx-0 rounded-none md:rounded-lg dark:border-zinc-800 px-6 pt-6 pb-10">
           {activeTab === 'desc' ? (
             <div className="prose dark:prose-invert max-w-none text-zinc-600 dark:text-zinc-300 text-sm leading-relaxed whitespace-pre-line space-y-4">
               <h3 className="text-zinc-900 dark:text-white font-extrabold text-base">
