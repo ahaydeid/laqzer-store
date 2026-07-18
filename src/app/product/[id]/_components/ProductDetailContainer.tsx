@@ -481,8 +481,8 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
             </button>
           </div>
 
-          {/* External Contact Buttons */}
-          <div className="flex-shrink-0 grid grid-cols-2 gap-3 pt-1">
+          {/* External Contact Buttons (Desktop Only) */}
+          <div className="hidden md:grid flex-shrink-0 grid-cols-2 gap-3 pt-1">
             <button 
               onClick={handleChatAdmin}
               className="flex items-center justify-center gap-2 rounded bg-zinc-100 dark:bg-zinc-800 py-2.5 px-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-[0.99]"
@@ -499,10 +499,133 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               <span>Chat lewat WA</span>
             </button>
           </div>
+
+          {/* Mobile-Only Product Details & Actions Section (md:hidden) */}
+          <div className="block md:hidden space-y-5 pt-3 border-t border-zinc-100 dark:border-zinc-900/50">
+            {/* 1. Title/Name */}
+            <h1 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-white leading-tight">
+              {product.name}
+            </h1>
+
+            {/* 2. Rating Box */}
+            <div className="grid grid-cols-3 divide-x divide-zinc-100 dark:divide-zinc-900 border-y border-zinc-100 dark:border-zinc-900 py-2 text-center bg-transparent">
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center justify-center gap-1 text-xs font-bold text-zinc-900 dark:text-white">
+                  <FiStar className="h-3.5 w-3.5 text-yellow-500 fill-current" />
+                  <span>{product.rating}</span>
+                </div>
+                <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">rating</span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs font-bold text-zinc-900 dark:text-white">0</span>
+                <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">penilaian</span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs font-bold text-zinc-900 dark:text-white">{product.soldCount}</span>
+                <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">terjual</span>
+              </div>
+            </div>
+
+            {/* 3. Price Display */}
+            <div className="rounded-lg bg-slate-100/60 dark:bg-zinc-900 p-3.5 space-y-1">
+              <span className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                Harga Produk
+              </span>
+              <div className="flex items-center gap-2.5">
+                <span className="text-xl font-bold text-red-500 dark:text-rose-500">
+                  Rp{product.price.toLocaleString('id-ID')}
+                </span>
+                {hasDiscount && (
+                  <>
+                    <span className="text-xs text-zinc-400 line-through">
+                      Rp{product.originalPrice!.toLocaleString('id-ID')}
+                    </span>
+                    <span className="rounded bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 text-[10px] font-semibold text-red-600 dark:text-red-400">
+                      -{discountPercentage}%
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* 4. Stock and Variant */}
+            <div className="space-y-4 pt-1">
+              {/* Stok Row (2 Columns) */}
+              <div className="flex items-center gap-4">
+                <span className="w-16 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                  Stok
+                </span>
+                <div className="flex-1 text-zinc-800 dark:text-zinc-200 font-semibold text-xs">
+                  {product.stock}
+                </div>
+              </div>
+
+              {/* Varian Row (New Row/Line for options in Mobile) */}
+              {productVariants.length > 0 && (
+                <div className="space-y-1.5">
+                  <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 block">
+                    Varian
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {productVariants.map((v) => (
+                      <button
+                        key={v}
+                        onClick={() => setSelectedVariant(v)}
+                        className={`rounded-full px-3 py-1.5 text-xs font-semibold tracking-wide transition-all border outline-none ${
+                          selectedVariant === v
+                            ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-zinc-900 dark:border-white'
+                            : 'bg-white text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800'
+                        }`}
+                      >
+                        {v}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 5. Contact Buttons (Chat Admin & WA) */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <button 
+                onClick={handleChatAdmin}
+                className="flex items-center justify-center gap-1.5 rounded bg-zinc-100 dark:bg-zinc-800 py-2.5 px-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-[0.99]"
+              >
+                <FiMessageSquare className="h-4 w-4" />
+                <span>Chat Admin</span>
+              </button>
+
+              <button 
+                onClick={handleChatWA}
+                className="flex items-center justify-center gap-1.5 rounded bg-zinc-100 dark:bg-zinc-800 py-2.5 px-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-[0.99]"
+              >
+                <FaWhatsapp className="h-4 w-4 text-green-500" />
+                <span>Chat lewat WA</span>
+              </button>
+            </div>
+
+            {/* 6. Checkout Buttons */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <button 
+                onClick={handleAddToCart}
+                className="flex items-center justify-center cursor-pointer gap-1.5 rounded bg-zinc-100 dark:bg-zinc-800 py-2.5 px-2 text-xs font-semibold tracking-wide hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all text-zinc-700 dark:text-zinc-200 active:scale-[0.99]"
+              >
+                <FiShoppingCart className="h-4 w-4" />
+                <span>Masukkan Keranjang</span>
+              </button>
+
+              <button 
+                onClick={handleBuyNow}
+                className="flex items-center justify-center cursor-pointer rounded bg-zinc-950 dark:bg-white dark:text-zinc-950 text-white py-2.5 px-2 text-xs font-semibold tracking-wide hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all active:scale-[0.99]"
+              >
+                Beli Sekarang
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Row 1, Col 2: Metadata, Pricing, Variant Actions & Checkout Buttons */}
-        <div className="flex flex-col justify-between md:col-start-2 md:row-start-1 md:h-full gap-6">
+        {/* Row 1, Col 2: Metadata, Pricing, Variant Actions & Checkout Buttons (Desktop Only) */}
+        <div className="hidden md:flex flex-col justify-between md:col-start-2 md:row-start-1 md:h-full gap-6">
           <div className="space-y-6">
             {/* Title */}
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white leading-tight">
