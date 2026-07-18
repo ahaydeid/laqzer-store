@@ -396,10 +396,10 @@ export function UserProfileContainer() {
               </select>
             </div>
 
-            {/* Kota / Kabupaten */}
+            {/* Kecamatan */}
             <div>
               <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">
-                Kota / Kabupaten {loadingCities && <span className="text-[10px] text-rose-500 animate-pulse">(Memuat...)</span>}
+                Kecamatan {loadingCities && <span className="text-[10px] text-rose-500 animate-pulse">(Memuat...)</span>}
               </label>
               <select 
                 value={cityId}
@@ -414,10 +414,10 @@ export function UserProfileContainer() {
                 disabled={!provinceId || loadingCities || !isEditing}
                 className={getSelectClass(isEditing)}
               >
-                <option value="">{isEditing ? "Pilih Kota/Kabupaten" : "-"}</option>
+                <option value="">{isEditing ? "Pilih Kecamatan" : "-"}</option>
                 {cities.map(c => (
                   <option key={c.city_id} value={c.city_id}>
-                    {c.type} {c.city_name}
+                    {c.city_name}
                   </option>
                 ))}
               </select>

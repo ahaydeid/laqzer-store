@@ -420,7 +420,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
                         {item.name}
                       </h4>
                       <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                        Varian: {item.variant} • Kuantitas: {item.quantity} pcs
+                        Varian: {item.variant} • QTY: {item.quantity} pcs
                       </span>
                     </div>
                     <div className="flex justify-between items-end mt-1">
@@ -603,8 +603,8 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
                 }}
                 className={`w-full flex items-center justify-between p-4 rounded text-left border transition-all cursor-pointer ${
                   isSelected
-                    ? 'border-zinc-950 bg-zinc-50 dark:border-white dark:bg-zinc-900'
-                    : 'border-zinc-200 bg-white hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700'
+                    ? 'border-rose-600 bg-white border-2 dark:border-white dark:bg-zinc-900'
+                    : 'bg-slate-50 border-none focus:border-slate-300 hover:border-slate-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700'
                 }`}
               >
                 <div>
