@@ -10,7 +10,6 @@ import Swal from 'sweetalert2'
 
 export function CartContainer() {
   const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
   const {
     items,
     loading,
@@ -19,44 +18,6 @@ export function CartContainer() {
     toggleCheckItem,
     toggleAllCheck,
   } = useCart()
-
-  if (authLoading) {
-    return (
-      <div className="min-h-[50vh] flex items-center justify-center">
-        <p className="text-xs text-zinc-400">Memeriksa status login...</p>
-      </div>
-    )
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 py-12 text-center">
-        <div className="w-16 h-16 rounded-full bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/60 flex items-center justify-center mb-4">
-          <FiShoppingBag className="h-8 w-8 text-sky-500" />
-        </div>
-        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">
-          Keranjang Belanja Memerlukan Login
-        </h2>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mb-6 leading-relaxed">
-          Silakan masuk dengan akun Google kamu untuk dapat melihat, menyimpan, dan mengelola produk di keranjang belanja.
-        </p>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login?next=/cart"
-            className="px-5 py-2.5 rounded bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs transition-colors"
-          >
-            Masuk dengan Google
-          </Link>
-          <Link
-            href="/"
-            className="px-5 py-2.5 rounded border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold text-xs hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
-          >
-            Kembali Belanja
-          </Link>
-        </div>
-      </div>
-    )
-  }
 
 
 
