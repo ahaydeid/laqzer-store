@@ -50,7 +50,12 @@ export async function updateSession(request: NextRequest) {
 
   // This will refresh the session if it is expired
   // IMPORTANT: Do not remove or change this call.
-  await supabase.auth.getUser()
+  // Wrapped in try-catch to protect the app from crashing during local network timeouts / offline mode.
+  try {
+    await supabase.auth.getUser()
+  } catch (err) {
+    console.warn('[Supabase Middleware] Connection timeout or offline during session refresh:', err)
+  }
 
   return supabaseResponse
 }

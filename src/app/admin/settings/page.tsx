@@ -63,7 +63,7 @@ export default function SettingsPage() {
     {
       id: "expedisi" as const,
       title: "Ekspedisi",
-      subtitle: "Aktifkan atau nonaktifkan pilihan jasa pengiriman toko Anda",
+      subtitle: "Pilih jasa pengiriman toko",
       icon: FiTruck,
     },
   ];
