@@ -71,9 +71,9 @@ export function ProductDetailModal({
       <div className="p-5 space-y-6">
         {/* Header Produk & Media Gallery Preview */}
         <div className="flex flex-col sm:flex-row gap-5 items-start">
-          <div className="space-y-2.5 w-full sm:w-48 flex-shrink-0">
-            {/* Foto Utama */}
-            <div className="w-full h-48 rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 relative">
+          {/* Main Image Container */}
+          <div className="w-full sm:w-52 flex-shrink-0 space-y-3">
+            <div className="w-full h-52 rounded overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={activeImage || product.imageUrl}
@@ -85,28 +85,31 @@ export function ProductDetailModal({
               />
             </div>
 
-            {/* Thumbnail Galeri (Jika > 1 Foto) */}
+            {/* Deretan Foto Galeri di Baris Baru bawah Gambar Utama */}
             {galleryImages.length > 1 && (
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
-                {galleryImages.map((img, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setActiveImage(img)}
-                    className={`h-10 w-10 rounded overflow-hidden border transition-all flex-shrink-0 cursor-pointer ${
-                      activeImage === img
-                        ? 'border-zinc-900 dark:border-zinc-100 ring-1 ring-zinc-900 dark:ring-zinc-100'
-                        : 'border-zinc-200 dark:border-zinc-800 opacity-70 hover:opacity-100'
-                    }`}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={img}
-                      alt={`Thumb ${idx + 1}`}
-                      className="object-cover w-full h-full"
-                    />
-                  </button>
-                ))}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+                {galleryImages.map((img, idx) => {
+                  const isActive = activeImage === img
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActiveImage(img)}
+                      className={`h-12 w-12 rounded overflow-hidden transition-all flex-shrink-0 cursor-pointer ${
+                        isActive
+                          ? 'ring-2 ring-sky-500 dark:ring-sky-400 border-transparent'
+                          : 'border border-zinc-200 dark:border-zinc-800 opacity-70 hover:opacity-100'
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={img}
+                        alt={`Galeri ${idx + 1}`}
+                        className="object-cover w-full h-full"
+                      />
+                    </button>
+                  )
+                })}
               </div>
             )}
           </div>
