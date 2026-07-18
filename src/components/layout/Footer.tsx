@@ -111,9 +111,19 @@ export function Footer({ settings }: FooterProps) {
 
       {/* Footer Bottom bar */}
       <div className="mx-auto max-w-7xl border-t border-zinc-800 mt-12 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
-        <p>&copy; {currentYear} {settings.name}. Hak Cipta Dilindungi.</p>
+        <p>
+          &copy; {currentYear} {settings.name}. Hak Cipta Dilindungi. &middot; Dibuat oleh{' '}
+          <a
+            href="https://ahadi.my.id/own"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-rose-400 hover:text-rose-300 transition-colors font-medium"
+          >
+            Ahadi
+          </a>
+        </p>
         <div className="flex gap-4 text-zinc-500">
-          <a href="#" className="hover:underline">Syarat & Ketentuan</a>
+          <a href="#" className="hover:underline">Syarat &amp; Ketentuan</a>
           <a href="#" className="hover:underline">Kebijakan Privasi</a>
         </div>
       </div>
