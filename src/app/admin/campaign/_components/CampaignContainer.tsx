@@ -11,21 +11,62 @@ import { SupabasePopupService } from '@/services/supabase/popup.service'
 import useSWR from 'swr'
 
 import { VoucherItem } from './types'
+import { VoucherRecord } from '@/core/types/voucher'
+import { SupabaseVoucherService } from '@/services/supabase/voucher.service'
 import DiscountTab from './DiscountTab'
 import DiscountModal from './DiscountModal'
 import VoucherTab from './VoucherTab'
 import PopupTab from './PopupTab'
 
-const INITIAL_VOUCHERS: VoucherItem[] = [
-  { code: 'LAQZERBARU', campaignName: 'Promo Pelanggan Baru', type: 'percent', value: 10, minPurchase: 150000, quota: 100, expiryDate: '2026-08-31', status: 'active' },
-  { code: 'HEMAT50K', campaignName: 'Promo Gajian Akhir Bulan', type: 'nominal', value: 50000, minPurchase: 300000, quota: 50, expiryDate: '2026-07-31', status: 'active' },
-  { code: 'FREEONGKIR', campaignName: 'Gratis Ongkos Kirim', type: 'nominal', value: 20000, minPurchase: 100000, quota: 200, expiryDate: '2026-12-31', status: 'active' },
-]
-
 export default function CampaignContainer() {
   const [activeTab, setActiveTab] = useState<'discount' | 'voucher' | 'popup'>('discount')
   const campaignService = useMemo(() => getServices().campaigns, [])
   const productService = useMemo(() => getServices().products, [])
+  const voucherService = useMemo(() => new SupabaseVoucherService(), [])
+
+  // === Voucher state dengan useSWR ===
+  const { data: vouchers = [], mutate: mutateVouchers } = useSWR<VoucherRecord[]>(
+    'vouchers-list',
+    () => voucherService.getVouchers(),
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 10000,
+    }
+  )
+
+  // Handlers Voucher
+  const handleAddVoucher = async (data: Omit<VoucherRecord, 'id' | 'usedCount' | 'createdAt'>) => {
+    try {
+      await voucherService.createVoucher(data)
+      playSwalSound('success')
+      Swal.fire({ icon: 'success', title: 'Voucher Berhasil Dibuat', text: `Voucher "${data.code}" telah aktif.`, confirmButtonColor: '#0369a1' })
+      mutateVouchers()
+    } catch (err: any) {
+      Swal.fire({ icon: 'error', title: 'Gagal', text: err?.message || 'Gagal menyimpan voucher.' })
+    }
+  }
+
+  const handleToggleVoucherStatus = async (id: string, currentStatus: boolean) => {
+    try {
+      await voucherService.toggleVoucherStatus(id, !currentStatus)
+      playSwalSound('success')
+      Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Status voucher berhasil diperbarui.', confirmButtonColor: '#0369a1' })
+      mutateVouchers()
+    } catch (err: any) {
+      Swal.fire({ icon: 'error', title: 'Gagal', text: err?.message || 'Gagal merubah status.' })
+    }
+  }
+
+  const handleDeleteVoucher = async (id: string, code: string) => {
+    try {
+      await voucherService.deleteVoucher(id)
+      playSwalSound('success')
+      Swal.fire({ icon: 'success', title: 'Dihapus!', text: `Voucher "${code}" telah dihapus.`, confirmButtonColor: '#0369a1' })
+      mutateVouchers()
+    } catch (err: any) {
+      Swal.fire({ icon: 'error', title: 'Gagal', text: err?.message || 'Gagal menghapus voucher.' })
+    }
+  }
 
   // === Discount / Campaign state (SWR Caching) ===
   const { data: campaigns = [], isLoading: isLoadingCampaigns, mutate: mutateCampaigns } = useSWR<CampaignItem[]>(
@@ -103,16 +144,6 @@ export default function CampaignContainer() {
     }
   }
 
-  // === Voucher (masih local) ===
-  const [vouchers, setVouchers] = useState<VoucherItem[]>(INITIAL_VOUCHERS)
-  const handleAddVoucher = (v: VoucherItem) => {
-    setVouchers([v, ...vouchers])
-    Swal.fire({ icon: 'success', title: 'Voucher Berhasil Dibuat', text: `Voucher ${v.code} siap digunakan.`, confirmButtonColor: '#0369a1' })
-  }
-  const handleToggleVoucher = (code: string) => {
-    setVouchers(vouchers.map(v => v.code === code ? { ...v, status: v.status === 'active' ? 'inactive' : 'active' } : v))
-  }
-
   // === Popup preview state ===
   const [showPopupPreview, setShowPopupPreview] = useState(false)
   const [previewConfig, setPreviewConfig] = useState<PopupAdConfig | null>(null)
@@ -145,7 +176,7 @@ export default function CampaignContainer() {
           <div className="space-y-1 relative z-10">
             <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Voucher</h3>
             <span className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 block">
-              {vouchers.filter(v => v.status === 'active').length}{' '}
+              {vouchers.filter(v => v.isActive).length}{' '}
               <span className="text-sm font-normal text-zinc-400 dark:text-zinc-500">aktif</span>
             </span>
           </div>
@@ -193,7 +224,13 @@ export default function CampaignContainer() {
           />
         )}
         {activeTab === 'voucher' && (
-          <VoucherTab vouchers={vouchers} onAddVoucher={handleAddVoucher} onToggleVoucher={handleToggleVoucher} formatRupiah={formatRupiah} />
+          <VoucherTab
+            vouchers={vouchers}
+            onAddVoucher={handleAddVoucher}
+            onToggleVoucher={handleToggleVoucherStatus}
+            onDeleteVoucher={handleDeleteVoucher}
+            formatRupiah={formatRupiah}
+          />
         )}
         {activeTab === 'popup' && (
           <PopupTab onTestShowPreview={handleShowPreview} />

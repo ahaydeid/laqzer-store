@@ -7,9 +7,11 @@ import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { StoreSettings } from '@/core/types/store'
 import { SupabaseProfileService } from '@/services/supabase/profile.service'
+import { SupabaseVoucherService } from '@/services/supabase/voucher.service'
 import { UserProfile } from '@/core/types/profile'
 import { FiChevronLeft, FiTag, FiLoader } from 'react-icons/fi'
 import Swal from 'sweetalert2'
+import { playSwalSound } from '@/utils/sound'
 import { Modal } from '@/components/ui/Modal'
 
 interface CheckoutContainerProps {
@@ -146,7 +148,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
   const [voucherInput, setVoucherInput] = useState('')
   const [appliedVoucher, setAppliedVoucher] = useState<{
     code: string
-    type: 'percent' | 'fixed'
+    type: 'percent' | 'nominal' | 'fixed'
     value: number
     maxDiscount?: number
   } | null>(null)
@@ -172,46 +174,52 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
   const shippingCost = selectedCourier ? selectedCourier.cost : 0
   const grandTotal = Math.max(0, productSubtotal + shippingCost - discount)
 
-  // Voucher Handler
-  const handleApplyVoucher = (e: React.FormEvent) => {
+  // Voucher Handler Real-Time dari Database Supabase
+  const [validatingVoucher, setValidatingVoucher] = useState(false)
+  const voucherService = useMemo(() => new SupabaseVoucherService(), [])
+
+  const handleApplyVoucher = async (e: React.FormEvent) => {
     e.preventDefault()
     const cleanCode = voucherInput.trim().toUpperCase()
     if (!cleanCode) return
 
-    if (cleanCode === 'LAQZERNEW') {
+    setValidatingVoucher(true)
+    try {
+      const result = await voucherService.validateVoucher(cleanCode, productSubtotal)
+      setValidatingVoucher(false)
+
+      if (!result.valid || !result.voucher) {
+        Swal.fire({
+          title: 'Voucher Tidak Valid',
+          text: result.message || 'Kode voucher yang Anda masukkan tidak dapat digunakan.',
+          icon: 'error',
+          confirmButtonColor: '#e11d48',
+          confirmButtonText: 'Coba Lagi',
+        })
+        return
+      }
+
       setAppliedVoucher({
-        code: 'LAQZERNEW',
-        type: 'percent',
-        value: 10,
+        code: result.voucher.code,
+        type: result.voucher.type,
+        value: result.voucher.value,
+        maxDiscount: result.voucher.maxDiscount,
       })
+
       Swal.fire({
-        title: 'Voucher Berhasil!',
-        text: 'Diskon 10% telah diterapkan pada pesanan Anda.',
+        title: 'Voucher Berhasil Diterapkan!',
+        text: result.message,
         icon: 'success',
         confirmButtonColor: '#e11d48',
         confirmButtonText: 'Oke',
       })
-    } else if (cleanCode === 'DISKON50') {
-      setAppliedVoucher({
-        code: 'DISKON50',
-        type: 'percent',
-        value: 50,
-        maxDiscount: 50000,
-      })
+    } catch (err: any) {
+      setValidatingVoucher(false)
       Swal.fire({
-        title: 'Voucher Berhasil!',
-        text: 'Diskon 50% (Maks. Rp50.000) telah diterapkan.',
-        icon: 'success',
-        confirmButtonColor: '#e11d48',
-        confirmButtonText: 'Oke',
-      })
-    } else {
-      Swal.fire({
-        title: 'Voucher Tidak Valid',
-        text: 'Kode voucher salah atau tidak berlaku.',
+        title: 'Gagal',
+        text: 'Terjadi kesalahan saat memverifikasi voucher.',
         icon: 'error',
         confirmButtonColor: '#e11d48',
-        confirmButtonText: 'Oke',
       })
     }
   }
@@ -528,9 +536,17 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
                   <button
                     type="button"
                     onClick={handleApplyVoucher}
-                    className="rounded bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700 transition-all cursor-pointer"
+                    disabled={validatingVoucher || !voucherInput.trim()}
+                    className="rounded bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
                   >
-                    Pakai
+                    {validatingVoucher ? (
+                      <>
+                        <FiLoader className="w-3 h-3 animate-spin" />
+                        <span>Cek...</span>
+                      </>
+                    ) : (
+                      <span>Pakai</span>
+                    )}
                   </button>
                 </div>
               )}
