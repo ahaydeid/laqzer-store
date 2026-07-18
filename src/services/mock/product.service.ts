@@ -82,6 +82,12 @@ Petunjuk Perawatan: Cuci mesin air dingin, jemur gantung di tempat teduh, setrik
     price: 179000,
     originalPrice: 299000,
     imageUrl: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=600',
+    images: [
+      'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1620012253295-c15cc3e65df4?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&q=80&w=600'
+    ],
     category: 'shirt',
     rating: 4.9,
     soldCount: 1250,
@@ -95,6 +101,11 @@ Petunjuk Perawatan: Cuci mesin air dingin, jemur gantung di tempat teduh, setrik
     price: 198000,
     originalPrice: 325000,
     imageUrl: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?auto=format&fit=crop&q=80&w=600',
+    images: [
+      'https://images.unsplash.com/photo-1533867617858-e7b97e060509?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1560343776-97c7d202ff0e?auto=format&fit=crop&q=80&w=600'
+    ],
     category: 'shoes',
     rating: 4.8,
     soldCount: 840,
@@ -133,6 +144,11 @@ Petunjuk Perawatan: Cuci mesin air dingin, jemur gantung di tempat teduh, setrik
     description: 'Tas jinjing wanita berbahan kulit sintetis premium dengan kapasitas besar.',
     price: 650000,
     imageUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600',
+    images: [
+      'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&q=80&w=600'
+    ],
     category: 'bag',
     rating: 4.9,
     soldCount: 520,
