@@ -101,7 +101,8 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     const subscription = chatService.subscribeToRoomMessages(roomId, (newMessage) => {
       setMessages((prev) => {
         if (prev.some((m) => m.id === newMessage.id)) return prev
-        return [...prev, newMessage]
+        const filtered = prev.filter((m) => !m.id.startsWith('temp_'))
+        return [...filtered, newMessage]
       })
     })
 
@@ -201,9 +202,11 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     setMessages((prev) => [...prev, tempMsg])
 
     try {
-      await chatService.sendMessage(activeRoomId, 'user', currentText, currentProduct, user?.id)
+      const realMsg = await chatService.sendMessage(activeRoomId, 'user', currentText, currentProduct, user?.id)
+      setMessages((prev) => prev.map((m) => (m.id === tempId ? realMsg : m)))
     } catch (err) {
       console.error('Gagal mengirim pesan:', err)
+      setMessages((prev) => prev.filter((m) => m.id !== tempId))
     }
   }
 
