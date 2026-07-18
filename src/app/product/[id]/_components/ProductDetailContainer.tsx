@@ -558,7 +558,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
           <div className="grid grid-cols-2 gap-3 border-t border-zinc-100 dark:border-zinc-900 pt-5">
             <button 
               onClick={handleAddToCart}
-              className="flex items-center justify-center cursor-pointer gap-2 rounded border border-zinc-200 py-3 px-4 text-xs font-semibold tracking-wide hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 transition-all text-zinc-900 dark:text-white"
+              className="flex items-center justify-center cursor-pointer gap-2 rounded bg-zinc-100 dark:bg-zinc-800 py-3 px-4 text-xs font-semibold tracking-wide hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all text-zinc-700 dark:text-zinc-200 active:scale-[0.99]"
             >
               <FiShoppingCart className="h-4 w-4" />
               <span>Masukkan Keranjang</span>
