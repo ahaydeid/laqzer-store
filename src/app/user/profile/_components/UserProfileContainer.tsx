@@ -1,45 +1,30 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseProfileService } from '@/services/supabase/profile.service'
 import { UserProfile } from '@/core/types/profile'
-import { FiLoader } from 'react-icons/fi'
+import { FiLoader, FiSearch, FiMapPin } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 import { playSwalSound } from '@/utils/sound'
 
-interface ProvinceOption {
-  province_id: string
-  province: string
-}
-
-interface CityOption {
-  city_id: string
-  province_id: string
-  province: string
-  type: string
+interface SearchResult {
+  id: string
+  label: string
+  province_name: string
   city_name: string
-  postal_code: string
-}
-
-interface SubdistrictOption {
-  subdistrict_id: string
-  city_id: string
+  district_name: string
   subdistrict_name: string
-  postal_code: string
+  zip_code: string
 }
 
 export function UserProfileContainer() {
   const { user } = useAuth()
   const profileService = useMemo(() => new SupabaseProfileService(), [])
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [provinces, setProvinces] = useState<ProvinceOption[]>([])
-  const [cities, setCities] = useState<CityOption[]>([])
-  const [loadingCities, setLoadingCities] = useState(false)
-  const [subdistricts, setSubdistricts] = useState<SubdistrictOption[]>([])
-  const [loadingSubdistricts, setLoadingSubdistricts] = useState(false)
 
   // Mode Edit / View
   const [isEditing, setIsEditing] = useState(false)
@@ -52,119 +37,23 @@ export function UserProfileContainer() {
   const [gender, setGender] = useState('')
   const [birthDate, setBirthDate] = useState('')
   const [address, setAddress] = useState('')
+
+  // Alamat states (diset lewat autocomplete search)
+  const [province, setProvince] = useState('')
   const [provinceId, setProvinceId] = useState('')
-  const [tempCityId, setTempCityId] = useState('') // Kota/Kabupaten terpilih sementara
-  const [cityId, setCityId] = useState('') // Menyimpan ID Kota aslinya
-  const [subdistrictId, setSubdistrictId] = useState('') // Menyimpan ID Kecamatan terpilih
+  const [city, setCity] = useState('')
+  const [cityId, setCityId] = useState('')
+  const [subdistrict, setSubdistrict] = useState('')
+  const [subdistrictId, setSubdistrictId] = useState('')
   const [postalCode, setPostalCode] = useState('')
 
-  // 1. Fetch Provinces list
-  useEffect(() => {
-    const cachedProvinces = sessionStorage.getItem('cached_provinces')
-    if (cachedProvinces) {
-      try {
-        setProvinces(JSON.parse(cachedProvinces))
-        return
-      } catch (e) {
-        console.warn('Gagal mem-parse cache provinsi:', e)
-      }
-    }
+  // Autocomplete search states
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [searching, setSearching] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
 
-    fetch('/api/shipping/provinces')
-      .then(res => res.json())
-      .then(data => {
-        const list = data?.rajaongkir?.results || []
-        setProvinces(list)
-        if (list.length > 0) {
-          sessionStorage.setItem('cached_provinces', JSON.stringify(list))
-        }
-      })
-      .catch(err => console.error('Gagal memuat provinsi:', err))
-  }, [])
-
-  // 2. Fetch Cities list when provinceId changes
-  const fetchCities = useCallback((provId: string) => {
-    if (!provId) {
-      setCities([])
-      return
-    }
-
-    const cacheKey = `cached_cities_v2_${provId}`
-    const cachedCities = sessionStorage.getItem(cacheKey)
-    if (cachedCities) {
-      try {
-        setCities(JSON.parse(cachedCities))
-        return
-      } catch (e) {
-        console.warn('Gagal mem-parse cache kota:', e)
-      }
-    }
-
-    setLoadingCities(true)
-    fetch(`/api/shipping/cities?provinceId=${provId}`)
-      .then(res => res.json())
-      .then(data => {
-        const list = data?.rajaongkir?.results || []
-        setCities(list)
-        if (list.length > 0) {
-          sessionStorage.setItem(cacheKey, JSON.stringify(list))
-        }
-        setLoadingCities(false)
-      })
-      .catch(err => {
-        console.error('Gagal memuat kota:', err)
-        setLoadingCities(false)
-      })
-  }, [])
-
-  useEffect(() => {
-    if (provinceId) {
-      fetchCities(provinceId)
-    }
-  }, [provinceId, fetchCities])
-
-  // 3. Fetch Subdistricts list when tempCityId changes
-  const fetchSubdistricts = useCallback((cId: string) => {
-    if (!cId) {
-      setSubdistricts([])
-      return
-    }
-
-    const cacheKey = `cached_districts_v2_${cId}`
-    const cachedSubs = sessionStorage.getItem(cacheKey)
-    if (cachedSubs) {
-      try {
-        setSubdistricts(JSON.parse(cachedSubs))
-        return
-      } catch (e) {
-        console.warn('Gagal mem-parse cache kecamatan:', e)
-      }
-    }
-
-    setLoadingSubdistricts(true)
-    fetch(`/api/shipping/subdistricts?cityId=${cId}`)
-      .then(res => res.json())
-      .then(data => {
-        const list = data?.rajaongkir?.results || []
-        setSubdistricts(list)
-        if (list.length > 0) {
-          sessionStorage.setItem(cacheKey, JSON.stringify(list))
-        }
-        setLoadingSubdistricts(false)
-      })
-      .catch(err => {
-        console.error('Gagal memuat kecamatan:', err)
-        setLoadingSubdistricts(false)
-      })
-  }, [])
-
-  useEffect(() => {
-    if (tempCityId) {
-      fetchSubdistricts(tempCityId)
-    }
-  }, [tempCityId, fetchSubdistricts])
-
-  // 4. Fetch user profile from Supabase profiles table
+  // 1. Fetch user profile from Supabase profiles table on mount
   useEffect(() => {
     if (!user) return
 
@@ -183,11 +72,20 @@ export function UserProfileContainer() {
       setGender(defaultProf.gender || '')
       setBirthDate(defaultProf.birthDate || '')
       setAddress(defaultProf.address || '')
+      
+      setProvince(defaultProf.province || '')
       setProvinceId(defaultProf.provinceId || '')
-      setTempCityId(defaultProf.cityId || '')
+      setCity(defaultProf.city || '')
       setCityId(defaultProf.cityId || '')
+      setSubdistrict(defaultProf.subdistrict || '')
       setSubdistrictId(defaultProf.subdistrictId || '')
       setPostalCode(defaultProf.postalCode || '')
+
+      if (defaultProf.subdistrict) {
+        setSearchQuery(`${defaultProf.subdistrict}, ${defaultProf.city}, ${defaultProf.province}`)
+      } else {
+        setSearchQuery('')
+      }
       
       setLoading(false)
     }).catch(err => {
@@ -196,7 +94,65 @@ export function UserProfileContainer() {
     })
   }, [user, profileService])
 
-  // 5. Reset Form to initial data (Batal)
+  // 2. Autocomplete search logic (debounced)
+  useEffect(() => {
+    if (!isEditing || searchQuery.length < 3) {
+      setSearchResults([])
+      return
+    }
+
+    // Jangan search jika query persis sama dengan lokasi terpilih saat ini
+    const currentLocationLabel = subdistrict 
+      ? `${subdistrict}, ${city}, ${province}`.toLowerCase() 
+      : ''
+    if (searchQuery.toLowerCase() === currentLocationLabel) {
+      return
+    }
+
+    const delayDebounceFn = setTimeout(() => {
+      setSearching(true)
+      fetch(`/api/shipping/search-destination?q=${encodeURIComponent(searchQuery)}`)
+        .then(res => res.json())
+        .then(data => {
+          setSearchResults(data.results || [])
+          setShowDropdown(true)
+          setSearching(false)
+        })
+        .catch(err => {
+          console.error("Gagal mencari lokasi:", err)
+          setSearching(false)
+        })
+    }, 450)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchQuery, isEditing, subdistrict, city, province])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  // Select location from search recommendations
+  const handleSelectLocation = (loc: SearchResult) => {
+    setProvince(loc.province_name)
+    setProvinceId('') // Tidak wajib di-set karena ongkir menggunakan subdistrictId
+    setCity(loc.city_name)
+    setCityId(loc.id) // Map ke ID Komerce yang valid
+    setSubdistrict(loc.subdistrict_name)
+    setSubdistrictId(loc.id) // Map ke ID Kecamatan Komerce yang valid
+    setPostalCode(loc.zip_code)
+    
+    setSearchQuery(`${loc.subdistrict_name}, ${loc.city_name}, ${loc.province_name}`)
+    setShowDropdown(false)
+  }
+
+  // Reset Form to initial data (Batal)
   const handleCancel = () => {
     if (initialProfile) {
       setFullName(initialProfile.fullName || '')
@@ -205,19 +161,39 @@ export function UserProfileContainer() {
       setGender(initialProfile.gender || '')
       setBirthDate(initialProfile.birthDate || '')
       setAddress(initialProfile.address || '')
+      setProvince(initialProfile.province || '')
       setProvinceId(initialProfile.provinceId || '')
-      setTempCityId(initialProfile.cityId || '')
+      setCity(initialProfile.city || '')
       setCityId(initialProfile.cityId || '')
+      setSubdistrict(initialProfile.subdistrict || '')
       setSubdistrictId(initialProfile.subdistrictId || '')
       setPostalCode(initialProfile.postalCode || '')
+
+      if (initialProfile.subdistrict) {
+        setSearchQuery(`${initialProfile.subdistrict}, ${initialProfile.city}, ${initialProfile.province}`)
+      } else {
+        setSearchQuery('')
+      }
     }
     setIsEditing(false)
   }
 
-  // 6. Handle Submit Form
+  // Handle Submit Form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
+
+    // Validasi: Lokasi harus dipilih via autocomplete
+    if (!subdistrictId || !city || !province) {
+      playSwalSound('confirm')
+      Swal.fire({
+        title: 'Lokasi Belum Valid',
+        text: 'Silakan cari dan pilih Kecamatan / Kota Anda dari daftar hasil pencarian.',
+        icon: 'warning',
+        confirmButtonColor: '#e11d48',
+      })
+      return
+    }
 
     // Konfirmasi dialog sebelum menyimpan
     playSwalSound('confirm')
@@ -236,15 +212,6 @@ export function UserProfileContainer() {
 
     setSaving(true)
 
-    // Cari nama provinsi, nama kota, dan nama kecamatan terpilih untuk disimpan
-    const selectedProv = provinces.find(p => p.province_id === provinceId)?.province || ''
-    const selectedCityObj = cities.find(c => c.city_id === tempCityId)
-    const selectedCity = selectedCityObj 
-      ? `${selectedCityObj.type} ${selectedCityObj.city_name}`
-      : ''
-    const selectedSubObj = subdistricts.find(s => s.subdistrict_id === subdistrictId)
-    const selectedSub = selectedSubObj ? selectedSubObj.subdistrict_name : ''
-
     const payload: Partial<UserProfile> = {
       fullName,
       email: user.email || '',
@@ -252,11 +219,11 @@ export function UserProfileContainer() {
       gender,
       birthDate: birthDate || undefined,
       address,
-      province: selectedProv,
+      province,
       provinceId,
-      city: selectedCity,
-      cityId: tempCityId,
-      subdistrict: selectedSub,
+      city,
+      cityId,
+      subdistrict,
       subdistrictId,
       postalCode,
     }
@@ -322,28 +289,19 @@ export function UserProfileContainer() {
       : `${base} border-transparent bg-zinc-100/40 dark:bg-zinc-900/20 cursor-default select-none`
   }
 
-  const getSelectClass = (active: boolean) => {
-    const base = 'w-full rounded border px-3 py-2.5 text-zinc-800 dark:text-zinc-200 font-medium transition-all duration-200'
-    return active
-      ? `${base} border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500`
-      : `${base} border-transparent bg-zinc-100/40 dark:bg-zinc-900/20 cursor-default pointer-events-none appearance-none`
-  }
-
   const getTextareaClass = (active: boolean) => {
-    const base = 'w-full rounded border px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 font-medium resize-none transition-all duration-200'
+    const base = 'w-full rounded border px-3 py-2 text-zinc-800 dark:text-zinc-200 font-medium transition-all duration-200 resize-none'
     return active
       ? `${base} border-zinc-200 dark:border-zinc-800 bg-transparent focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500`
       : `${base} border-transparent bg-zinc-100/40 dark:bg-zinc-900/20 cursor-default select-none`
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-      {/* Kolom 1: Data Diri */}
-      <div className="md:col-span-1 bg-white dark:bg-zinc-900 rounded p-6 h-fit space-y-4">
+    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start select-none">
+      {/* Kolom 1: Data Pribadi */}
+      <div className="bg-white dark:bg-zinc-900 rounded p-6 space-y-4">
         <div className="border-b border-zinc-100 dark:border-zinc-800 pb-3">
-          <h2 className="font-bold text-zinc-900 dark:text-white">
-            Data Pribadi
-          </h2>
+          <h2 className="font-bold text-zinc-900 dark:text-white">Data Pribadi</h2>
         </div>
 
         {/* Nama Lengkap */}
@@ -353,24 +311,25 @@ export function UserProfileContainer() {
             type="text" 
             value={fullName} 
             onChange={e => setFullName(e.target.value)} 
+            placeholder={isEditing ? "Nama Lengkap Anda" : "-"}
             required
             className={getInputClass(isEditing)}
             disabled={!isEditing}
           />
         </div>
 
-        {/* Email (Read Only) */}
+        {/* Email */}
         <div>
           <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">Email</label>
           <input 
             type="email" 
             value={email} 
-            disabled
             className={getInputClass(false, true)}
+            disabled
           />
         </div>
 
-        {/* Telepon */}
+        {/* No Telepon */}
         <div>
           <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">No. Telepon / WhatsApp</label>
           <input 
@@ -386,16 +345,24 @@ export function UserProfileContainer() {
         {/* Jenis Kelamin */}
         <div>
           <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">Jenis Kelamin</label>
-          <select 
-            value={gender} 
-            onChange={e => setGender(e.target.value)}
-            className={getSelectClass(isEditing)}
-            disabled={!isEditing}
-          >
-            <option value="">{isEditing ? "Pilih Jenis Kelamin" : "-"}</option>
-            <option value="Laki-laki">Laki-laki</option>
-            <option value="Perempuan">Perempuan</option>
-          </select>
+          {!isEditing ? (
+            <input 
+              type="text" 
+              value={gender || '-'} 
+              className={getInputClass(false)} 
+              disabled 
+            />
+          ) : (
+            <select 
+              value={gender} 
+              onChange={e => setGender(e.target.value)}
+              className="w-full rounded border px-3 py-2.5 text-zinc-800 dark:text-zinc-200 font-medium transition-all duration-200 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+            >
+              <option value="">Pilih Jenis Kelamin</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+          )}
         </div>
 
         {/* Tanggal Lahir */}
@@ -427,126 +394,103 @@ export function UserProfileContainer() {
               rows={3}
               value={address} 
               onChange={e => setAddress(e.target.value)} 
-              placeholder={isEditing ? "Nama Jalan, RT/RW, Blok, No Rumah, Kecamatan, Kelurahan" : "-"}
+              placeholder={isEditing ? "Nama Jalan, RT/RW, Blok, No Rumah, Kelurahan" : "-"}
               required
               className={getTextareaClass(isEditing)}
               disabled={!isEditing}
             />
           </div>
 
+          {/* Search Autocomplete / Readonly view */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Provinsi */}
+            
+            {isEditing ? (
+              /* INPUT SEARCH AUTOCOMPLETE (Saat Edit) */
+              <div className="md:col-span-2 relative" ref={dropdownRef}>
+                <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">
+                  Cari Kecamatan / Kota (RajaOngkir)
+                </label>
+                <div className="relative flex items-center">
+                  <input 
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Ketik minimal 3 huruf (cth: Cipondoh atau Balaraja)"
+                    required
+                    className="w-full rounded border pl-10 pr-4 py-2.5 text-zinc-800 dark:text-zinc-200 font-medium transition-all duration-200 border-zinc-200 dark:border-zinc-800 bg-transparent focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+                  />
+                  <FiSearch className="absolute left-3.5 w-4.5 h-4.5 text-zinc-400" />
+                  {searching && (
+                    <FiLoader className="absolute right-3.5 w-4.5 h-4.5 animate-spin text-rose-500" />
+                  )}
+                </div>
+
+                {/* Dropdown Hasil Pencarian Autocomplete */}
+                {showDropdown && searchResults.length > 0 && (
+                  <div className="absolute left-0 right-0 mt-1.5 max-h-60 overflow-y-auto bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800/80 rounded-lg shadow-xl z-50 divide-y divide-zinc-100 dark:divide-zinc-900">
+                    {searchResults.map(loc => (
+                      <button
+                        key={loc.id + '-' + loc.zip_code}
+                        type="button"
+                        onClick={() => handleSelectLocation(loc)}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-900/60 transition-colors text-left text-xs font-semibold text-zinc-700 dark:text-zinc-300 cursor-pointer"
+                      >
+                        <FiMapPin className="w-4 h-4 text-rose-500 shrink-0" />
+                        <span>{loc.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                
+                {showDropdown && searchResults.length === 0 && searchQuery.length >= 3 && !searching && (
+                  <div className="absolute left-0 right-0 mt-1.5 p-4 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xl z-50 text-center text-xs text-zinc-400">
+                    Lokasi tidak ditemukan. Coba ketik kata kunci lain.
+                  </div>
+                )}
+              </div>
+            ) : null}
+
+            {/* Readonly Alamat Info (Muncul di mode view & edit sebagai info visual) */}
             <div>
               <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">Provinsi</label>
-              {!isEditing ? (
-                <input 
-                  type="text" 
-                  value={initialProfile?.province || '-'} 
-                  className={getInputClass(false)} 
-                  disabled 
-                />
-              ) : (
-                <select 
-                  value={provinceId}
-                  onChange={e => {
-                    setProvinceId(e.target.value)
-                    setTempCityId('')
-                    setSubdistrictId('')
-                  }}
-                  required
-                  className={getSelectClass(true)}
-                >
-                  <option value="">Pilih Provinsi</option>
-                  {provinces.map(p => (
-                    <option key={p.province_id} value={p.province_id}>
-                      {p.province}
-                    </option>
-                  ))}
-                </select>
-              )}
+              <input 
+                type="text" 
+                value={province || '-'} 
+                className={getInputClass(false)} 
+                disabled 
+              />
             </div>
 
-            {/* Kota / Kabupaten */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">
-                Kota / Kabupaten {loadingCities && <span className="text-[10px] text-rose-500 animate-pulse">(Memuat...)</span>}
-              </label>
-              {!isEditing ? (
-                <input 
-                  type="text" 
-                  value={initialProfile?.city || '-'} 
-                  className={getInputClass(false)} 
-                  disabled 
-                />
-              ) : (
-                <select 
-                  value={tempCityId}
-                  onChange={e => {
-                    setTempCityId(e.target.value)
-                    setSubdistrictId('')
-                  }}
-                  required
-                  disabled={!provinceId || loadingCities}
-                  className={getSelectClass(true)}
-                >
-                  <option value="">Pilih Kota/Kabupaten</option>
-                  {cities.map(c => (
-                    <option key={c.city_id} value={c.city_id}>
-                      {c.type} {c.city_name}
-                    </option>
-                  ))}
-                </select>
-              )}
+              <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">Kota / Kabupaten</label>
+              <input 
+                type="text" 
+                value={city || '-'} 
+                className={getInputClass(false)} 
+                disabled 
+              />
             </div>
 
-            {/* Kecamatan */}
-            <div className={tempCityId || !isEditing ? "md:col-span-2" : "hidden"}>
-              <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">
-                Kecamatan {loadingSubdistricts && <span className="text-[10px] text-rose-500 animate-pulse">(Memuat...)</span>}
-              </label>
-              {!isEditing ? (
-                <input 
-                  type="text" 
-                  value={initialProfile?.subdistrict || '-'} 
-                  className={getInputClass(false)} 
-                  disabled 
-                />
-              ) : (
-                <select 
-                  value={subdistrictId}
-                  onChange={e => {
-                    setSubdistrictId(e.target.value)
-                    const selectedSub = subdistricts.find(s => s.subdistrict_id === e.target.value)
-                    if (selectedSub?.postal_code) {
-                      setPostalCode(selectedSub.postal_code)
-                    }
-                  }}
-                  required={!!tempCityId}
-                  disabled={!tempCityId || loadingSubdistricts}
-                  className={getSelectClass(true)}
-                >
-                  <option value="">Pilih Kecamatan</option>
-                  {subdistricts.map(s => (
-                    <option key={s.subdistrict_id} value={s.subdistrict_id}>
-                      {s.subdistrict_name}
-                    </option>
-                  ))}
-                </select>
-              )}
+            <div>
+              <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">Kecamatan</label>
+              <input 
+                type="text" 
+                value={subdistrict || '-'} 
+                className={getInputClass(false)} 
+                disabled 
+              />
             </div>
 
-            {/* Kode Pos */}
-            <div className="md:col-span-2">
+            <div>
               <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">Kode Pos</label>
               <input 
                 type="text" 
-                value={postalCode} 
-                onChange={e => setPostalCode(e.target.value)} 
-                required
-                className={getInputClass(isEditing)}
-                disabled={!isEditing}
+                value={postalCode || '-'} 
+                className={getInputClass(false)} 
+                disabled 
               />
             </div>
+
           </div>
         </div>
 
