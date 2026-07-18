@@ -64,7 +64,21 @@ const MOCK_PRODUCTS: Product[] = [
   {
     id: 'p-1',
     name: 'Essentials Men\'s Oxford Long Sleeve Shirt',
-    description: 'Kemeja oxford lengan panjang pria dengan katun bertekstur, cocok untuk gaya semi-formal.',
+    description: `Kemeja oxford lengan panjang pria klasik berbahan 100% Fine Cotton Oxford berkualitas tinggi. Dirancang dengan potongan Regular Fit modern yang fleksibel untuk tampilan profesional kerja kantor maupun gaya kasual harian yang rapi dan nyaman sepanjang hari.
+
+DETAIL FITUR:
+• Bahan 100% Katun Oxford premium (adem, lembut, dan menyerap keringat)
+• Kerah Button-Down Collar yang kokoh dan tidak mudah melengkung
+• Jahitan Double-Needle presisi tinggi untuk durabilitas jangka panjang
+• Saku dada fungsional dengan aksen jahitan rapi
+
+PANDUAN UKURAN (SIZE CHART):
+• S  : Lebar Dada 50 cm | Panjang Baju 70 cm
+• M  : Lebar Dada 53 cm | Panjang Baju 72 cm
+• L  : Lebar Dada 56 cm | Panjang Baju 74 cm
+• XL : Lebar Dada 59 cm | Panjang Baju 76 cm
+
+Petunjuk Perawatan: Cuci mesin air dingin, jemur gantung di tempat teduh, setrika suhu sedang.`,
     price: 179000,
     originalPrice: 299000,
     imageUrl: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=600',
