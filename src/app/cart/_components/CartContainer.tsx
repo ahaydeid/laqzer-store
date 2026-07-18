@@ -10,6 +10,7 @@ import Swal from 'sweetalert2'
 
 export function CartContainer() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const {
     items,
     loading,
@@ -18,6 +19,20 @@ export function CartContainer() {
     toggleCheckItem,
     toggleAllCheck,
   } = useCart()
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login?next=/cart')
+    }
+  }, [user, authLoading, router])
+
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <p className="text-xs text-zinc-400 font-medium">Memeriksa status login...</p>
+      </div>
+    )
+  }
 
 
 
