@@ -5,10 +5,11 @@ import Swal from 'sweetalert2'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { RichTextEditor } from '@/components/ui/RichTextEditor'
+import { CategoryCombobox } from '@/components/ui/CategoryCombobox'
 import { Category } from '@/core/types/category'
 import { Product } from '@/core/types/product'
 import { playSwalSound } from '@/utils/sound'
-import { FiSave, FiAlertCircle, FiUploadCloud, FiX, FiPlus } from 'react-icons/fi'
+import { FiSave, FiAlertCircle, FiPlus, FiX } from 'react-icons/fi'
 
 interface ProductFormModalProps {
   isOpen: boolean
@@ -21,13 +22,14 @@ interface ProductFormModalProps {
 export function ProductFormModal({
   isOpen,
   onClose,
-  categories,
+  categories: initialCategories,
   initialData,
   onSave,
 }: ProductFormModalProps) {
   const isEdit = !!initialData
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const [categoryList, setCategoryList] = useState<Category[]>(initialCategories)
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -40,19 +42,19 @@ export function ProductFormModal({
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Sync form data when initialData or categories change / modal opens
+  // Sync form data & categoryList when initialData or initialCategories change / modal opens
   useEffect(() => {
     if (isOpen) {
       setError('')
+      setCategoryList(initialCategories)
       setFormData({
         name: initialData?.name || '',
-        category: initialData?.category || categories[0]?.id || '',
+        category: initialData?.category || initialCategories[0]?.id || '',
         price: initialData?.price?.toString() || '',
         stock: initialData?.stock?.toString() || '',
         description: initialData?.description || '',
       })
 
-      // Sync images array (if initialData has images array or fallback to single imageUrl)
       if (initialData?.images && initialData.images.length > 0) {
         setImages(initialData.images)
       } else if (initialData?.imageUrl) {
@@ -61,7 +63,7 @@ export function ProductFormModal({
         setImages([])
       }
     }
-  }, [isOpen, initialData, categories])
+  }, [isOpen, initialData, initialCategories])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -219,18 +221,12 @@ export function ProductFormModal({
               <label className="block text-xs font-semibold mb-1.5 text-zinc-700 dark:text-zinc-300">
                 Kategori <span className="text-rose-500">*</span>
               </label>
-              <select
-                name="category"
+              <CategoryCombobox
+                categories={categoryList}
                 value={formData.category}
-                onChange={handleChange}
-                className="w-full rounded border border-zinc-200 bg-zinc-50/50 py-2 px-3.5 text-xs outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/60"
-              >
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(catId) => setFormData((prev) => ({ ...prev, category: catId }))}
+                onAddNewCategory={(newCat) => setCategoryList((prev) => [...prev, newCat])}
+              />
             </div>
 
             {/* Harga Satuan */}
