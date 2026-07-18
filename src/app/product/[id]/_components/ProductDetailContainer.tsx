@@ -449,7 +449,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
           <div className="flex-shrink-0 grid grid-cols-2 gap-3 pt-1">
             <button 
               onClick={handleChatAdmin}
-              className="flex items-center justify-center gap-2 border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
+              className="flex items-center justify-center gap-2 rounded bg-zinc-100 dark:bg-zinc-800 py-2.5 px-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-[0.99]"
             >
               <FiMessageSquare className="h-4 w-4" />
               <span>Chat Admin</span>
@@ -457,7 +457,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
 
             <button 
               onClick={handleChatWA}
-              className="flex items-center justify-center gap-2 border border-zinc-200 py-2.5 px-2 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-white transition-all bg-white dark:bg-zinc-950"
+              className="flex items-center justify-center gap-2 rounded bg-zinc-100 dark:bg-zinc-800 py-2.5 px-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-[0.99]"
             >
               <FaWhatsapp className="h-4 w-4 text-green-500" />
               <span>Chat lewat WA</span>
