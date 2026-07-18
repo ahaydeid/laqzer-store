@@ -189,7 +189,7 @@ export function PurchaseContainer() {
               }`}
             >
               <span>{tab.label}</span>
-              {count > 0 && (
+              {tab.id !== 'semua' && count > 0 && (
                 <span
                   className={`w-5 h-5 text-[10px] font-bold rounded-full flex items-center justify-center shrink-0 transition-colors ${
                     isActive
