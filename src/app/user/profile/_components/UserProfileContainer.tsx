@@ -95,7 +95,7 @@ export function UserProfileContainer() {
     })
   }, [user, profileService])
 
-  // 2. Autocomplete search logic (debounced)
+  // 2. Autocomplete search logic (debounced + client cache)
   useEffect(() => {
     // Jangan fetch jika lokasi sudah dipilih — tunggu user mengetik lagi
     if (isLocationSelected) return
@@ -105,14 +105,32 @@ export function UserProfileContainer() {
       return
     }
 
+    const cacheKey = `search_dest_${searchQuery.toLowerCase().trim()}`
+
     const delayDebounceFn = setTimeout(() => {
+      // ── Cek client-side sessionStorage cache terlebih dahulu ──
+      try {
+        const cached = sessionStorage.getItem(cacheKey)
+        if (cached) {
+          setSearchResults(JSON.parse(cached))
+          setShowDropdown(true)
+          return // 0 API call
+        }
+      } catch (_) {}
+
+      // ── Hit server jika cache miss ─────────────────────────────
       setSearching(true)
       fetch(`/api/shipping/search-destination?q=${encodeURIComponent(searchQuery)}`)
         .then(res => res.json())
         .then(data => {
-          setSearchResults(data.results || [])
+          const results = data.results || []
+          setSearchResults(results)
           setShowDropdown(true)
           setSearching(false)
+          // Simpan ke sessionStorage untuk query yang sama berikutnya
+          if (results.length > 0) {
+            try { sessionStorage.setItem(cacheKey, JSON.stringify(results)) } catch (_) {}
+          }
         })
         .catch(err => {
           console.error("Gagal mencari lokasi:", err)

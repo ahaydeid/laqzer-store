@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// =====================================================================
+// Server-side In-Memory Cache
+// Cache ini dibagikan antar semua user di server yang sama.
+// Jika "Balaraja" sudah dicari user A, user B tidak akan memakan kuota.
+// TTL: 24 jam (86400 detik)
+// =====================================================================
+const serverCache = new Map<string, { results: any[]; expiresAt: number }>()
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000 // 24 jam
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
-  const query = searchParams.get('q')
+  const query = searchParams.get('q')?.toLowerCase().trim() ?? ''
   const apiKey = process.env.RAJAONGKIR_API_KEY
 
-  if (!query || query.length < 3) {
+  if (query.length < 3) {
     return NextResponse.json({ results: [] })
   }
 
@@ -16,14 +25,24 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  try {
-    const res = await fetch(`https://rajaongkir.komerce.id/api/v1/destination/domestic-destination?search=${encodeURIComponent(query)}`, {
-      headers: {
-        key: apiKey
-      },
-      signal: AbortSignal.timeout(6000), // Batas waktu 6 detik
-      cache: 'no-store' // Hindari bug caching
+  // ── Cek server cache ──────────────────────────────────────────────
+  const cached = serverCache.get(query)
+  if (cached && cached.expiresAt > Date.now()) {
+    return NextResponse.json({ results: cached.results, cached: true }, {
+      headers: { 'Cache-Control': 'public, max-age=86400' }
     })
+  }
+
+  // ── Hit Komerce API (hanya jika cache miss atau expired) ──────────
+  try {
+    const res = await fetch(
+      `https://rajaongkir.komerce.id/api/v1/destination/domestic-destination?search=${encodeURIComponent(query)}`,
+      {
+        headers: { key: apiKey },
+        signal: AbortSignal.timeout(6000),
+        cache: 'no-store'
+      }
+    )
 
     if (!res.ok) {
       throw new Error(`Komerce RajaOngkir returned status ${res.status}`)
@@ -40,7 +59,12 @@ export async function GET(request: NextRequest) {
       zip_code: item.zip_code || ''
     }))
 
-    return NextResponse.json({ results })
+    // Simpan ke server cache
+    serverCache.set(query, { results, expiresAt: Date.now() + CACHE_TTL_MS })
+
+    return NextResponse.json({ results }, {
+      headers: { 'Cache-Control': 'public, max-age=86400' }
+    })
   } catch (error: any) {
     console.error('[Komerce Search API Error] Gagal mencari lokasi:', error)
     return NextResponse.json(
