@@ -11,6 +11,8 @@ export interface UserProfile {
   provinceId?: string
   city?: string
   cityId?: string
+  subdistrict?: string
+  subdistrictId?: string
   postalCode?: string
   createdAt?: string
 }

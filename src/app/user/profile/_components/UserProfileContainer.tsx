@@ -22,6 +22,13 @@ interface CityOption {
   postal_code: string
 }
 
+interface SubdistrictOption {
+  subdistrict_id: string
+  city_id: string
+  subdistrict_name: string
+  postal_code: string
+}
+
 export function UserProfileContainer() {
   const { user } = useAuth()
   const profileService = useMemo(() => new SupabaseProfileService(), [])
@@ -31,6 +38,8 @@ export function UserProfileContainer() {
   const [provinces, setProvinces] = useState<ProvinceOption[]>([])
   const [cities, setCities] = useState<CityOption[]>([])
   const [loadingCities, setLoadingCities] = useState(false)
+  const [subdistricts, setSubdistricts] = useState<SubdistrictOption[]>([])
+  const [loadingSubdistricts, setLoadingSubdistricts] = useState(false)
 
   // Mode Edit / View
   const [isEditing, setIsEditing] = useState(false)
@@ -44,7 +53,9 @@ export function UserProfileContainer() {
   const [birthDate, setBirthDate] = useState('')
   const [address, setAddress] = useState('')
   const [provinceId, setProvinceId] = useState('')
-  const [cityId, setCityId] = useState('')
+  const [tempCityId, setTempCityId] = useState('') // Kota/Kabupaten terpilih sementara
+  const [cityId, setCityId] = useState('') // Menyimpan ID Kota aslinya
+  const [subdistrictId, setSubdistrictId] = useState('') // Menyimpan ID Kecamatan terpilih
   const [postalCode, setPostalCode] = useState('')
 
   // 1. Fetch Provinces list
@@ -112,7 +123,48 @@ export function UserProfileContainer() {
     }
   }, [provinceId, fetchCities])
 
-  // 3. Fetch user profile from Supabase profiles table
+  // 3. Fetch Subdistricts list when tempCityId changes
+  const fetchSubdistricts = useCallback((cId: string) => {
+    if (!cId) {
+      setSubdistricts([])
+      return
+    }
+
+    const cacheKey = `cached_subdistricts_${cId}`
+    const cachedSubs = sessionStorage.getItem(cacheKey)
+    if (cachedSubs) {
+      try {
+        setSubdistricts(JSON.parse(cachedSubs))
+        return
+      } catch (e) {
+        console.warn('Gagal mem-parse cache kecamatan:', e)
+      }
+    }
+
+    setLoadingSubdistricts(true)
+    fetch(`/api/shipping/subdistricts?cityId=${cId}`)
+      .then(res => res.json())
+      .then(data => {
+        const list = data?.rajaongkir?.results || []
+        setSubdistricts(list)
+        if (list.length > 0) {
+          sessionStorage.setItem(cacheKey, JSON.stringify(list))
+        }
+        setLoadingSubdistricts(false)
+      })
+      .catch(err => {
+        console.error('Gagal memuat kecamatan:', err)
+        setLoadingSubdistricts(false)
+      })
+  }, [])
+
+  useEffect(() => {
+    if (tempCityId) {
+      fetchSubdistricts(tempCityId)
+    }
+  }, [tempCityId, fetchSubdistricts])
+
+  // 4. Fetch user profile from Supabase profiles table
   useEffect(() => {
     if (!user) return
 
@@ -132,7 +184,9 @@ export function UserProfileContainer() {
       setBirthDate(defaultProf.birthDate || '')
       setAddress(defaultProf.address || '')
       setProvinceId(defaultProf.provinceId || '')
+      setTempCityId(defaultProf.cityId || '')
       setCityId(defaultProf.cityId || '')
+      setSubdistrictId(defaultProf.subdistrictId || '')
       setPostalCode(defaultProf.postalCode || '')
       
       setLoading(false)
@@ -142,22 +196,25 @@ export function UserProfileContainer() {
     })
   }, [user, profileService])
 
-  // 4. Reset Form to initial data (Batal)
+  // 5. Reset Form to initial data (Batal)
   const handleCancel = () => {
     if (initialProfile) {
       setFullName(initialProfile.fullName || '')
+      setEmail(initialProfile.email || '')
       setPhone(initialProfile.phone || '')
       setGender(initialProfile.gender || '')
       setBirthDate(initialProfile.birthDate || '')
       setAddress(initialProfile.address || '')
       setProvinceId(initialProfile.provinceId || '')
+      setTempCityId(initialProfile.cityId || '')
       setCityId(initialProfile.cityId || '')
+      setSubdistrictId(initialProfile.subdistrictId || '')
       setPostalCode(initialProfile.postalCode || '')
     }
     setIsEditing(false)
   }
 
-  // 5. Handle Submit Form
+  // 6. Handle Submit Form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
@@ -179,12 +236,14 @@ export function UserProfileContainer() {
 
     setSaving(true)
 
-    // Cari nama provinsi dan nama kota terpilih untuk disimpan
+    // Cari nama provinsi, nama kota, dan nama kecamatan terpilih untuk disimpan
     const selectedProv = provinces.find(p => p.province_id === provinceId)?.province || ''
-    const selectedCityObj = cities.find(c => c.city_id === cityId)
+    const selectedCityObj = cities.find(c => c.city_id === tempCityId)
     const selectedCity = selectedCityObj 
       ? `${selectedCityObj.type} ${selectedCityObj.city_name}`
       : ''
+    const selectedSubObj = subdistricts.find(s => s.subdistrict_id === subdistrictId)
+    const selectedSub = selectedSubObj ? selectedSubObj.subdistrict_name : ''
 
     const payload: Partial<UserProfile> = {
       fullName,
@@ -196,7 +255,9 @@ export function UserProfileContainer() {
       province: selectedProv,
       provinceId,
       city: selectedCity,
-      cityId,
+      cityId: tempCityId,
+      subdistrict: selectedSub,
+      subdistrictId,
       postalCode,
     }
 
@@ -381,7 +442,8 @@ export function UserProfileContainer() {
                 value={provinceId}
                 onChange={e => {
                   setProvinceId(e.target.value)
-                  setCityId('')
+                  setTempCityId('')
+                  setSubdistrictId('')
                 }}
                 required
                 className={getSelectClass(isEditing)}
@@ -396,28 +458,52 @@ export function UserProfileContainer() {
               </select>
             </div>
 
-            {/* Kecamatan */}
+            {/* Kota / Kabupaten */}
             <div>
               <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">
-                Kecamatan {loadingCities && <span className="text-[10px] text-rose-500 animate-pulse">(Memuat...)</span>}
+                Kota / Kabupaten {loadingCities && <span className="text-[10px] text-rose-500 animate-pulse">(Memuat...)</span>}
               </label>
               <select 
-                value={cityId}
+                value={tempCityId}
                 onChange={e => {
-                  setCityId(e.target.value)
-                  const selectedCity = cities.find(c => c.city_id === e.target.value)
-                  if (selectedCity?.postal_code) {
-                    setPostalCode(selectedCity.postal_code)
-                  }
+                  setTempCityId(e.target.value)
+                  setSubdistrictId('')
                 }}
                 required
                 disabled={!provinceId || loadingCities || !isEditing}
                 className={getSelectClass(isEditing)}
               >
-                <option value="">{isEditing ? "Pilih Kecamatan" : "-"}</option>
+                <option value="">{isEditing ? "Pilih Kota/Kabupaten" : "-"}</option>
                 {cities.map(c => (
                   <option key={c.city_id} value={c.city_id}>
-                    {c.city_name}
+                    {c.type} {c.city_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Kecamatan */}
+            <div className={tempCityId || !isEditing ? "md:col-span-2" : "hidden"}>
+              <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">
+                Kecamatan {loadingSubdistricts && <span className="text-[10px] text-rose-500 animate-pulse">(Memuat...)</span>}
+              </label>
+              <select 
+                value={subdistrictId}
+                onChange={e => {
+                  setSubdistrictId(e.target.value)
+                  const selectedSub = subdistricts.find(s => s.subdistrict_id === e.target.value)
+                  if (selectedSub?.postal_code) {
+                    setPostalCode(selectedSub.postal_code)
+                  }
+                }}
+                required={!!tempCityId}
+                disabled={!tempCityId || loadingSubdistricts || !isEditing}
+                className={getSelectClass(isEditing)}
+              >
+                <option value="">{isEditing ? "Pilih Kecamatan" : "-"}</option>
+                {subdistricts.map(s => (
+                  <option key={s.subdistrict_id} value={s.subdistrict_id}>
+                    {s.subdistrict_name}
                   </option>
                 ))}
               </select>

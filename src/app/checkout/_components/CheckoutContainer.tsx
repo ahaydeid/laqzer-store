@@ -82,7 +82,8 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
 
   // 3. Fetch Shipping Cost from RajaOngkir
   useEffect(() => {
-    if (!profile || !profile.cityId || checkedItems.length === 0) return
+    const destinationId = profile?.subdistrictId || profile?.cityId
+    if (!profile || !destinationId || checkedItems.length === 0) return
 
     // Hitung total berat belanjaan berdasarkan berat produk asli
     const totalWeight = checkedItems.reduce((acc, item) => acc + ((item.weight || 500) * item.quantity), 0)
@@ -93,7 +94,7 @@ export function CheckoutContainer({ settings }: CheckoutContainerProps) {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        destinationCityId: profile.cityId,
+        destinationCityId: destinationId,
         weightInGrams: totalWeight
       })
     })
