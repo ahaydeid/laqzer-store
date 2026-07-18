@@ -1,4 +1,7 @@
--- Seed initial new products to Supabase products table
+-- Truncate existing products to replace old data cleanly
+TRUNCATE TABLE public.products;
+
+-- Seed initial products using time-ordered UUID v7 IDs
 INSERT INTO public.products (
   id,
   name,
@@ -14,7 +17,7 @@ INSERT INTO public.products (
   is_campaign
 ) VALUES 
 (
-  'prod-sb-1',
+  '0190cf6e-7b80-71e1-b1d5-98305c4897f1',
   'Urban Waterproof Roll-top Backpack',
   'Tas punggung roll-top berkapasitas 25L dengan bahan TPU waterproof tahan hujan ekstrem. Dilengkapi kompartemen laptop 15.6 inci terpisah dan tali bahu ergonomis.',
   489000,
@@ -32,7 +35,7 @@ INSERT INTO public.products (
   false
 ),
 (
-  'prod-sb-2',
+  '0190cf6e-7b80-71e1-b1d5-98305c4897f2',
   'Oversized Fleece Hoodie - Midnight Black',
   'Sweater hoodie pria potongan oversized berbahan Heavyweight Cotton Fleece 330 Gsm. Sangat hangat, lembut di kulit, dan cocok untuk gaya streetwear modern.',
   359000,
@@ -49,7 +52,7 @@ INSERT INTO public.products (
   false
 ),
 (
-  'prod-sb-3',
+  '0190cf6e-7b80-71e1-b1d5-98305c4897f3',
   'Minimalist Chronograph Leather Watch',
   'Jam tangan analog pria dengan bezel stainless steel 316L presisi dan strap kulit asli Italia warna cokelat tan. Dilengkapi ketahanan air 5 ATM.',
   899000,
@@ -66,7 +69,7 @@ INSERT INTO public.products (
   false
 ),
 (
-  'prod-sb-4',
+  '0190cf6e-7b80-71e1-b1d5-98305c4897f4',
   'AirFlex Breathable Running Sneakers',
   'Sepatu lari kasual pria dengan upper knit bernapas dan outsole phylon super empuk. Memberikan fleksibilitas tinggi dan kenyamanan maksimal saat berolahraga.',
   520000,
@@ -84,7 +87,7 @@ INSERT INTO public.products (
   false
 ),
 (
-  'prod-sb-5',
+  '0190cf6e-7b80-71e1-b1d5-98305c4897f5',
   'Slim Fit Stretch Chino Trousers',
   'Celana panjang chino pria berbahan katun twill stretch premium. Fleksibel, tahan lama, dan cocok untuk padu padan gaya kemeja maupun kaos.',
   275000,
@@ -99,13 +102,4 @@ INSERT INTO public.products (
   315,
   95,
   false
-)
-ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name,
-  description = EXCLUDED.description,
-  price = EXCLUDED.price,
-  original_price = EXCLUDED.original_price,
-  image_url = EXCLUDED.image_url,
-  images = EXCLUDED.images,
-  category = EXCLUDED.category,
-  stock = EXCLUDED.stock;
+);
