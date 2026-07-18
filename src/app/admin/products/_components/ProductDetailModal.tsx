@@ -50,6 +50,16 @@ export function ProductDetailModal({
     </div>
   )
 
+  const formatDescriptionHtml = (desc?: string) => {
+    if (!desc) return 'Tidak ada deskripsi rinci untuk produk ini.'
+    // If description already contains HTML tags, return as is
+    if (/<[a-z][\s\S]*>/i.test(desc)) {
+      return desc
+    }
+    // Otherwise, convert plain text newlines to <br />
+    return desc.replace(/\n/g, '<br />')
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -176,15 +186,15 @@ export function ProductDetailModal({
           </div>
         </div>
 
-        {/* Deskripsi Lengkap (Rich Text HTML Renderer) */}
+        {/* Deskripsi Lengkap (Rich Text / Plain Text HTML Renderer) */}
         <div className="space-y-2">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
             Deskripsi Produk
           </h4>
           <div
-            className="rounded bg-zinc-50/60 dark:bg-zinc-900/30 p-4 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400 prose dark:prose-invert max-w-none [&_h1]:text-sm [&_h1]:font-bold [&_h2]:text-xs [&_h2]:font-bold [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_p]:mb-2"
+            className="rounded bg-zinc-50/60 dark:bg-zinc-900/30 p-4 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400 whitespace-pre-line prose dark:prose-invert max-w-none [&_h1]:text-sm [&_h1]:font-bold [&_h2]:text-xs [&_h2]:font-bold [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_p]:mb-2"
             dangerouslySetInnerHTML={{
-              __html: product.description || 'Tidak ada deskripsi rinci untuk produk ini.',
+              __html: formatDescriptionHtml(product.description),
             }}
           />
         </div>
