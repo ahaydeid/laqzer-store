@@ -3,30 +3,7 @@ import { CartItem } from '@/core/types/cart'
 import { SupabaseProductService } from '../supabase/product.service'
 
 // Shared in-memory state so it persists across different page loads in the same dev session
-let MOCK_CART_ITEMS: CartItem[] = [
-  {
-    id: 'cart-fs-1-L',
-    productId: 'fs-1',
-    name: 'EliteShield Performance Men\'s Jacket',
-    price: 255000,
-    imageUrl: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=600',
-    variant: 'L',
-    quantity: 1,
-    stock: 100,
-    checked: false,
-  },
-  {
-    id: 'cart-fs-3-Default',
-    productId: 'fs-3',
-    name: 'OptiZoom Camera Shoulder Bag',
-    price: 250000,
-    imageUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600',
-    variant: 'Default',
-    quantity: 2,
-    stock: 30,
-    checked: false,
-  }
-]
+let MOCK_CART_ITEMS: CartItem[] = []
 
 /**
  * Mock implementation of ICartService.
