@@ -92,14 +92,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
   const [unreadOrderCount, setUnreadOrderCount] = useState(0);
 
   useEffect(() => {
-    const calcUnread = () => {
-      const stored = localStorage.getItem("chat_list");
-      if (stored) {
-        const chats = JSON.parse(stored) as { unreadCount?: number }[];
-        const total = chats.reduce((acc, c) => acc + (c.unreadCount || 0), 0);
-        setUnreadCount(total);
-      } else {
-        setUnreadCount(0);
+    const fetchUnreadChatCount = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("chat_rooms")
+          .select("unread_count_admin");
+        
+        if (!error && data) {
+          const totalUnread = data.reduce((acc, r) => acc + (r.unread_count_admin || 0), 0);
+          setUnreadCount(totalUnread);
+        }
+      } catch (err) {
+        console.error("Gagal memuat unread chat count:", err);
       }
     };
 
@@ -119,17 +123,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
     };
 
     const timer = setTimeout(() => {
-      calcUnread();
+      fetchUnreadChatCount();
       fetchActiveOrdersCount();
     }, 0);
 
-    window.addEventListener("chat_updated", calcUnread);
-    window.addEventListener("storage", calcUnread);
+    // Subskripsi Supabase Realtime listener untuk unread_count_admin
+    const chatSubscription = supabase
+      .channel("sidebar_admin_chat_unread")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "chat_rooms" },
+        () => {
+          fetchUnreadChatCount();
+        }
+      )
+      .subscribe();
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("chat_updated", calcUnread);
-      window.removeEventListener("storage", calcUnread);
+      chatSubscription.unsubscribe();
     };
   }, [supabase]);
 

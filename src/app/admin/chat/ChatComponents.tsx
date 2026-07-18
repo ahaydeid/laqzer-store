@@ -29,21 +29,27 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
   const chatService = useMemo(() => new SupabaseChatService(), []);
 
   const [messages, setMessages] = useState<ChatMessageRecord[]>([]);
+  const [roomInfo, setRoomInfo] = useState<{ userName: string } | null>(null);
   const [inputText, setInputText] = useState("");
   const [loadingMessages, setLoadingMessages] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Load chat messages from Supabase
+  // Load chat room detail & messages from Supabase
   useEffect(() => {
     let isMounted = true;
     setLoadingMessages(true);
 
-    chatService
-      .getRoomMessages(chatId)
-      .then((history) => {
+    Promise.all([
+      chatService.getRoomMessages(chatId),
+      chatService.getRoomById(chatId),
+    ])
+      .then(([history, room]) => {
         if (!isMounted) return;
         setMessages(history);
+        if (room) {
+          setRoomInfo({ userName: room.userName });
+        }
         setLoadingMessages(false);
       })
       .catch((err) => {
@@ -135,14 +141,14 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(chatId)}`}
+              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(roomInfo?.userName || chatId)}`}
               alt="Avatar"
               className="h-full w-full object-cover"
             />
           </div>
           <div className="min-w-0 flex flex-col justify-center h-9">
             <span className="font-semibold text-sm leading-none truncate text-zinc-900 dark:text-zinc-100">
-              Obrolan Pembeli #{chatId.slice(0, 8)}
+              {roomInfo?.userName || `Obrolan Pembeli #${chatId.slice(0, 8)}`}
             </span>
             <div className="flex items-center gap-1 mt-1">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />

@@ -18,6 +18,14 @@ export class SupabaseChatService {
         .limit(1)
 
       if (data && data.length > 0) {
+        // Update user_name jika ada nama baru dari profil auth
+        if (guestInfo?.name && guestInfo.name !== data[0].user_name) {
+          await this.supabase
+            .from('chat_rooms')
+            .update({ user_name: guestInfo.name })
+            .eq('id', data[0].id)
+          data[0].user_name = guestInfo.name
+        }
         return this.mapRoomRecord(data[0])
       }
     }
@@ -150,6 +158,20 @@ export class SupabaseChatService {
       .eq('id', roomId)
 
     return this.mapMessageRecord(data)
+  }
+
+  /**
+   * Mengambil detail room berdasarkan ID
+   */
+  async getRoomById(roomId: string): Promise<ChatRoomRecord | null> {
+    const { data, error } = await this.supabase
+      .from('chat_rooms')
+      .select('*')
+      .eq('id', roomId)
+      .single()
+
+    if (error || !data) return null
+    return this.mapRoomRecord(data)
   }
 
   /**
