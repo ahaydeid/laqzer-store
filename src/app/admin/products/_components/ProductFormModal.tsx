@@ -170,9 +170,55 @@ export function ProductFormModal({
     }, 500)
   }
 
+  const isFormDirty = () => {
+    const initName = initialData?.name || ''
+    const initCategory = initialData?.category || initialCategories[0]?.id || ''
+    const initPrice = initialData?.price?.toString() || ''
+    const initStock = initialData?.stock?.toString() || ''
+    const initDesc = initialData?.description || ''
+
+    const initImgs = initialData?.images && initialData.images.length > 0
+      ? initialData.images
+      : initialData?.imageUrl
+      ? [initialData.imageUrl]
+      : []
+
+    if (formData.name.trim() !== initName) return true
+    if (formData.category !== initCategory) return true
+    if (formData.price !== initPrice) return true
+    if (formData.stock !== initStock) return true
+    if (formData.description.trim() !== initDesc) return true
+    if (JSON.stringify(images) !== JSON.stringify(initImgs)) return true
+
+    return false
+  }
+
+  const handleClose = () => {
+    if (isFormDirty() && !isSubmitting) {
+      playSwalSound('confirm')
+      Swal.fire({
+        title: 'Batalkan Pengisian?',
+        text: 'Perubahan atau data yang telah Anda masukkan akan hilang.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Batalkan',
+        cancelButtonText: 'Lanjutkan Mengisi',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#71717a',
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          onClose()
+        }
+      })
+    } else {
+      onClose()
+    }
+  }
+
   const footer = (
     <div className="flex justify-end gap-3">
-      <Button variant="secondary" size="sm" onClick={onClose} disabled={isSubmitting}>
+      <Button variant="secondary" size="sm" onClick={handleClose} disabled={isSubmitting}>
         Batal
       </Button>
       <Button variant="primary" size="sm" onClick={handleSubmit} disabled={isSubmitting}>
@@ -185,7 +231,7 @@ export function ProductFormModal({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={isEdit ? 'Edit Detail Produk' : 'Tambah Produk Baru'}
       size="2xl"
       footer={footer}
