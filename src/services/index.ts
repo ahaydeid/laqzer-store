@@ -30,7 +30,7 @@ export const SERVICE_PROVIDERS: {
   cart: ProviderType
 } = {
   store: 'mock',
-  products: 'mock',
+  products: 'supabase',
   categories: 'mock',
   cart: 'mock',
 }

@@ -26,6 +26,8 @@ import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } fro
 import { ActionButton } from "@/components/ui/ActionButton";
 import { Button } from "@/components/ui/Button";
 
+import { getServices } from "@/services";
+
 const DEFAULT_CATEGORIES: Category[] = [
   { id: 'shirt', name: 'Kemeja', iconName: 'Shirt' },
   { id: 't-shirt', name: 'T-Shirt', iconName: 'Shirt' },
@@ -83,20 +85,31 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
     }));
   };
 
-  const handleSaveStock = (productId: string, name: string) => {
+  const handleSaveStock = async (productId: string, name: string) => {
     const newStock = draftStocks[productId] ?? 0;
-    setProducts(prev => prev.map(p => p.id === productId ? { ...p, stock: newStock } : p));
-    setEditingProductId(null);
-    
-    playSwalSound("success");
-    
-    Swal.fire({
-      title: 'Berhasil!',
-      text: `Stok "${name}" berhasil diubah menjadi ${newStock} pcs`,
-      icon: 'success',
-      timer: 2000,
-      showConfirmButton: false,
-    });
+    try {
+      const productService = getServices().products;
+      await productService.updateProduct(productId, { stock: newStock });
+      setProducts(prev => prev.map(p => p.id === productId ? { ...p, stock: newStock } : p));
+      setEditingProductId(null);
+      
+      playSwalSound("success");
+      
+      Swal.fire({
+        title: 'Berhasil!',
+        text: `Stok "${name}" berhasil diubah menjadi ${newStock} pcs`,
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (err: any) {
+      console.error(err);
+      Swal.fire({
+        title: 'Gagal!',
+        text: err.message || 'Gagal memperbarui stok di Supabase',
+        icon: 'error',
+      });
+    }
   };
 
   const handleDeleteClick = (id: string, name: string) => {
@@ -110,17 +123,28 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
       cancelButtonText: 'Batal',
       confirmButtonColor: '#ef4444',
       cancelButtonColor: '#71717a',
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setProducts(prev => prev.filter(p => p.id !== id));
-        playSwalSound("success");
-        Swal.fire({
-          title: 'Berhasil!',
-          text: `Produk "${name}" berhasil dihapus! (Simulasi)`,
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-        });
+        try {
+          const productService = getServices().products;
+          await productService.deleteProduct(id);
+          setProducts(prev => prev.filter(p => p.id !== id));
+          playSwalSound("success");
+          Swal.fire({
+            title: 'Berhasil!',
+            text: `Produk "${name}" berhasil dihapus dari Supabase!`,
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        } catch (err: any) {
+          console.error(err);
+          Swal.fire({
+            title: 'Gagal!',
+            text: err.message || 'Gagal menghapus produk dari Supabase',
+            icon: 'error',
+          });
+        }
       }
     });
   };
@@ -144,28 +168,27 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
   };
 
   // Handle saving product from Form Modal
-  const handleSaveProduct = (savedData: Partial<Product>) => {
-    if (savedData.id) {
-      // Update existing product
-      setProducts(prev =>
-        prev.map(p => (p.id === savedData.id ? ({ ...p, ...savedData } as Product) : p))
-      );
-    } else {
-      // Create new product
-      const newProduct: Product = {
-        id: `p-${Date.now()}`,
-        name: savedData.name || 'Produk Baru',
-        description: savedData.description || '',
-        price: savedData.price || 0,
-        originalPrice: savedData.originalPrice,
-        imageUrl: savedData.imageUrl || 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600',
-        category: savedData.category || categories[0]?.id || 'general',
-        rating: 5.0,
-        soldCount: 0,
-        stock: savedData.stock || 0,
-        isCampaign: false,
-      };
-      setProducts(prev => [newProduct, ...prev]);
+  const handleSaveProduct = async (savedData: Partial<Product>) => {
+    try {
+      const productService = getServices().products;
+      if (savedData.id) {
+        // Update existing product
+        const updated = await productService.updateProduct(savedData.id, savedData);
+        setProducts(prev =>
+          prev.map(p => (p.id === savedData.id ? updated : p))
+        );
+      } else {
+        // Create new product
+        const created = await productService.createProduct(savedData);
+        setProducts(prev => [created, ...prev]);
+      }
+    } catch (err: any) {
+      console.error(err);
+      Swal.fire({
+        title: 'Gagal!',
+        text: err.message || 'Gagal menyimpan produk ke Supabase',
+        icon: 'error',
+      });
     }
   };
 

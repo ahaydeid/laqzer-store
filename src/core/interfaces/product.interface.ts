@@ -19,4 +19,19 @@ export interface IProductService {
    * Fetches a single product by its unique identifier.
    */
   getProductById(id: string): Promise<Product | null>
+
+  /**
+   * Creates a new product.
+   */
+  createProduct(product: Partial<Product>): Promise<Product>
+
+  /**
+   * Updates an existing product by ID.
+   */
+  updateProduct(id: string, product: Partial<Product>): Promise<Product>
+
+  /**
+   * Deletes a product by ID.
+   */
+  deleteProduct(id: string): Promise<boolean>
 }
