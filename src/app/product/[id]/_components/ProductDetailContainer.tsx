@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart, FiHeart, FiCheck } from 'react-icons/fi'
@@ -9,6 +9,7 @@ import { Product } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/components/providers/AuthProvider'
+import { SupabaseWishlistService } from '@/services/supabase/wishlist.service'
 import Swal from 'sweetalert2'
 
 interface ProductDetailContainerProps {
@@ -20,7 +21,8 @@ interface ProductDetailContainerProps {
 export function ProductDetailContainer({ product, settings, relatedProducts = [] }: ProductDetailContainerProps) {
   const router = useRouter()
   const { addToCart, toggleAllCheck } = useCart()
-  const { requireAuth } = useAuth()
+  const { requireAuth, user } = useAuth()
+  const wishlistService = useMemo(() => new SupabaseWishlistService(), [])
   
   // Use real product images, falling back to single imageUrl
   const galleryImages = product.images && product.images.length > 0
@@ -35,6 +37,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const [quantity] = useState(1)
   const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
   const [isFavorited, setIsFavorited] = useState(false)
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const [showAddSuccess, setShowAddSuccess] = useState(false)
   const [animateAddSuccess, setAnimateAddSuccess] = useState(false)
@@ -174,19 +177,40 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
     }
   }
 
-  const handleToggleFavorite = () => {
-    setIsFavorited((prev) => {
-      const next = !prev
+  // Load status favorit dari Supabase saat mount
+  useEffect(() => {
+    if (!user?.id) return
+    wishlistService.isFavorited(user.id, String(product.id)).then(setIsFavorited).catch(() => {})
+  }, [user?.id, product.id, wishlistService])
+
+  const handleToggleFavorite = async () => {
+    if (!requireAuth('menambahkan produk ke favorit')) return
+    if (isFavoriteLoading || !user?.id) return
+
+    setIsFavoriteLoading(true)
+    try {
+      const nowFav = await wishlistService.toggle(user.id, String(product.id))
+      setIsFavorited(nowFav)
       Swal.fire({
         toast: true,
         position: 'top-end',
         icon: 'success',
-        title: next ? 'Produk dimasukkan ke Favorit Saya' : 'Produk dihapus dari Favorit Saya',
+        title: nowFav ? 'Produk dimasukkan ke Favorit Saya' : 'Produk dihapus dari Favorit Saya',
         showConfirmButton: false,
         timer: 2000
       })
-      return next
-    })
+    } catch {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: 'Gagal mengubah status favorit',
+        showConfirmButton: false,
+        timer: 2000
+      })
+    } finally {
+      setIsFavoriteLoading(false)
+    }
   }
 
   const handleAddToCart = async () => {
@@ -433,7 +457,10 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
             {/* Favorite Button */}
             <button
               onClick={handleToggleFavorite}
-              className="flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-400 transition-colors cursor-pointer outline-none"
+              disabled={isFavoriteLoading}
+              className={`flex items-center gap-1.5 text-sm font-semibold transition-colors cursor-pointer outline-none ${
+                isFavoriteLoading ? 'opacity-50 cursor-wait' : 'hover:text-rose-600 dark:hover:text-rose-400'
+              } text-zinc-600 dark:text-zinc-400`}
               title={isFavorited ? "Hapus dari Favorit Saya" : "Masukkan ke Favorit Saya"}
             >
               {isFavorited ? (
@@ -441,7 +468,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               ) : (
                 <FiHeart className="h-5.5 w-5.5 text-rose-500" />
               )}
-              <span>Favorit ({isFavorited ? '10,9RB' : '10,8RB'})</span>
+              <span>Favorit</span>
             </button>
           </div>
 
