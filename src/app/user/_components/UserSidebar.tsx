@@ -1,21 +1,27 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseWishlistService } from '@/services/supabase/wishlist.service'
+import useSWR from 'swr'
 
 export function UserSidebar() {
   const pathname = usePathname()
   const { user } = useAuth()
   const wishlistService = useMemo(() => new SupabaseWishlistService(), [])
-  const [favCount, setFavCount] = useState<number | null>(null)
 
-  useEffect(() => {
-    if (!user?.id) return
-    wishlistService.getFavoriteProductIds(user.id).then((ids) => setFavCount(ids.length)).catch(() => {})
-  }, [user?.id, wishlistService])
+  const { data: favorites = [] } = useSWR(
+    user?.id ? `user-wishlist-${user.id}` : null,
+    () => wishlistService.getFavoriteProducts(user!.id),
+    {
+      revalidateOnFocus: true,
+      dedupingInterval: 5000,
+    }
+  )
+
+  const favCount = favorites.length
 
   const links = [
     { href: '/user/profile', label: 'Profil Saya' },
@@ -23,7 +29,7 @@ export function UserSidebar() {
     {
       href: '/user/favorit',
       label: 'Favorit Saya',
-      badge: favCount !== null && favCount > 0 ? favCount : null,
+      badge: favCount > 0 ? favCount : null,
     },
   ]
 
@@ -53,3 +59,4 @@ export function UserSidebar() {
     </div>
   )
 }
+

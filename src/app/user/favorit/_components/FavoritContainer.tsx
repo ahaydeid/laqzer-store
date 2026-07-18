@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { FiHeart, FiShoppingBag, FiTrash2 } from 'react-icons/fi'
 import { FaHeart } from 'react-icons/fa'
 import Link from 'next/link'
@@ -9,32 +9,22 @@ import { SupabaseWishlistService } from '@/services/supabase/wishlist.service'
 import { Product } from '@/core/types/product'
 import Swal from 'sweetalert2'
 import { playSwalSound } from '@/utils/sound'
+import useSWR from 'swr'
+
 
 export function FavoritContainer() {
   const { user } = useAuth()
   const wishlistService = useMemo(() => new SupabaseWishlistService(), [])
-
-  const [products, setProducts] = useState<Product[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [removingId, setRemovingId] = useState<string | null>(null)
 
-  const loadFavorites = async () => {
-    if (!user?.id) { setIsLoading(false); return }
-    setIsLoading(true)
-    try {
-      const data = await wishlistService.getFavoriteProducts(user.id)
-      setProducts(data)
-    } catch {
-      // silent
-    } finally {
-      setIsLoading(false)
+  const { data: products = [], isLoading, mutate } = useSWR(
+    user?.id ? `user-wishlist-${user.id}` : null,
+    () => wishlistService.getFavoriteProducts(user!.id),
+    {
+      revalidateOnFocus: true,
+      dedupingInterval: 5000,
     }
-  }
-
-  useEffect(() => {
-    loadFavorites()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id])
+  )
 
   const handleRemove = async (product: Product) => {
     if (!user?.id) return
@@ -52,9 +42,15 @@ export function FavoritContainer() {
     if (!res.isConfirmed) return
 
     setRemovingId(String(product.id))
-    await wishlistService.toggle(user.id, String(product.id))
-    setProducts((prev) => prev.filter((p) => String(p.id) !== String(product.id)))
-    setRemovingId(null)
+    try {
+      await wishlistService.toggle(user.id, String(product.id))
+      // Update cache lokal secara optimis
+      mutate(products.filter((p) => String(p.id) !== String(product.id)), { revalidate: false })
+    } catch {
+      // silent
+    } finally {
+      setRemovingId(null)
+    }
   }
 
   if (isLoading) {
