@@ -1,6 +1,6 @@
 import { ICartService } from '@/core/interfaces/cart.interface'
 import { CartItem } from '@/core/types/cart'
-import { MockProductService } from './product.service'
+import { SupabaseProductService } from '../supabase/product.service'
 
 // Shared in-memory state so it persists across different page loads in the same dev session
 let MOCK_CART_ITEMS: CartItem[] = [
@@ -33,7 +33,7 @@ let MOCK_CART_ITEMS: CartItem[] = [
  * Manages shopping cart operations in-memory for testing and rapid development.
  */
 export class MockCartService implements ICartService {
-  private productService = new MockProductService()
+  private productService = new SupabaseProductService()
 
   async getCartItems(): Promise<CartItem[]> {
     await new Promise((resolve) => setTimeout(resolve, 150))

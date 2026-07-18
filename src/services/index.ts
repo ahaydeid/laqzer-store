@@ -6,7 +6,6 @@ import { ICartService } from '@/core/interfaces/cart.interface'
 
 // Mock Implementations
 import { MockStoreService } from './mock/store.service'
-import { MockProductService } from './mock/product.service'
 import { MockCategoryService } from './mock/category.service'
 import { MockCartService } from './mock/cart.service'
 
@@ -55,10 +54,7 @@ export function getServices(supabaseClient?: SupabaseClient): AppServices {
       SERVICE_PROVIDERS.store === 'supabase'
         ? new SupabaseStoreService(supabaseClient)
         : new MockStoreService(),
-    products:
-      SERVICE_PROVIDERS.products === 'supabase'
-        ? new SupabaseProductService(supabaseClient)
-        : new MockProductService(),
+    products: new SupabaseProductService(supabaseClient),
     categories:
       SERVICE_PROVIDERS.categories === 'supabase'
         ? new SupabaseCategoryService(supabaseClient)
