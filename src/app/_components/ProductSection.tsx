@@ -62,7 +62,7 @@ export function ProductSection({ products }: ProductSectionProps) {
       </div>
 
       {/* Product grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-6">
         {filteredProducts.map((product) => {
           const hasDiscount = product.isCampaign && product.originalPrice && product.originalPrice > product.price
           const discountPercentage = hasDiscount 
@@ -72,7 +72,7 @@ export function ProductSection({ products }: ProductSectionProps) {
           return (
             <div 
               key={product.id} 
-              className="group relative flex flex-col rounded-xl bg-white overflow-hidden hover:shadow-md transition-all duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/40"
+              className="group relative flex flex-col rounded md:rounded-xl bg-white overflow-hidden hover:shadow-md transition-all duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/40"
             >
               {/* Product link wrapper */}
               <Link href={`/product/${product.id}`} className="flex flex-col flex-1">
@@ -87,7 +87,7 @@ export function ProductSection({ products }: ProductSectionProps) {
 
                   {/* Slashed discount badge */}
                   {hasDiscount && (
-                    <span className="absolute top-0 left-0 rounded-br-xl bg-red-500 px-2.5 py-1 text-xs font-semibold text-white uppercase tracking-wider">
+                    <span className="absolute top-0 left-0 rounded-br md:rounded-br-xl bg-red-500 px-2.5 py-1 text-xs font-semibold text-white uppercase tracking-wider">
                       -{discountPercentage}%
                     </span>
                   )}
