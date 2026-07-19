@@ -34,7 +34,7 @@ export function UserSidebar() {
   ]
 
   return (
-    <div className="md:col-span-1 flex flex-row md:flex-col gap-2 md:gap-1 text-sm overflow-x-auto scrollbar-none pb-3 md:pb-0 border-b border-zinc-100 dark:border-zinc-800 md:border-none">
+    <div className="hidden md:flex md:col-span-1 md:flex-col md:gap-1 text-sm md:pb-0 md:border-none">
       {links.map((link) => {
         const isActive = pathname === link.href
         return (

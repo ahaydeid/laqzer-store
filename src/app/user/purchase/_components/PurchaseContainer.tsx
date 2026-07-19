@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { FiSearch, FiShoppingBag, FiX, FiLoader, FiCheckCircle, FiPackage, FiTruck, FiCreditCard, FiXCircle } from 'react-icons/fi'
+import { FiSearch, FiShoppingBag, FiX, FiLoader, FiCheckCircle, FiPackage, FiTruck, FiCreditCard, FiXCircle, FiChevronDown } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseOrderService } from '@/services/supabase/order.service'
@@ -26,6 +26,7 @@ export function PurchaseContainer() {
   const orderService = useMemo(() => new SupabaseOrderService(), [])
   const [activeTab, setActiveTab] = useState<TabType>('semua')
   const [searchQuery, setSearchQuery] = useState('')
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   // Fetch real orders from Supabase using useSWR
   const { data: orders = [], isLoading, mutate } = useSWR<OrderRecord[]>(
@@ -191,8 +192,57 @@ export function PurchaseContainer() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-xl font-extrabold text-zinc-900 dark:text-white">Pembelian Saya</h1>
+      <div className="relative">
+        {/* Desktop Title */}
+        <h1 className="hidden md:block text-xl font-extrabold text-zinc-900 dark:text-white">
+          Pembelian Saya
+        </h1>
+
+        {/* Mobile Title with Dropdown */}
+        <div className="md:hidden relative inline-block text-left">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center gap-2 text-xl font-extrabold text-zinc-900 dark:text-white focus:outline-none cursor-pointer"
+          >
+            <span>Pembelian Saya</span>
+            <FiChevronDown className={`w-5 h-5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isDropdownOpen && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setIsDropdownOpen(false)}
+              />
+              <div className="absolute left-0 mt-2 w-48 rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg focus:outline-none z-50">
+                <div className="py-1">
+                  <Link
+                    href="/user/profile"
+                    className="block px-4 py-2 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Profil Saya
+                  </Link>
+                  <Link
+                    href="/user/purchase"
+                    className="block px-4 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Pesanan Saya
+                  </Link>
+                  <Link
+                    href="/user/favorit"
+                    className="block px-4 py-2 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Favorit Saya
+                  </Link>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}
