@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseProfileService } from '@/services/supabase/profile.service'
 import { UserProfile } from '@/core/types/profile'
@@ -21,18 +20,9 @@ interface SearchResult {
 }
 
 export function UserProfileContainer() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const { user, loading: authLoading } = useAuth()
+  const { user } = useAuth()
   const profileService = useMemo(() => new SupabaseProfileService(), [])
   const dropdownRef = useRef<HTMLDivElement>(null)
-
-  // Auth Guard: redirect jika belum login
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.replace(`/login?next=${encodeURIComponent(pathname)}`)
-    }
-  }, [user, authLoading, router, pathname])
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

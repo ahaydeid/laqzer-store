@@ -2,9 +2,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 /**
- * Refreshes the user's Supabase session automatically and enforces route protection.
- * This is essential for keeping the user logged in, refreshing tokens, updating cookies,
- * and preventing unauthorized access to protected routes.
+ * Refreshes the user's Supabase session automatically.
+ * This is essential for keeping the user logged in, refreshing tokens, and updating cookies.
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -49,45 +48,13 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  let user = null
+  // This will refresh the session if it is expired
+  // IMPORTANT: Do not remove or change this call.
+  // Wrapped in try-catch to protect the app from crashing during local network timeouts / offline mode.
   try {
-    const { data } = await supabase.auth.getUser()
-    user = data?.user || null
+    await supabase.auth.getUser()
   } catch (err) {
     console.warn('[Supabase Middleware] Connection timeout or offline during session refresh:', err)
-  }
-
-  const pathname = request.nextUrl.pathname
-
-  // Protected buyer routes that require authentication
-  const isProtectedRoute = pathname.startsWith('/user') || pathname.startsWith('/checkout') || pathname.startsWith('/cart')
-
-  if (isProtectedRoute && !user) {
-    const loginUrl = request.nextUrl.clone()
-    loginUrl.pathname = '/login'
-    loginUrl.searchParams.set('next', pathname + request.nextUrl.search)
-    return NextResponse.redirect(loginUrl)
-  }
-
-  // Redirect logged in users away from login page to home or next target
-  if (user && pathname === '/login') {
-    const nextParam = request.nextUrl.searchParams.get('next')
-    const safeNext = (nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//') && !nextParam.startsWith('/admin'))
-      ? nextParam
-      : '/'
-    const redirectUrl = request.nextUrl.clone()
-    redirectUrl.pathname = safeNext
-    redirectUrl.search = ''
-    return NextResponse.redirect(redirectUrl)
-  }
-
-  // Protected admin routes
-  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    if (!user) {
-      const adminLoginUrl = request.nextUrl.clone()
-      adminLoginUrl.pathname = '/admin/login'
-      return NextResponse.redirect(adminLoginUrl)
-    }
   }
 
   return supabaseResponse

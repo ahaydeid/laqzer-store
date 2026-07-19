@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { FiHeart, FiShoppingBag, FiTrash2, FiChevronDown } from 'react-icons/fi'
 import { FaHeart } from 'react-icons/fa'
 import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseWishlistService } from '@/services/supabase/wishlist.service'
 import { Product } from '@/core/types/product'
@@ -14,17 +13,8 @@ import useSWR from 'swr'
 
 
 export function FavoritContainer() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const { user, loading: authLoading } = useAuth()
+  const { user } = useAuth()
   const wishlistService = useMemo(() => new SupabaseWishlistService(), [])
-
-  // Auth Guard: redirect jika belum login
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.replace(`/login?next=${encodeURIComponent(pathname)}`)
-    }
-  }, [user, authLoading, router, pathname])
   const [removingId, setRemovingId] = useState<string | null>(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
