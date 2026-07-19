@@ -47,7 +47,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
         cancelButtonColor: '#71717a',
       }).then((result) => {
         if (result.isConfirmed) {
-          router.push('/login')
+          router.push(`/login?next=${encodeURIComponent(pathname)}`)
         }
       })
       return
@@ -60,9 +60,13 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
   }
 
   // Reset room & messages jika akun pengguna berganti
+  const prevUserIdRef = useRef(user?.id)
   useEffect(() => {
-    setRoomId(null)
-    setMessages([])
+    if (prevUserIdRef.current !== user?.id) {
+      prevUserIdRef.current = user?.id
+      setRoomId(null)
+      setMessages([])
+    }
   }, [user?.id])
 
   // Inisialisasi Room Chat Supabase saat widget dibuka

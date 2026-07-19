@@ -412,7 +412,7 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
               </div>
             ) : (
               <Link
-                href="/login"
+                href={`/login?next=${encodeURIComponent(pathname)}`}
                 className="px-3.5 py-1.5 rounded bg-rose-500 hover:bg-rose-600 text-white font-semibold text-xs transition-colors"
               >
                 Masuk
