@@ -40,10 +40,27 @@ export class SupabaseCartService implements ICartService {
 
     if (!data) return []
 
-    return data
-      .filter((item: any) => item.products)
-      .map((item: any) => {
-        const p = item.products
+    const rawItems = data as unknown as {
+      id: string
+      product_id: string
+      variant: string
+      quantity: number
+      checked: boolean
+      products: {
+        id: string
+        name: string
+        price: number
+        image_url: string
+        stock: number
+        variants: string[] | null
+        weight: number | null
+      } | null
+    }[]
+
+    return rawItems
+      .filter((item) => item.products !== null && item.products !== undefined)
+      .map((item) => {
+        const p = item.products!
         return {
           id: item.id,
           productId: item.product_id,
@@ -51,6 +68,7 @@ export class SupabaseCartService implements ICartService {
           price: p.price,
           imageUrl: p.image_url,
           variant: item.variant,
+          variants: p.variants || [],
           quantity: item.quantity,
           checked: item.checked,
           stock: p.stock || 99,
@@ -152,5 +170,18 @@ export class SupabaseCartService implements ICartService {
       .eq('user_id', session.user.id)
 
     if (error) console.error('Error toggling all cart checks:', error)
+  }
+
+  async updateVariant(id: string, variant: string): Promise<void> {
+    const supabase = this.getClient()
+    const { error } = await supabase
+      .from('cart_items')
+      .update({ variant })
+      .eq('id', id)
+
+    if (error) {
+      console.error('Error updating cart item variant:', error)
+      throw error
+    }
   }
 }

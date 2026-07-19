@@ -16,6 +16,7 @@ interface CartContextProps {
   updateQuantity: (id: string, quantity: number) => Promise<void>
   toggleCheckItem: (id: string) => Promise<void>
   toggleAllCheck: (checked: boolean) => Promise<void>
+  updateVariant: (id: string, variant: string) => Promise<void>
   clearCheckedItems: () => Promise<void>
 }
 
@@ -134,6 +135,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const updateVariant = async (id: string, variant: string) => {
+    // Optimistic UI update
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, variant } : item
+      )
+    )
+    try {
+      await cartService.updateVariant(id, variant)
+      const cartItems = await cartService.getCartItems()
+      setItems(cartItems)
+    } catch (error) {
+      console.error('Failed to update variant:', error)
+    }
+  }
+
   const clearCheckedItems = async () => {
     setLoading(true)
     try {
@@ -164,6 +181,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         toggleCheckItem,
         toggleAllCheck,
+        updateVariant,
         clearCheckedItems,
       }}
     >

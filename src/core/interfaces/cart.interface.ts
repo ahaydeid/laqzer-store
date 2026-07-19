@@ -33,4 +33,9 @@ export interface ICartService {
    * Toggles the selection/checked status of all cart items.
    */
   toggleAllCheck(checked: boolean): Promise<void>
+
+  /**
+   * Updates the variant of a specific cart item.
+   */
+  updateVariant(id: string, variant: string): Promise<void>
 }

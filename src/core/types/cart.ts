@@ -8,6 +8,7 @@ export interface CartItem {
   price: number
   imageUrl: string
   variant: string
+  variants?: string[]
   quantity: number
   stock: number
   checked: boolean
