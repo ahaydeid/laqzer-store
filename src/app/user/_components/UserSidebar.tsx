@@ -49,7 +49,7 @@ export function UserSidebar() {
           >
             <span>{link.label}</span>
             {link.badge !== null && link.badge !== undefined && (
-              <span className="text-[10px] font-semibold text-rose-600 dark:text-rose-400">
+              <span className="text-xs font-semibold text-rose-600 dark:text-rose-400">
                 {link.badge}
               </span>
             )}
