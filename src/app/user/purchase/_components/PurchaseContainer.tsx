@@ -419,7 +419,7 @@ export function PurchaseContainer() {
                       </button>
                       <button
                         onClick={() => handleConfirmPaymentWA(order)}
-                        className="px-2.5 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-normal sm:font-bold text-xs transition-all flex items-center justify-center gap-1 cursor-pointer shadow-xs whitespace-nowrap"
+                        className="px-2.5 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-normal sm:font-medium text-xs transition-all flex items-center justify-center gap-1 cursor-pointer shadow-xs whitespace-nowrap"
                       >
                         <FiCreditCard className="hidden sm:inline-flex w-3.5 h-3.5 shrink-0" />
                         <span>Konfirmasi Pembayaran (WA)</span>
