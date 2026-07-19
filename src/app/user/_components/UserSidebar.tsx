@@ -44,8 +44,8 @@ export function UserSidebar() {
             href={link.href}
             className={`flex items-center justify-start md:justify-between gap-1.5 md:gap-0 px-3 py-1.5 md:px-4 md:py-2.5 rounded cursor-pointer transition-colors font-medium ${
               isActive
-                ? 'font-bold text-rose-600 bg-rose-50/50 dark:bg-rose-950/10 md:bg-transparent md:dark:bg-transparent'
-                : 'text-zinc-500 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-500 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 md:hover:bg-transparent md:dark:hover:bg-transparent'
+                ? 'font-bold text-rose-600'
+                : 'text-zinc-500 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-500'
             }`}
           >
             <span>
