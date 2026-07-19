@@ -385,20 +385,22 @@ export function PurchaseContainer() {
               </div>
 
               {/* Order Info & Totals */}
-              <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900 flex flex-wrap items-center justify-between gap-4 text-sm">
-                <div className="space-y-1">
+              <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900 space-y-3">
+                {/* Kurir & Metode Pembayaran */}
+                <div className="space-y-1 text-sm">
                   <p className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-                    <FiTruck className="w-4 h-4 text-zinc-400" />
+                    <FiTruck className="w-4 h-4 text-zinc-400 shrink-0" />
                     <span>Kurir: <strong className="text-zinc-800 dark:text-zinc-200">{order.shippingCourier}</strong></span>
                   </p>
                   <p className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-                    <FiCreditCard className="w-4 h-4 text-zinc-400" />
+                    <FiCreditCard className="w-4 h-4 text-zinc-400 shrink-0" />
                     <span>Metode Pembayaran: <strong className="text-zinc-800 dark:text-zinc-200">{order.paymentMethod}</strong></span>
                   </p>
                 </div>
 
-                <div className="flex items-center gap-4 ml-auto">
-                  <div className="text-right">
+                {/* Total + Tombol Aksi */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
                     <span className="text-[11px] text-zinc-400 block uppercase font-medium">Total Pembayaran</span>
                     <span className="text-base font-extrabold text-rose-500">
                       Rp {order.totalAmount.toLocaleString('id-ID')}
@@ -407,19 +409,19 @@ export function PurchaseContainer() {
 
                   {/* Actions */}
                   {order.status === 'unpaid' && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                       <button
                         onClick={() => handleCancelOrder(order.id, order.orderNumber)}
-                        className="px-3.5 py-2 rounded border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-medium text-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                        className="px-3.5 py-2 rounded border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-medium text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                       >
-                        <FiXCircle className="w-4 h-4" />
+                        <FiXCircle className="w-4 h-4 shrink-0" />
                         <span>Batalkan</span>
                       </button>
                       <button
                         onClick={() => handleConfirmPaymentWA(order)}
-                        className="px-3.5 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                        className="px-3.5 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                       >
-                        <FiCreditCard className="w-4 h-4" />
+                        <FiCreditCard className="w-4 h-4 shrink-0" />
                         <span>Konfirmasi Pembayaran (WA)</span>
                       </button>
                     </div>
@@ -428,9 +430,9 @@ export function PurchaseContainer() {
                   {order.status === 'shipped' && (
                     <button
                       onClick={() => handleMarkAsCompleted(order.id, order.orderNumber)}
-                      className="px-3.5 py-2 rounded bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-2 rounded bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                     >
-                      <FiCheckCircle className="w-4 h-4" />
+                      <FiCheckCircle className="w-4 h-4 shrink-0" />
                       <span>Pesanan Diterima</span>
                     </button>
                   )}
