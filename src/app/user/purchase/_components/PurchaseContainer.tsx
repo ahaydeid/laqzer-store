@@ -51,15 +51,15 @@ export function PurchaseContainer() {
   const getStatusBadge = (status: OrderStatus) => {
     switch (status) {
       case 'unpaid':
-        return <span className="text-xs text-amber-600 dark:text-amber-400">Belum Bayar</span>
+        return <span className="text-sm text-amber-600 dark:text-amber-400 font-medium">Belum Bayar</span>
       case 'processing':
-        return <span className="text-xs text-sky-600 dark:text-sky-400">Sedang Diproses</span>
+        return <span className="text-sm text-sky-600 dark:text-sky-400 font-medium">Sedang Diproses</span>
       case 'shipped':
-        return <span className="text-xs text-indigo-600 dark:text-indigo-400">Dikirim</span>
+        return <span className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">Dikirim</span>
       case 'completed':
-        return <span className="text-xs text-emerald-600 dark:text-emerald-400">Selesai</span>
+        return <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">Selesai</span>
       case 'cancelled':
-        return <span className="text-xs text-rose-600 dark:text-rose-400">Dibatalkan</span>
+        return <span className="text-sm text-rose-600 dark:text-rose-400 font-medium">Dibatalkan</span>
     }
   }
 
@@ -254,7 +254,7 @@ export function PurchaseContainer() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 text-xs border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-2 px-4 py-3 text-sm border-b-2 transition-all cursor-pointer whitespace-nowrap ${
                 isActive
                   ? 'border-rose-600 text-rose-600 dark:border-rose-500 dark:text-rose-400 font-semibold'
                   : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
@@ -263,7 +263,7 @@ export function PurchaseContainer() {
               <span>{tab.label}</span>
               {['unpaid', 'processing', 'shipped'].includes(tab.id) && count > 0 && (
                 <span
-                  className={`w-5 h-5 text-[10px] font-medium rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                  className={`w-5 h-5 text-xs font-medium rounded-full flex items-center justify-center shrink-0 transition-colors ${
                     isActive
                       ? 'bg-rose-600 text-white dark:bg-rose-500 dark:text-zinc-950'
                       : 'bg-slate-200 text-zinc-600 dark:bg-slate-800 dark:text-zinc-400'
@@ -284,7 +284,7 @@ export function PurchaseContainer() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Cari berdasarkan No. Invoice atau Nama Produk..."
-          className="w-full rounded border border-zinc-200 pl-10 pr-10 py-2 text-xs text-zinc-900 placeholder-zinc-400 focus:border-rose-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+          className="w-full rounded border border-zinc-200 pl-10 pr-10 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-rose-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
         />
         <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
         {searchQuery && (
@@ -333,11 +333,11 @@ export function PurchaseContainer() {
               {/* Card Header */}
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 dark:border-zinc-900 pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-zinc-900 dark:text-white">
+                  <span className="font-mono text-sm font-bold text-zinc-900 dark:text-white">
                     {order.orderNumber}
                   </span>
                   <span className="text-zinc-300 dark:text-zinc-700">•</span>
-                  <span className="text-[11px] text-zinc-400">
+                  <span className="text-xs text-zinc-400">
                     {new Date(order.createdAt).toLocaleDateString('id-ID', {
                       day: 'numeric',
                       month: 'short',
@@ -367,15 +367,15 @@ export function PurchaseContainer() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-semibold text-zinc-900 dark:text-white truncate">
+                      <h4 className="text-sm font-semibold text-zinc-900 dark:text-white truncate">
                         {item.productName}
                       </h4>
                       {item.variantLabel && (
-                        <p className="text-[11px] text-zinc-400 mt-0.5">{item.variantLabel}</p>
+                        <p className="text-xs text-zinc-400 mt-0.5">{item.variantLabel}</p>
                       )}
                       <div className="flex justify-between items-center mt-1">
-                        <span className="text-xs text-zinc-500 font-medium">x{item.quantity}</span>
-                        <span className="text-xs font-bold text-zinc-900 dark:text-white">
+                        <span className="text-sm text-zinc-500 font-medium">x{item.quantity}</span>
+                        <span className="text-sm font-bold text-zinc-900 dark:text-white">
                           Rp {item.price.toLocaleString('id-ID')}
                         </span>
                       </div>
@@ -385,22 +385,22 @@ export function PurchaseContainer() {
               </div>
 
               {/* Order Info & Totals */}
-              <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900 flex flex-wrap items-center justify-between gap-4 text-xs">
+              <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900 flex flex-wrap items-center justify-between gap-4 text-sm">
                 <div className="space-y-1">
                   <p className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-                    <FiTruck className="w-3.5 h-3.5 text-zinc-400" />
+                    <FiTruck className="w-4 h-4 text-zinc-400" />
                     <span>Kurir: <strong className="text-zinc-800 dark:text-zinc-200">{order.shippingCourier}</strong></span>
                   </p>
                   <p className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-                    <FiCreditCard className="w-3.5 h-3.5 text-zinc-400" />
+                    <FiCreditCard className="w-4 h-4 text-zinc-400" />
                     <span>Metode Pembayaran: <strong className="text-zinc-800 dark:text-zinc-200">{order.paymentMethod}</strong></span>
                   </p>
                 </div>
 
                 <div className="flex items-center gap-4 ml-auto">
                   <div className="text-right">
-                    <span className="text-[10px] text-zinc-400 block uppercase font-medium">Total Pembayaran</span>
-                    <span className="text-sm font-extrabold text-rose-500">
+                    <span className="text-[11px] text-zinc-400 block uppercase font-medium">Total Pembayaran</span>
+                    <span className="text-base font-extrabold text-rose-500">
                       Rp {order.totalAmount.toLocaleString('id-ID')}
                     </span>
                   </div>
@@ -410,14 +410,14 @@ export function PurchaseContainer() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleCancelOrder(order.id, order.orderNumber)}
-                        className="px-3.5 py-2 rounded border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-medium text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                        className="px-3.5 py-2 rounded border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-medium text-sm transition-all flex items-center gap-1.5 cursor-pointer"
                       >
                         <FiXCircle className="w-4 h-4" />
                         <span>Batalkan</span>
                       </button>
                       <button
                         onClick={() => handleConfirmPaymentWA(order)}
-                        className="px-3.5 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                        className="px-3.5 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
                       >
                         <FiCreditCard className="w-4 h-4" />
                         <span>Konfirmasi Pembayaran (WA)</span>
@@ -428,7 +428,7 @@ export function PurchaseContainer() {
                   {order.status === 'shipped' && (
                     <button
                       onClick={() => handleMarkAsCompleted(order.id, order.orderNumber)}
-                      className="px-3.5 py-2 rounded bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-2 rounded bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-sm transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <FiCheckCircle className="w-4 h-4" />
                       <span>Pesanan Diterima</span>
