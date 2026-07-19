@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { FiSearch, FiShoppingCart, FiChevronDown, FiMenu, FiX } from 'react-icons/fi'
 import Link from 'next/link'
-import { FaRegUserCircle } from 'react-icons/fa'
 import Avatar from '@/components/ui/Avatar'
 import { StoreSettings } from '@/core/types/store'
 import { Category } from '@/core/types/category'
@@ -195,6 +194,12 @@ export function Navbar({ settings, categories }: NavbarProps) {
               >
                 <Link
                   href="/user/profile"
+                  onClick={(e) => {
+                    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                      e.preventDefault()
+                      setIsProfileOpen(!isProfileOpen)
+                    }
+                  }}
                   className="flex items-center gap-2 p-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                   aria-label="Menu Profil"
                 >
