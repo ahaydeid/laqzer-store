@@ -190,7 +190,7 @@ export function PurchaseContainer() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
       <div className="relative">
         {/* Desktop Title */}

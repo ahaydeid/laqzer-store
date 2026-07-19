@@ -311,7 +311,7 @@ export function UserProfileContainer() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
       <div className="relative">
         {/* Desktop Title */}
@@ -320,7 +320,7 @@ export function UserProfileContainer() {
         </h1>
 
         {/* Mobile Title with Dropdown */}
-        <div className="md:hidden relative inline-block text-left mb-6">
+        <div className="md:hidden relative inline-block text-left mb-4">
           <button
             type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}

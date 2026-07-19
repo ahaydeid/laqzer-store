@@ -19,7 +19,7 @@ export default async function UserProfilePage() {
       {/* Navigation bar */}
       <Navbar settings={storeSettings} categories={categories} />
 
-      <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-10">
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-4 md:py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Sidebar Kiri */}
           <UserSidebar />
