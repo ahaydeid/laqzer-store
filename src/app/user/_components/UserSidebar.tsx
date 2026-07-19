@@ -24,12 +24,11 @@ export function UserSidebar() {
   const favCount = favorites.length
 
   const links = [
-    { href: '/user/profile', labelDesktop: 'Profil Saya', labelMobile: 'Profil' },
-    { href: '/user/purchase', labelDesktop: 'Pesanan Saya', labelMobile: 'Pesanan' },
+    { href: '/user/profile', label: 'Profil Saya' },
+    { href: '/user/purchase', label: 'Pesanan Saya' },
     {
       href: '/user/favorit',
-      labelDesktop: 'Favorit Saya',
-      labelMobile: 'Favorit',
+      label: 'Favorit Saya',
       badge: favCount > 0 ? favCount : null,
     },
   ]
@@ -48,10 +47,7 @@ export function UserSidebar() {
                 : 'text-zinc-500 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-500'
             }`}
           >
-            <span>
-              <span className="md:hidden">{link.labelMobile}</span>
-              <span className="hidden md:inline">{link.labelDesktop}</span>
-            </span>
+            <span>{link.label}</span>
             {link.badge !== null && link.badge !== undefined && (
               <span className="text-xs font-semibold text-rose-600 dark:text-rose-400">
                 {link.badge}
