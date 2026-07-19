@@ -197,6 +197,7 @@ export function CartContainer() {
                     <select
                       value={item.variant}
                       onChange={(e) => updateVariant(item.id, e.target.value)}
+                      style={{ width: `${(8 + item.variant.length) * 6.8 + 36}px` }}
                       className="appearance-none pr-8 pl-2.5 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 rounded border border-zinc-200 dark:border-zinc-800 focus:outline-none focus:ring-1 focus:ring-rose-500 cursor-pointer"
                     >
                       {item.variants && item.variants.length > 0 ? (
@@ -314,6 +315,7 @@ export function CartContainer() {
                     <select
                       value={item.variant}
                       onChange={(e) => updateVariant(item.id, e.target.value)}
+                      style={{ width: `${(8 + item.variant.length) * 5.8 + 28}px` }}
                       className="appearance-none pr-6 pl-2 py-0.5 text-[10px] font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 rounded border border-zinc-200 dark:border-zinc-800 focus:outline-none focus:ring-1 focus:ring-rose-500 cursor-pointer"
                     >
                       {item.variants && item.variants.length > 0 ? (
