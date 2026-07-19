@@ -48,7 +48,7 @@ export default async function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans">
       {/* Navigation bar */}
-      <Navbar settings={storeSettings} categories={categories} />
+      <Navbar settings={storeSettings} categories={categories} products={initialProducts} />
 
       {/* Hero Slider Promotion (Full Width) */}
       <HeroCarousel />

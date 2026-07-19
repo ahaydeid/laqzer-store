@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Avatar from '@/components/ui/Avatar'
 import { StoreSettings } from '@/core/types/store'
 import { Category } from '@/core/types/category'
+import { Product } from '@/core/types/product'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { usePathname } from 'next/navigation'
@@ -13,9 +14,10 @@ import { usePathname } from 'next/navigation'
 interface NavbarProps {
   settings: StoreSettings
   categories: Category[]
+  products?: Product[]
 }
 
-export function Navbar({ settings, categories }: NavbarProps) {
+export function Navbar({ settings, categories, products = [] }: NavbarProps) {
   const { cartCount, items } = useCart()
   const { user, signOut } = useAuth()
   const pathname = usePathname()
@@ -25,19 +27,89 @@ export function Navbar({ settings, categories }: NavbarProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
 
+  // Search state
+  const [searchInput, setSearchInput] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
+  const [showResults, setShowResults] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
 
+  // Mobile search state
+  const [mobileSearchInput, setMobileSearchInput] = useState('')
+  const [mobileDebouncedQuery, setMobileDebouncedQuery] = useState('')
+  const [showMobileResults, setShowMobileResults] = useState(false)
+  const mobileSearchRef = useRef<HTMLDivElement>(null)
+
+  // Debounce desktop search — 400ms agar tidak membebani render setiap keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchInput)
+      setShowResults(searchInput.trim().length > 0)
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [searchInput])
+
+  // Debounce mobile search — 400ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMobileDebouncedQuery(mobileSearchInput)
+      setShowMobileResults(mobileSearchInput.trim().length > 0)
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [mobileSearchInput])
+
+  // Close dropdown on outside click (desktop)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowResults(false)
+      }
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setIsProfileOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // Close dropdown on outside click (mobile)
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (mobileSearchRef.current && !mobileSearchRef.current.contains(event.target as Node)) {
+        setShowMobileResults(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Close on Escape key
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setShowResults(false)
+        setShowMobileResults(false)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  // Filter produk berdasarkan query dan kategori
+  const getSearchResults = (query: string) => {
+    if (!query.trim()) return []
+    const q = query.toLowerCase()
+    return products
+      .filter((p) => {
+        const matchesQuery = p.name.toLowerCase().includes(q)
+        const matchesCategory =
+          selectedCategory === 'Semua Kategori' || p.category === selectedCategory
+        return matchesQuery && matchesCategory
+      })
+      .slice(0, 6) // Tampilkan maksimal 6 hasil
+  }
+
+  const desktopResults = getSearchResults(debouncedQuery)
+  const mobileResults = getSearchResults(mobileDebouncedQuery)
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
@@ -59,53 +131,132 @@ export function Navbar({ settings, categories }: NavbarProps) {
           </div>
 
           {/* Search bar & Category Dropdown (Desktop) */}
-          <div className="hidden flex-1 max-w-xl md:flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 py-1.5 px-3 dark:border-zinc-800 dark:bg-zinc-900">
-            {/* Category Select Dropdown */}
-            <div className="relative border-r border-zinc-200 pr-2 dark:border-zinc-800">
-              <button 
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-center gap-1 text-xs font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
-              >
-                <span>{selectedCategory}</span>
-                <FiChevronDown className="h-3.5 w-3.5" />
-              </button>
+          <div ref={searchRef} className="hidden flex-1 max-w-xl md:flex flex-col relative">
+            <div className="flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 py-1.5 px-3 dark:border-zinc-800 dark:bg-zinc-900">
+              {/* Category Select Dropdown */}
+              <div className="relative border-r border-zinc-200 pr-2 dark:border-zinc-800">
+                <button 
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="flex items-center gap-1 text-xs font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
+                >
+                  <span>{selectedCategory}</span>
+                  <FiChevronDown className="h-3.5 w-3.5" />
+                </button>
 
-              {showDropdown && (
-                <div className="absolute left-0 mt-2.5 w-48 rounded-xl border border-zinc-200 bg-white p-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
-                  <button
-                    onClick={() => {
-                      setSelectedCategory('Semua Kategori')
-                      setShowDropdown(false)
-                    }}
-                    className="w-full rounded-lg px-3 py-1.5 text-left text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-900"
-                  >
-                    Semua Kategori
-                  </button>
-                  {categories.map((cat) => (
+                {showDropdown && (
+                  <div className="absolute left-0 mt-2.5 w-48 rounded-xl border border-zinc-200 bg-white p-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
                     <button
-                      key={cat.id}
                       onClick={() => {
-                        setSelectedCategory(cat.name)
+                        setSelectedCategory('Semua Kategori')
                         setShowDropdown(false)
                       }}
                       className="w-full rounded-lg px-3 py-1.5 text-left text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-900"
                     >
-                      {cat.name}
+                      Semua Kategori
                     </button>
-                  ))}
-                </div>
-              )}
+                    {categories.map((cat) => (
+                      <button
+                        key={cat.id}
+                        onClick={() => {
+                          setSelectedCategory(cat.name)
+                          setShowDropdown(false)
+                        }}
+                        className="w-full rounded-lg px-3 py-1.5 text-left text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-900"
+                      >
+                        {cat.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Input Search */}
+              <div className="flex flex-1 items-center gap-1.5">
+                <FiSearch className="h-4 w-4 text-zinc-400 shrink-0" />
+                <input
+                  type="text"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onFocus={() => {
+                    if (debouncedQuery.trim().length > 0) setShowResults(true)
+                  }}
+                  placeholder="Cari barang atau kategori di sini..."
+                  className="w-full bg-transparent text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none dark:text-white"
+                />
+                {searchInput && (
+                  <button
+                    onClick={() => {
+                      setSearchInput('')
+                      setDebouncedQuery('')
+                      setShowResults(false)
+                    }}
+                    className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+                  >
+                    <FiX className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
 
-            {/* Input Search */}
-            <div className="flex flex-1 items-center gap-1.5">
-              <FiSearch className="h-4 w-4 text-zinc-400" />
-              <input 
-                type="text" 
-                placeholder="Cari barang atau kategori di sini..."
-                className="w-full bg-transparent text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none dark:text-white"
-              />
-            </div>
+            {/* Search Results Dropdown */}
+            {showResults && (
+              <div className="absolute top-full left-0 right-0 mt-2 rounded-xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden z-50">
+                {desktopResults.length > 0 ? (
+                  <>
+                    <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-900">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                        Hasil Pencarian
+                        {selectedCategory !== 'Semua Kategori' && (
+                          <span className="ml-1 text-rose-400">· {selectedCategory}</span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="divide-y divide-zinc-50 dark:divide-zinc-900">
+                      {desktopResults.map((product) => (
+                        <Link
+                          key={product.id}
+                          href={`/product/${product.id}`}
+                          onClick={() => {
+                            setShowResults(false)
+                            setSearchInput('')
+                          }}
+                          className="flex items-center gap-3 px-3 py-2.5 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className="h-10 w-10 rounded-lg object-cover bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <span className="block text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                              {product.name}
+                            </span>
+                            <span className="block text-[10px] text-zinc-400 dark:text-zinc-500">
+                              {product.category}
+                            </span>
+                          </div>
+                          <span className="text-xs font-bold text-rose-500 shrink-0">
+                            Rp{product.price.toLocaleString('id-ID')}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-8 px-4 text-center gap-1">
+                    <FiSearch className="h-6 w-6 text-zinc-300 dark:text-zinc-700 mb-1" />
+                    <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                      Tidak ada produk ditemukan
+                    </span>
+                    <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
+                      untuk &ldquo;{debouncedQuery}&rdquo;
+                      {selectedCategory !== 'Semua Kategori' && ` di ${selectedCategory}`}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Quick Actions (Cart, Notifications, Mobile Menu) */}
@@ -280,13 +431,78 @@ export function Navbar({ settings, categories }: NavbarProps) {
       {isOpen && (
         <div className="md:hidden border-t border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950 space-y-3">
           {/* Mobile Search */}
-          <div className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 py-1.5 px-3 dark:border-zinc-800 dark:bg-zinc-900">
-            <FiSearch className="h-4 w-4 text-zinc-400" />
-            <input 
-              type="text" 
-              placeholder="Cari barang..." 
-              className="w-full bg-transparent text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none dark:text-white"
-            />
+          <div ref={mobileSearchRef} className="relative">
+            <div className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 py-1.5 px-3 dark:border-zinc-800 dark:bg-zinc-900">
+              <FiSearch className="h-4 w-4 text-zinc-400 shrink-0" />
+              <input
+                type="text"
+                value={mobileSearchInput}
+                onChange={(e) => setMobileSearchInput(e.target.value)}
+                onFocus={() => {
+                  if (mobileDebouncedQuery.trim().length > 0) setShowMobileResults(true)
+                }}
+                placeholder="Cari barang..."
+                className="w-full bg-transparent text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none dark:text-white"
+              />
+              {mobileSearchInput && (
+                <button
+                  onClick={() => {
+                    setMobileSearchInput('')
+                    setMobileDebouncedQuery('')
+                    setShowMobileResults(false)
+                  }}
+                  className="text-zinc-400 hover:text-zinc-600"
+                >
+                  <FiX className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Mobile Search Results */}
+            {showMobileResults && (
+              <div className="mt-1.5 rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden">
+                {mobileResults.length > 0 ? (
+                  <div className="divide-y divide-zinc-50 dark:divide-zinc-900">
+                    {mobileResults.map((product) => (
+                      <Link
+                        key={product.id}
+                        href={`/product/${product.id}`}
+                        onClick={() => {
+                          setShowMobileResults(false)
+                          setMobileSearchInput('')
+                          setIsOpen(false)
+                        }}
+                        className="flex items-center gap-3 px-3 py-2.5 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={product.imageUrl}
+                          alt={product.name}
+                          className="h-9 w-9 rounded-lg object-cover bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <span className="block text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                            {product.name}
+                          </span>
+                          <span className="block text-[10px] text-zinc-400">
+                            {product.category}
+                          </span>
+                        </div>
+                        <span className="text-xs font-bold text-rose-500 shrink-0">
+                          Rp{product.price.toLocaleString('id-ID')}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-6 px-4 text-center gap-1">
+                    <FiSearch className="h-5 w-5 text-zinc-300 dark:text-zinc-700 mb-0.5" />
+                    <span className="text-xs font-semibold text-zinc-500">Tidak ada produk ditemukan</span>
+                    <span className="text-[11px] text-zinc-400">untuk &ldquo;{mobileDebouncedQuery}&rdquo;</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile Categories list */}
