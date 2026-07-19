@@ -139,9 +139,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
       )
       .subscribe();
 
+    // Subskripsi Supabase Realtime listener untuk orders count
+    const orderSubscription = supabase
+      .channel("sidebar_admin_orders_count")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders" },
+        () => {
+          fetchActiveOrdersCount();
+        }
+      )
+      .subscribe();
+
     return () => {
       clearTimeout(timer);
       chatSubscription.unsubscribe();
+      orderSubscription.unsubscribe();
     };
   }, [supabase]);
 
