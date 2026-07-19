@@ -412,16 +412,16 @@ export function PurchaseContainer() {
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => handleCancelOrder(order.id, order.orderNumber)}
-                        className="px-2.5 py-1.5 rounded border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-medium text-xs transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
+                        className="px-2.5 py-1.5 rounded border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-normal sm:font-medium text-xs transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap"
                       >
-                        <FiXCircle className="w-3.5 h-3.5 shrink-0" />
+                        <FiXCircle className="hidden sm:inline-flex w-3.5 h-3.5 shrink-0" />
                         <span>Batalkan</span>
                       </button>
                       <button
                         onClick={() => handleConfirmPaymentWA(order)}
-                        className="px-2.5 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-1 cursor-pointer shadow-xs whitespace-nowrap"
+                        className="px-2.5 py-1.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-normal sm:font-bold text-xs transition-all flex items-center justify-center gap-1 cursor-pointer shadow-xs whitespace-nowrap"
                       >
-                        <FiCreditCard className="w-3.5 h-3.5 shrink-0" />
+                        <FiCreditCard className="hidden sm:inline-flex w-3.5 h-3.5 shrink-0" />
                         <span>Konfirmasi Pembayaran (WA)</span>
                       </button>
                     </div>
