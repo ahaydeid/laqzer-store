@@ -8,7 +8,6 @@ import { SupabaseOrderService } from '@/services/supabase/order.service'
 import { OrderRecord, OrderStatus } from '@/core/types/order'
 import useSWR from 'swr'
 import { playSwalSound } from '@/utils/sound'
-import { Badge } from '@/components/ui/Badge'
 import Link from 'next/link'
 
 type TabType = 'semua' | 'unpaid' | 'processing' | 'shipped' | 'completed' | 'cancelled'
@@ -27,7 +26,6 @@ export function PurchaseContainer() {
   const orderService = useMemo(() => new SupabaseOrderService(), [])
   const [activeTab, setActiveTab] = useState<TabType>('semua')
   const [searchQuery, setSearchQuery] = useState('')
-  const [isFocused, setIsFocused] = useState(false)
 
   // Fetch real orders from Supabase using useSWR
   const { data: orders = [], isLoading, mutate } = useSWR<OrderRecord[]>(
@@ -48,32 +46,19 @@ export function PurchaseContainer() {
     return orders.filter((o) => o.status === tabId).length
   }
 
-  const getTabClass = (tabId: TabType, isActive: boolean) => {
-    if (isActive) {
-      if (tabId === 'completed') {
-        return 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400'
-      }
-      if (tabId === 'cancelled') {
-        return 'border-rose-500 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400'
-      }
-      return 'border-sky-500 bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400'
-    } else {
-      return 'border-transparent text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-800/20'
-    }
-  }
 
   const getStatusBadge = (status: OrderStatus) => {
     switch (status) {
       case 'unpaid':
-        return <Badge variant="warning" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/40">Belum Bayar</Badge>
+        return <span className="text-xs text-amber-600 dark:text-amber-400">Belum Bayar</span>
       case 'processing':
-        return <Badge variant="info" className="bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/30 dark:text-sky-400 dark:border-sky-900/40">Sedang Diproses</Badge>
+        return <span className="text-xs text-sky-600 dark:text-sky-400">Sedang Diproses</span>
       case 'shipped':
-        return <Badge variant="info" className="bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/30 dark:text-indigo-400 dark:border-indigo-900/40">Dikirim</Badge>
+        return <span className="text-xs text-indigo-600 dark:text-indigo-400">Dikirim</span>
       case 'completed':
-        return <Badge variant="success" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/40">Selesai</Badge>
+        return <span className="text-xs text-emerald-600 dark:text-emerald-400">Selesai</span>
       case 'cancelled':
-        return <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/40">Dibatalkan</Badge>
+        return <span className="text-xs text-rose-600 dark:text-rose-400">Dibatalkan</span>
     }
   }
 
@@ -118,10 +103,11 @@ export function PurchaseContainer() {
         confirmButtonColor: '#10b981',
       })
       mutate()
-    } catch (err: any) {
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Gagal mengubah status pesanan.'
       Swal.fire({
         title: 'Gagal',
-        text: err?.message || 'Gagal mengubah status pesanan.',
+        text: errorMsg,
         icon: 'error',
         confirmButtonColor: '#e11d48',
       })
@@ -153,10 +139,11 @@ export function PurchaseContainer() {
         confirmButtonColor: '#10b981',
       })
       mutate()
-    } catch (err: any) {
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Gagal membatalkan pesanan.'
       Swal.fire({
         title: 'Gagal',
-        text: err?.message || 'Gagal membatalkan pesanan.',
+        text: errorMsg,
         icon: 'error',
         confirmButtonColor: '#e11d48',
       })
@@ -246,8 +233,6 @@ export function PurchaseContainer() {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
           placeholder="Cari berdasarkan No. Invoice atau Nama Produk..."
           className="w-full rounded border border-zinc-200 pl-10 pr-10 py-2 text-xs text-zinc-900 placeholder-zinc-400 focus:border-rose-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
         />
@@ -277,7 +262,7 @@ export function PurchaseContainer() {
             <h3 className="text-sm font-bold text-zinc-900 dark:text-white">Tidak ada pesanan ditemukan</h3>
             {searchQuery && (
               <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-sm">
-                Tidak ada hasil untuk kata kunci "{searchQuery}".
+                Tidak ada hasil untuk kata kunci &ldquo;{searchQuery}&rdquo;.
               </p>
             )}
           </div>
@@ -393,7 +378,7 @@ export function PurchaseContainer() {
                   {order.status === 'shipped' && (
                     <button
                       onClick={() => handleMarkAsCompleted(order.id, order.orderNumber)}
-                      className="px-3.5 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-2 rounded bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-xs transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <FiCheckCircle className="w-4 h-4" />
                       <span>Pesanan Diterima</span>
