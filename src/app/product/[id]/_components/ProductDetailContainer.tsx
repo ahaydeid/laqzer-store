@@ -330,7 +330,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   }
 
   return (
-    <div className="w-full space-y-6 font-sans">
+    <div className="w-full space-y-3 md:space-y-6 font-sans">
       {/* Back Button Navigation */}
       <button 
         onClick={() => router.push('/')}

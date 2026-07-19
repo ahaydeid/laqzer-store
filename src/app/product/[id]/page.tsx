@@ -87,7 +87,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
       {/* Main product detail workspace */}
       <div className="flex-1 w-full bg-white dark:bg-zinc-950">
-        <main className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 pb-16">
+        <main className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-3 md:py-8 pb-16">
           <ProductDetailContainer
             product={product}
             settings={storeSettings}
