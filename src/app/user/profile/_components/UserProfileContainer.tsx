@@ -1,10 +1,11 @@
 'use client'
 
 import React, { useState, useEffect, useMemo, useRef } from 'react'
+import Link from 'next/link'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseProfileService } from '@/services/supabase/profile.service'
 import { UserProfile } from '@/core/types/profile'
-import { FiLoader, FiSearch, FiMapPin } from 'react-icons/fi'
+import { FiLoader, FiSearch, FiMapPin, FiChevronDown } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 import { playSwalSound } from '@/utils/sound'
 
@@ -51,6 +52,7 @@ export function UserProfileContainer() {
   const [searching, setSearching] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
   const [isLocationSelected, setIsLocationSelected] = useState(false) // Blokir fetch setelah pilih lokasi
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   // 1. Fetch user profile from Supabase profiles table on mount
   useEffect(() => {
@@ -309,7 +311,63 @@ export function UserProfileContainer() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start select-none">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="relative">
+        {/* Desktop Title */}
+        <h1 className="hidden md:block text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-6">
+          Pengaturan Akun & Alamat
+        </h1>
+
+        {/* Mobile Title with Dropdown */}
+        <div className="md:hidden relative inline-block text-left mb-6">
+          <button
+            type="button"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center gap-2 text-xl font-extrabold text-zinc-900 dark:text-white focus:outline-none cursor-pointer"
+          >
+            <span>Profil Saya</span>
+            <FiChevronDown className={`w-5 h-5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isDropdownOpen && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setIsDropdownOpen(false)}
+              />
+              <div className="absolute left-0 mt-2 w-48 rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg focus:outline-none z-50">
+                <div className="py-1">
+                  <Link
+                    href="/user/profile"
+                    className="block px-4 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Profil Saya
+                  </Link>
+                  <Link
+                    href="/user/purchase"
+                    className="block px-4 py-2 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Pesanan Saya
+                  </Link>
+                  <Link
+                    href="/user/favorit"
+                    className="block px-4 py-2 text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Favorit Saya
+                  </Link>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start select-none">
       {/* Kolom 1: Data Pribadi */}
       <div className="bg-white dark:bg-zinc-900 rounded p-6 space-y-4">
         <div className="border-b border-zinc-100 dark:border-zinc-800 pb-3">
@@ -542,5 +600,6 @@ export function UserProfileContainer() {
         </div>
       </div>
     </form>
+    </div>
   )
 }

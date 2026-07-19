@@ -2,7 +2,6 @@ import { getServices } from '@/services'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { UserProfileContainer } from './_components/UserProfileContainer'
-import Link from 'next/link'
 import { UserSidebar } from '../_components/UserSidebar'
 
 
@@ -26,12 +25,7 @@ export default async function UserProfilePage() {
           <UserSidebar />
 
 
-          {/* Konten Kanan */}
           <div className="md:col-span-3">
-            <h1 className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-6">
-              Pengaturan Akun & Alamat
-            </h1>
-            
             {/* User profile form container */}
             <UserProfileContainer />
           </div>
