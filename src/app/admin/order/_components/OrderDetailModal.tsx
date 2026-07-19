@@ -41,15 +41,17 @@ export default function OrderDetailModal({
             >
               Tutup
             </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => onOpenEdit(order)}
-              className="rounded"
-            >
-              <FiEdit2 className="h-3.5 w-3.5" />
-              Edit Status
-            </Button>
+            {order.status !== "Selesai" && order.status !== "Dibatalkan" && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => onOpenEdit(order)}
+                className="rounded"
+              >
+                <FiEdit2 className="h-3.5 w-3.5" />
+                Edit Status
+              </Button>
+            )}
           </div>
         ) : undefined
       }

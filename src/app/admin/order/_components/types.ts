@@ -6,6 +6,7 @@ export interface OrderItem {
 
 export interface Order {
   id: string;
+  realDbId?: string;
   customerName: string;
   total: number;
   paymentMethod: string;

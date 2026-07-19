@@ -6,6 +6,7 @@ export class SupabaseOrderService {
     return createClient()
   }
 
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   private mapToOrderRecord(row: any, items: OrderItemRecord[] = []): OrderRecord {
     return {
       id: row.id,
@@ -25,6 +26,7 @@ export class SupabaseOrderService {
     }
   }
 
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   private mapToOrderItemRecord(row: any): OrderItemRecord {
     return {
       id: row.id,
@@ -178,6 +180,22 @@ export class SupabaseOrderService {
    */
   async updateOrderStatus(orderId: string, status: OrderStatus): Promise<void> {
     const supabase = this.getClient()
+
+    // Ambil status pesanan saat ini untuk pengamanan
+    const { data: currentOrder, error: fetchError } = await supabase
+      .from('orders')
+      .select('status')
+      .eq('id', orderId)
+      .single()
+
+    if (fetchError || !currentOrder) {
+      throw new Error(`Pesanan tidak ditemukan: ${fetchError?.message || ''}`)
+    }
+
+    if (currentOrder.status === 'completed' || currentOrder.status === 'cancelled') {
+      throw new Error('Pesanan sudah selesai atau dibatalkan, status tidak dapat diubah lagi.')
+    }
+
     const { error } = await supabase
       .from('orders')
       .update({ status, updated_at: new Date().toISOString() })
@@ -193,6 +211,22 @@ export class SupabaseOrderService {
    */
   async updatePaymentMethod(orderId: string, paymentMethod: string): Promise<void> {
     const supabase = this.getClient()
+
+    // Ambil status pesanan saat ini untuk pengamanan
+    const { data: currentOrder, error: fetchError } = await supabase
+      .from('orders')
+      .select('status')
+      .eq('id', orderId)
+      .single()
+
+    if (fetchError || !currentOrder) {
+      throw new Error(`Pesanan tidak ditemukan: ${fetchError?.message || ''}`)
+    }
+
+    if (currentOrder.status === 'completed' || currentOrder.status === 'cancelled') {
+      throw new Error('Pesanan sudah selesai atau dibatalkan, metode pembayaran tidak dapat diubah lagi.')
+    }
+
     const { error } = await supabase
       .from('orders')
       .update({ payment_method: paymentMethod, updated_at: new Date().toISOString() })

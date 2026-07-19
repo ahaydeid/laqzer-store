@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { FiSearch, FiX, FiChevronLeft, FiChevronRight, FiLoader } from "react-icons/fi";
+import { FiSearch, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Swal from "sweetalert2";
 import { playSwalSound } from "@/utils/sound";
 import { Order } from "./_components/types";
@@ -32,7 +32,7 @@ export default function OrderPage() {
   const orderService = useMemo(() => new SupabaseOrderService(), []);
   
   // Fetch real orders from Supabase using useSWR
-  const { data: rawOrders = [], isLoading, mutate } = useSWR<OrderRecord[]>(
+  const { data: rawOrders = [], mutate } = useSWR<OrderRecord[]>(
     "admin-orders-list",
     () => orderService.getAllOrdersAdmin(),
     {
@@ -79,6 +79,7 @@ export default function OrderPage() {
   }, []);
 
   const handleOpenEditModal = (order: Order) => {
+    if (order.status === "Selesai" || order.status === "Dibatalkan") return;
     setEditingOrderForStatus(order);
     setSelectedNewStatus(order.status);
     setSelectedNewPaymentMethod(order.paymentMethod);
@@ -87,7 +88,7 @@ export default function OrderPage() {
   const handleSaveStatus = async () => {
     if (!editingOrderForStatus) return;
 
-    const realDbId = (editingOrderForStatus as any).realDbId;
+    const realDbId = editingOrderForStatus.realDbId || "";
     const dbStatus = UI_STATUS_TO_DB[selectedNewStatus];
     const newPaymentMethod = selectedNewPaymentMethod;
 
@@ -107,11 +108,12 @@ export default function OrderPage() {
 
       setEditingOrderForStatus(null);
       mutate();
-    } catch (err: any) {
+    } catch (err) {
       console.error("Gagal mengupdate pesanan:", err);
+      const errorMsg = err instanceof Error ? err.message : "Terjadi kesalahan saat memperbarui pesanan.";
       Swal.fire({
         title: "Gagal",
-        text: err?.message || "Terjadi kesalahan saat memperbarui pesanan.",
+        text: errorMsg,
         icon: "error",
         confirmButtonColor: "#0369a1",
       });

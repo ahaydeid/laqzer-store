@@ -98,14 +98,15 @@ export default function OrderTable({
                   >
                     <FiEye className="h-4 w-4" />
                   </ActionButton>
-                  <ActionButton
-                    variant="edit"
-                    onClick={() => order.status !== "Selesai" && onOpenEdit(order)}
-                    title={order.status === "Selesai" ? "Pesanan sudah selesai, tidak dapat diubah" : "Edit Pesanan"}
-                    className={order.status === "Selesai" ? "opacity-30 cursor-not-allowed pointer-events-none" : ""}
-                  >
-                    <FiEdit2 className="h-4 w-4" />
-                  </ActionButton>
+                  {order.status !== "Selesai" && order.status !== "Dibatalkan" && (
+                    <ActionButton
+                      variant="edit"
+                      onClick={() => onOpenEdit(order)}
+                      title="Edit Pesanan"
+                    >
+                      <FiEdit2 className="h-4 w-4" />
+                    </ActionButton>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
