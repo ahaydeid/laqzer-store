@@ -17,15 +17,16 @@ export default async function CartPage() {
   const services = getServices()
 
   // Concurrently fetch store settings and categories for header and footer layout
-  const [storeSettings, categories] = await Promise.all([
+  const [storeSettings, categories, products] = await Promise.all([
     services.store.getSettings(),
     services.categories.getCategories(),
+    services.products.getProducts(),
   ])
 
   return (
     <div className="flex min-h-screen flex-col bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans pb-16 md:pb-0">
       {/* Navigation header */}
-      <Navbar settings={storeSettings} categories={categories} />
+      <Navbar settings={storeSettings} categories={categories} products={products} />
 
       {/* Main interactive shopping cart area */}
       <main className="flex-1 w-full bg-slate-50/50 dark:bg-zinc-900/10">

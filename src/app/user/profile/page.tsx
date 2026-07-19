@@ -9,15 +9,16 @@ export default async function UserProfilePage() {
   const services = getServices()
 
   // Load toko dan kategori metadata
-  const [storeSettings, categories] = await Promise.all([
+  const [storeSettings, categories, products] = await Promise.all([
     services.store.getSettings(),
     services.categories.getCategories(),
+    services.products.getProducts(),
   ])
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans">
       {/* Navigation bar */}
-      <Navbar settings={storeSettings} categories={categories} />
+      <Navbar settings={storeSettings} categories={categories} products={products} />
 
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-4 md:py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">

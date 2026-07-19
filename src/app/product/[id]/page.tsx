@@ -83,7 +83,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   return (
     <div className="flex min-h-screen flex-col bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans">
       {/* Navigation bar */}
-      <Navbar settings={storeSettings} categories={categories} />
+      <Navbar settings={storeSettings} categories={categories} products={allProducts} />
 
       {/* Main product detail workspace */}
       <div className="flex-1 w-full bg-white dark:bg-zinc-950">
