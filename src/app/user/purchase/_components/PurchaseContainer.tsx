@@ -387,7 +387,7 @@ export function PurchaseContainer() {
               {/* Order Info & Totals */}
               <div className="pt-3 border-t border-zinc-100 dark:border-zinc-900 space-y-3">
                 {/* Kurir & Metode Pembayaran */}
-                <div className="space-y-1 text-sm">
+                <div className="space-y-1 text-xs sm:text-sm">
                   <p className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                     <FiTruck className="w-4 h-4 text-zinc-400 shrink-0" />
                     <span>Kurir: <strong className="text-zinc-800 dark:text-zinc-200">{order.shippingCourier}</strong></span>
