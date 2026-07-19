@@ -169,12 +169,17 @@ export function CartContainer() {
                 </td>
                 <td className="py-5 px-4 align-middle">
                   <div className="flex gap-4">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      className="h-20 w-20 rounded-lg object-cover bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
-                    />
+                    <Link
+                      href={`/product/${item.productId}`}
+                      className="block shrink-0 transition-opacity hover:opacity-90"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="h-20 w-20 rounded-lg object-cover bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
+                      />
+                    </Link>
                     <div className="flex flex-col justify-center min-w-0 max-w-[200px] lg:max-w-[400px]">
                       <Link
                         href={`/product/${item.productId}`}
@@ -259,12 +264,17 @@ export function CartContainer() {
               </div>
 
               {/* Product Image */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={item.imageUrl}
-                alt={item.name}
-                className="h-20 w-20 rounded-lg object-cover bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shrink-0"
-              />
+              <Link
+                href={`/product/${item.productId}`}
+                className="block shrink-0 transition-opacity hover:opacity-90"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="h-20 w-20 rounded-lg object-cover bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
+                />
+              </Link>
 
               {/* Product details */}
               <div className="flex-1 min-w-0 flex flex-col justify-between">
