@@ -3,6 +3,9 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/services/supabase/client";
+import useSWR from "swr";
+import { SupabaseOrderService } from "@/services/supabase/order.service";
+import { OrderRecord } from "@/core/types/order";
 import { 
   HiOutlineHome, 
   HiOutlineUser, 
@@ -89,7 +92,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
   }, [isProfileOpen]);
 
   const [unreadCount, setUnreadCount] = useState(0);
-  const [unreadOrderCount, setUnreadOrderCount] = useState(0);
+  const orderService = useMemo(() => new SupabaseOrderService(), []);
+
+  // Fetch real orders from Supabase using useSWR (shared cache with the admin order page)
+  const { data: rawOrders = [] } = useSWR<OrderRecord[]>(
+    "admin-orders-list",
+    () => orderService.getAllOrdersAdmin(),
+    {
+      revalidateOnFocus: true,
+      dedupingInterval: 5000,
+    }
+  );
+
+  const unreadOrderCount = useMemo(() => {
+    return rawOrders.filter((o) => ["unpaid", "processing", "shipped"].includes(o.status)).length;
+  }, [rawOrders]);
 
   useEffect(() => {
     const fetchUnreadChatCount = async () => {
@@ -107,24 +124,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
       }
     };
 
-    const fetchActiveOrdersCount = async () => {
-      try {
-        const { count, error } = await supabase
-          .from("orders")
-          .select("*", { count: "exact", head: true })
-          .in("status", ["unpaid", "processing", "shipped"]);
-        
-        if (!error && count !== null) {
-          setUnreadOrderCount(count);
-        }
-      } catch (err) {
-        console.error("Gagal memuat count pesanan di sidebar:", err);
-      }
-    };
-
     const timer = setTimeout(() => {
       fetchUnreadChatCount();
-      fetchActiveOrdersCount();
     }, 0);
 
     // Subskripsi Supabase Realtime listener untuk unread_count_admin
@@ -139,22 +140,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed })
       )
       .subscribe();
 
-    // Subskripsi Supabase Realtime listener untuk orders count
-    const orderSubscription = supabase
-      .channel("sidebar_admin_orders_count")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "orders" },
-        () => {
-          fetchActiveOrdersCount();
-        }
-      )
-      .subscribe();
-
     return () => {
       clearTimeout(timer);
       chatSubscription.unsubscribe();
-      orderSubscription.unsubscribe();
     };
   }, [supabase]);
 
