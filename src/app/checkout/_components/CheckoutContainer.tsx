@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/components/providers/AuthProvider'
@@ -29,8 +29,16 @@ interface CourierOption {
 
 export function CheckoutContainer({ settings }: CheckoutContainerProps) {
   const router = useRouter()
-  const { user } = useAuth()
+  const pathname = usePathname()
+  const { user, loading: authLoading } = useAuth()
   const { items, clearCheckedItems, removeFromCart } = useCart()
+
+  // Auth Guard: redirect jika belum login
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace(`/login?next=${encodeURIComponent(pathname)}`)
+    }
+  }, [user, authLoading, router, pathname])
 
   const profileService = useMemo(() => new SupabaseProfileService(), [])
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { FiSearch, FiShoppingBag, FiX, FiLoader, FiCheckCircle, FiPackage, FiTruck, FiCreditCard, FiXCircle, FiChevronDown } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 import { useAuth } from '@/components/providers/AuthProvider'
@@ -9,6 +9,7 @@ import { OrderRecord, OrderStatus } from '@/core/types/order'
 import useSWR from 'swr'
 import { playSwalSound } from '@/utils/sound'
 import Link from 'next/link'
+import { useRouter, usePathname } from 'next/navigation'
 
 type TabType = 'semua' | 'unpaid' | 'processing' | 'shipped' | 'completed' | 'cancelled'
 
@@ -22,8 +23,17 @@ const TABS: { id: TabType; label: string }[] = [
 ]
 
 export function PurchaseContainer() {
-  const { user } = useAuth()
+  const router = useRouter()
+  const pathname = usePathname()
+  const { user, loading: authLoading } = useAuth()
   const orderService = useMemo(() => new SupabaseOrderService(), [])
+
+  // Auth Guard: redirect jika belum login
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace(`/login?next=${encodeURIComponent(pathname)}`)
+    }
+  }, [user, authLoading, router, pathname])
   const [activeTab, setActiveTab] = useState<TabType>('semua')
   const [searchQuery, setSearchQuery] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
