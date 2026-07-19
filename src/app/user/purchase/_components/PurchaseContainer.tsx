@@ -309,7 +309,7 @@ export function PurchaseContainer() {
             <FiShoppingBag className="w-8 h-8" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-zinc-900 dark:text-white">Tidak ada pesanan ditemukan</h3>
+            <h3 className="text-sm font-bold text-zinc-900 dark:text-white">Belum ada pesanan ditemukan</h3>
             {searchQuery && (
               <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-sm">
                 Tidak ada hasil untuk kata kunci &ldquo;{searchQuery}&rdquo;.

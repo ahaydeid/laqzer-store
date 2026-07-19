@@ -66,6 +66,18 @@ export function HeroCarousel() {
                 <span className="inline-block text-xs sm:text-sm font-semibold tracking-wider text-zinc-500 uppercase">
                   {slide.tag}
                 </span>
+
+                {/* Mobile Image Showcase - only on mobile */}
+                <div className="md:hidden relative h-64 w-full rounded-2xl overflow-hidden shadow-lg shadow-zinc-200/50 dark:shadow-none">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={slide.imageUrl}
+                    alt="Showcase"
+                    className="absolute inset-0 h-full w-full object-cover transform hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                </div>
+
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-950 dark:text-white leading-[1.15] whitespace-pre-line animate-fade-in-up">
                   {slide.title}
                 </h2>
@@ -83,7 +95,7 @@ export function HeroCarousel() {
               </div>
 
               {/* Right Column: Visual Showcase */}
-              <div className="relative h-64 md:h-full w-full rounded-2xl overflow-hidden shadow-lg shadow-zinc-200/50 dark:shadow-none">
+              <div className="hidden md:block relative h-64 md:h-full w-full rounded-2xl overflow-hidden shadow-lg shadow-zinc-200/50 dark:shadow-none">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={slide.imageUrl}
@@ -100,13 +112,13 @@ export function HeroCarousel() {
       {/* Navigation Arrows */}
       <button 
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full hover:bg-white text-zinc-400 hover:text-zinc-700 transition-all focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:bg-zinc-950 dark:text-white"
+        className="absolute left-4 top-1/2 -translate-y-1/2 hidden md:flex h-10 w-10 items-center justify-center rounded-full hover:bg-white text-zinc-400 hover:text-zinc-700 transition-all focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:bg-zinc-950 dark:text-white"
       >
         <FiChevronLeft className="h-8 w-8" />
       </button>
       <button 
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full hover:bg-white text-zinc-400 hover:text-zinc-700 transition-all focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:bg-zinc-950 dark:text-white"
+        className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:flex h-10 w-10 items-center justify-center rounded-full hover:bg-white text-zinc-400 hover:text-zinc-700 transition-all focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:bg-zinc-950 dark:text-white"
       >
         <FiChevronRight className="h-8 w-8" />
       </button>

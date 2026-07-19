@@ -114,7 +114,7 @@ export default function OrderTable({
         ) : (
           <TableRow>
             <TableCell colSpan={9} className="py-8 text-center text-zinc-400">
-              Tidak ada pesanan ditemukan.
+              Belum ada pesanan ditemukan.
             </TableCell>
           </TableRow>
         )}
