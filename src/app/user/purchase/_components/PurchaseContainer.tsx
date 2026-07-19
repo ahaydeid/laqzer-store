@@ -400,9 +400,9 @@ export function PurchaseContainer() {
 
                 {/* Total + Tombol Aksi */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <div>
-                    <span className="text-[11px] text-zinc-400 block uppercase font-medium">Total Pembayaran</span>
-                    <span className="text-base font-extrabold text-rose-500">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-[11px] text-zinc-400 uppercase font-medium whitespace-nowrap">Total Pembayaran</span>
+                    <span className="text-base font-extrabold text-rose-500 whitespace-nowrap">
                       Rp {order.totalAmount.toLocaleString('id-ID')}
                     </span>
                   </div>
