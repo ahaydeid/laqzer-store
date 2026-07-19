@@ -4,12 +4,13 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { StoreSettings } from '@/core/types/store'
 import { FiChevronDown, FiSend, FiX } from 'react-icons/fi'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseChatService } from '@/services/supabase/chat.service'
 import { ChatMessageRecord, ProductAttachment } from '@/core/types/chat'
 import { SupabaseProfileService } from '@/services/supabase/profile.service'
 import { SupabaseWelcomeMessageService } from '@/services/supabase/welcome-message.service'
+import Swal from 'sweetalert2'
 
 interface ChatWidgetProps {
   settings: StoreSettings
@@ -17,6 +18,7 @@ interface ChatWidgetProps {
 
 export function ChatWidget({ settings }: ChatWidgetProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const { user } = useAuth()
   const chatService = useMemo(() => new SupabaseChatService(), [])
   const profileService = useMemo(() => new SupabaseProfileService(), [])
@@ -30,6 +32,32 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
 
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Guard: jika belum login, tampilkan Swal dan arahkan ke /login
+  const handleOpenChatGuarded = (product?: ProductAttachment) => {
+    if (!user) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Login Diperlukan',
+        text: 'Silakan masuk ke akun Anda terlebih dahulu untuk menghubungi kami melalui chat.',
+        confirmButtonText: 'Masuk Sekarang',
+        confirmButtonColor: '#e11d48',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        cancelButtonColor: '#71717a',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push('/login')
+        }
+      })
+      return
+    }
+    setIsChatOpen(true)
+    if (product) setPendingProduct(product)
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 350)
+  }
 
   // Reset room & messages jika akun pengguna berganti
   useEffect(() => {
@@ -130,21 +158,15 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
   useEffect(() => {
     const handleOpenChat = (e: Event) => {
       const customEvent = e as CustomEvent<{ product?: ProductAttachment }>
-      setIsChatOpen(true)
-      if (customEvent.detail && customEvent.detail.product) {
-        setPendingProduct(customEvent.detail.product)
-      }
-      // Auto-focus input setelah animasi widget selesai terbuka
-      setTimeout(() => {
-        inputRef.current?.focus()
-      }, 350)
+      handleOpenChatGuarded(customEvent.detail?.product)
     }
 
     window.addEventListener('open-chat-widget', handleOpenChat)
     return () => {
       window.removeEventListener('open-chat-widget', handleOpenChat)
     }
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
 
   // Auto-scroll ke bawah
   useEffect(() => {
@@ -390,7 +412,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
 
       {/* Floating Chat Widget Toggle Button (Strictly Asli UI) */}
       <button
-        onClick={() => setIsChatOpen(true)}
+        onClick={() => handleOpenChatGuarded()}
         className={`fixed bottom-0 right-3 z-30 flex items-center gap-0 md:gap-2.5 rounded-t-lg bg-white p-3 md:p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.25)] dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 active:scale-95 transition-all duration-300 group cursor-pointer origin-bottom-right transform ${
           isChatOpen
             ? 'opacity-0 scale-90 translate-y-8 pointer-events-none'
