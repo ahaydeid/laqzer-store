@@ -22,7 +22,8 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
   const { user, signOut } = useAuth()
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState('Semua Kategori')
+  const [selectedCategoryId, setSelectedCategoryId] = useState('all')
+  const [selectedCategoryName, setSelectedCategoryName] = useState('Semua Kategori')
   const [showDropdown, setShowDropdown] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
@@ -102,7 +103,7 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
       .filter((p) => {
         const matchesQuery = p.name.toLowerCase().includes(q)
         const matchesCategory =
-          selectedCategory === 'Semua Kategori' || p.category === selectedCategory
+          selectedCategoryId === 'all' || p.category === selectedCategoryId
         return matchesQuery && matchesCategory
       })
       .slice(0, 6) // Tampilkan maksimal 6 hasil
@@ -139,7 +140,7 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="flex items-center gap-1 text-xs font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
                 >
-                  <span>{selectedCategory}</span>
+                  <span>{selectedCategoryName}</span>
                   <FiChevronDown className="h-3.5 w-3.5" />
                 </button>
 
@@ -147,7 +148,8 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
                   <div className="absolute left-0 mt-2.5 w-48 rounded-xl border border-zinc-200 bg-white p-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
                     <button
                       onClick={() => {
-                        setSelectedCategory('Semua Kategori')
+                        setSelectedCategoryId('all')
+                        setSelectedCategoryName('Semua Kategori')
                         setShowDropdown(false)
                       }}
                       className="w-full rounded-lg px-3 py-1.5 text-left text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-900"
@@ -158,7 +160,8 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
                       <button
                         key={cat.id}
                         onClick={() => {
-                          setSelectedCategory(cat.name)
+                          setSelectedCategoryId(cat.id)
+                          setSelectedCategoryName(cat.name)
                           setShowDropdown(false)
                         }}
                         className="w-full rounded-lg px-3 py-1.5 text-left text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-900"
@@ -206,8 +209,8 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
                     <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-900">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                         Hasil Pencarian
-                        {selectedCategory !== 'Semua Kategori' && (
-                          <span className="ml-1 text-rose-400">· {selectedCategory}</span>
+                        {selectedCategoryId !== 'all' && (
+                          <span className="ml-1 text-rose-400">· {selectedCategoryName}</span>
                         )}
                       </span>
                     </div>
@@ -251,7 +254,7 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
                     </span>
                     <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
                       untuk &ldquo;{debouncedQuery}&rdquo;
-                      {selectedCategory !== 'Semua Kategori' && ` di ${selectedCategory}`}
+                      {selectedCategoryId !== 'all' && ` di ${selectedCategoryName}`}
                     </span>
                   </div>
                 )}
