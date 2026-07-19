@@ -959,7 +959,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
           <h3 className="text-xl font-extrabold tracking-tight text-zinc-950 dark:text-white">
             Produk Lainnya
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-6">
             {relatedProducts.map((p) => {
               const pHasDiscount = p.isCampaign && p.originalPrice && p.originalPrice > p.price
               const pDiscountPct = pHasDiscount
@@ -969,7 +969,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                 <Link
                   key={p.id}
                   href={`/product/${p.id}`}
-                  className="group flex flex-col rounded-xl bg-white overflow-hidden hover:shadow-md transition-all duration-300 border border-zinc-100 dark:border-zinc-800/60 dark:bg-zinc-900/40"
+                  className="group flex flex-col rounded md:rounded-xl bg-white overflow-hidden hover:shadow-md transition-all duration-300 border border-zinc-100 dark:border-zinc-800/60 dark:bg-zinc-900/40"
                 >
                   {/* Image */}
                   <div className="relative aspect-square w-full overflow-hidden bg-zinc-50 dark:bg-zinc-900">
