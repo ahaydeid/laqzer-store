@@ -144,12 +144,11 @@ export function CartContainer() {
           <thead>
             <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
               <th className="py-4 px-6 w-12 text-center" />
-              <th className="py-4 px-4 w-1/3">Produk</th>
-              <th className="py-4 px-4 w-40">Variasi</th>
-              <th className="py-4 px-4 w-32">Harga Satuan</th>
-              <th className="py-4 px-4 w-40 text-center">Kuantitas</th>
-              <th className="py-4 px-4 w-36">Total Harga</th>
-              <th className="py-4 px-6 w-20 text-center">Aksi</th>
+              <th className="py-4 px-4">Produk</th>
+              <th className="py-4 px-4 whitespace-nowrap">Variasi</th>
+              <th className="py-4 px-4 whitespace-nowrap">Harga Satuan</th>
+              <th className="py-4 px-4 text-center whitespace-nowrap">Kuantitas</th>
+              <th className="py-4 px-6 text-center whitespace-nowrap">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900">
@@ -165,7 +164,7 @@ export function CartContainer() {
                     type="checkbox"
                     checked={item.checked}
                     onChange={() => toggleCheckItem(item.id)}
-                    className="h-4 w-4 rounded border-zinc-300 text-rose-500 accent-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
+                    className="h-4.5 w-4.5 rounded border-zinc-300 text-rose-500 accent-rose-500 focus:ring-rose-500 dark:border-zinc-800 dark:bg-zinc-950 cursor-pointer"
                   />
                 </td>
                 <td className="py-5 px-4 align-middle">
@@ -176,7 +175,7 @@ export function CartContainer() {
                       alt={item.name}
                       className="h-20 w-20 rounded-lg object-cover bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
                     />
-                    <div className="flex flex-col justify-center min-w-0">
+                    <div className="flex flex-col justify-center min-w-0 max-w-[200px] lg:max-w-[400px]">
                       <Link
                         href={`/product/${item.productId}`}
                         className="text-sm font-semibold text-zinc-900 hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300 truncate transition-colors"
@@ -187,16 +186,16 @@ export function CartContainer() {
                   </div>
                 </td>
                 {/* Variasi Column with Shopee Bordered Dropdown Style */}
-                <td className="py-5 px-4 align-middle">
+                <td className="py-5 px-4 align-middle whitespace-nowrap">
                   <div className="inline-flex items-center gap-1.5 rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-2.5 py-1 text-xs text-zinc-600 dark:text-zinc-400 cursor-default">
                     <span>Varian: {item.variant}</span>
                     <FiChevronDown className="h-3 w-3 text-zinc-400" />
                   </div>
                 </td>
-                <td className="py-5 px-4 align-middle text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <td className="py-5 px-4 align-middle text-sm font-semibold text-rose-500 whitespace-nowrap">
                   Rp {item.price.toLocaleString('id-ID')}
                 </td>
-                <td className="py-5 px-4 align-middle">
+                <td className="py-5 px-4 align-middle whitespace-nowrap">
                   <div className="flex flex-col items-center gap-1.5">
                     <div className="flex items-center rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
                       <button
@@ -227,14 +226,10 @@ export function CartContainer() {
                     )}
                   </div>
                 </td>
-                {/* Total Harga Column with Red/Rose Accent */}
-                <td className="py-5 px-4 align-middle text-sm font-semibold text-rose-500">
-                  Rp {(item.price * item.quantity).toLocaleString('id-ID')}
-                </td>
-                <td className="py-5 px-6 align-middle text-center">
+                <td className="py-5 px-6 align-middle text-center whitespace-nowrap">
                   <button
                     onClick={() => removeFromCart(item.id)}
-                    className="text-xs font-medium text-zinc-600 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-455 transition-colors cursor-pointer"
+                    className="text-xs font-semibold text-zinc-600 hover:text-rose-500 dark:text-zinc-400 dark:hover:text-rose-400 transition-colors cursor-pointer"
                   >
                     Hapus
                   </button>
