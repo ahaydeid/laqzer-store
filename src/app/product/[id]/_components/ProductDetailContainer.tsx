@@ -344,7 +344,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 lg:gap-x-12 gap-y-3 items-stretch">
         
         {/* Row 1, Col 1: Main Display Image */}
-        <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-800 md:col-start-1 md:row-start-1">
+        <div className="relative w-[calc(100%+2rem)] -mx-4 md:mx-0 md:w-full aspect-square rounded-none md:rounded-2xl overflow-hidden bg-zinc-50 dark:bg-zinc-900/40 border-y border-x-0 md:border border-zinc-100 dark:border-zinc-800 md:col-start-1 md:row-start-1">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src={galleryImages[activeImageIdx]} 
