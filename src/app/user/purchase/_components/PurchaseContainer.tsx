@@ -399,7 +399,7 @@ export function PurchaseContainer() {
                 </div>
 
                 {/* Total + Tombol Aksi */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div className="flex flex-col items-end sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-[11px] text-zinc-400 uppercase font-medium whitespace-nowrap">Total Pembayaran</span>
                     <span className="text-base font-extrabold text-rose-500 whitespace-nowrap">
