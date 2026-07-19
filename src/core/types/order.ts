@@ -37,6 +37,7 @@ export interface OrderRecord {
   items?: OrderItemRecord[]
   createdAt: string
   updatedAt: string
+  customerAvatarUrl?: string // Foto profil user dari tabel profiles
 }
 
 export interface CreateOrderPayload {

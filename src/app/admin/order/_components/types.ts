@@ -8,6 +8,7 @@ export interface Order {
   id: string;
   realDbId?: string;
   customerName: string;
+  customerAvatarUrl?: string; // Foto profil nyata dari tabel profiles
   total: number;
   paymentMethod: string;
   status: "Belum Dibayar" | "Sedang Diproses" | "Dikirim" | "Selesai" | "Dibatalkan";

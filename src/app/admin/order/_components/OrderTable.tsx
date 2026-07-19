@@ -3,6 +3,7 @@ import { FiEye, FiEdit2 } from "react-icons/fi";
 import { Order } from "./types";
 import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from "@/components/ui/Table";
 import { ActionButton } from "@/components/ui/ActionButton";
+import Avatar from "@/components/ui/Avatar";
 
 interface OrderTableProps {
   displayedOrders: Order[];
@@ -65,14 +66,12 @@ export default function OrderTable({
                 </span>
               </TableCell>
               <TableCell className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(order.customerName)}`}
-                    alt={order.customerName}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+                <Avatar
+                  photo={order.customerAvatarUrl}
+                  name={order.customerName}
+                  size="small"
+                  className="border border-zinc-200 dark:border-zinc-700 shrink-0"
+                />
                 {order.customerName}
               </TableCell>
               <TableCell className="whitespace-nowrap">{order.date}</TableCell>

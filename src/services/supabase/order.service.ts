@@ -7,7 +7,7 @@ export class SupabaseOrderService {
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  private mapToOrderRecord(row: any, items: OrderItemRecord[] = []): OrderRecord {
+  private mapToOrderRecord(row: any, items: OrderItemRecord[] = [], avatarUrl?: string): OrderRecord {
     return {
       id: row.id,
       orderNumber: row.order_number,
@@ -23,6 +23,7 @@ export class SupabaseOrderService {
       items,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
+      customerAvatarUrl: avatarUrl,
     }
   }
 
@@ -172,7 +173,24 @@ export class SupabaseOrderService {
       itemsMap.set(item.orderId, list)
     })
 
-    return ordersData.map(orderRow => this.mapToOrderRecord(orderRow, itemsMap.get(orderRow.id) || []))
+    // Ambil avatar_url dari tabel profiles secara batch
+    const userIds = [...new Set(ordersData.map(o => o.user_id).filter(Boolean))]
+    const avatarMap = new Map<string, string>()
+    if (userIds.length > 0) {
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .in('id', userIds)
+      ;(profilesData || []).forEach(p => {
+        if (p.avatar_url) avatarMap.set(p.id, p.avatar_url)
+      })
+    }
+
+    return ordersData.map(orderRow => this.mapToOrderRecord(
+      orderRow,
+      itemsMap.get(orderRow.id) || [],
+      avatarMap.get(orderRow.user_id)
+    ))
   }
 
   /**

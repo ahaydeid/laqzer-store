@@ -47,6 +47,7 @@ export default function OrderPage() {
       id: rec.orderNumber, // Tampilkan Nomor Invoice unik (misal ORD-20260718-xxxx)
       realDbId: rec.id, // simpan UUID asli untuk update
       customerName: rec.shippingAddress?.recipientName || "Pembeli",
+      customerAvatarUrl: rec.customerAvatarUrl,
       total: rec.totalAmount,
       paymentMethod: rec.paymentMethod || "-",
       status: DB_STATUS_TO_UI[rec.status] || "Belum Dibayar",
