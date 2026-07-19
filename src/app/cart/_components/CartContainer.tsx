@@ -291,7 +291,7 @@ export function CartContainer() {
 
                 <div className="flex items-end justify-between mt-3">
                   <span className="text-xs font-bold text-rose-500">
-                    Rp {(item.price * item.quantity).toLocaleString('id-ID')}
+                    Rp {item.price.toLocaleString('id-ID')}
                   </span>
                   
                   {/* Quantity Counter */}
