@@ -179,7 +179,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     }
   }, [messages, isChatOpen])
 
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/admin') || pathname === '/links') {
     return null
   }
 
