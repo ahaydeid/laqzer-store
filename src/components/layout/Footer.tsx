@@ -11,7 +11,52 @@ export function Footer({ settings }: FooterProps) {
 
   return (
     <footer className="w-full bg-zinc-900 border-t border-zinc-800 text-zinc-400 py-12 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="mx-auto max-w-7xl">
+        {/* Visi & Misi Section */}
+        <div className="border-b border-zinc-800 pb-10 mb-10 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            {/* Visi */}
+            <div className="lg:col-span-1 space-y-2">
+              <h3 className="text-white text-sm font-semibold uppercase tracking-wider">Visi</h3>
+              <p className="text-xs sm:text-sm leading-relaxed text-zinc-300">
+                Menjadi brand fashion yang menghadirkan gaya Korean Style yang modis, nyaman, kreatif, dan inovatif bagi wanita remaja dan dewasa, serta mengikuti perkembangan tren fashion dunia.
+              </p>
+            </div>
+
+            {/* Misi */}
+            <div className="lg:col-span-2 space-y-2">
+              <h3 className="text-white text-sm font-semibold uppercase tracking-wider">Misi</h3>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs sm:text-sm text-zinc-400">
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span>Menghadirkan fashion dengan gaya cute dan Korean Style yang trendy namun tetap timeless.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span>Mengutamakan kenyamanan dan kualitas dengan menggunakan bahan premium.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span>Menciptakan desain yang kreatif dan inovatif sesuai dengan karakter konsumen.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span>Memahami kebutuhan konsumen dalam aktivitas sehari-hari.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span>Mengikuti perkembangan tren fashion dunia tanpa mengesampingkan karakter Laqzer.indonesia.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span>Menggabungkan estetika, kualitas, dan kenyamanan dalam setiap produk.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
         {/* Left column: Brand Info */}
         <div className="space-y-4">
@@ -106,7 +151,7 @@ export function Footer({ settings }: FooterProps) {
             </a>
           </div>
         </div>
-
+      </div>
       </div>
 
       {/* Footer Bottom bar */}
