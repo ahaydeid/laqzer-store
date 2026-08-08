@@ -68,10 +68,10 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   }
 
   const avgRating = useMemo(() => {
-    if (reviews.length === 0) return product.rating || 5.0
+    if (reviews.length === 0) return 0
     const total = reviews.reduce((sum, r) => sum + r.rating, 0)
     return Number((total / reviews.length).toFixed(1))
-  }, [reviews, product.rating])
+  }, [reviews])
   
   // Use real product images, falling back to single imageUrl
   const galleryImages = product.images && product.images.length > 0
