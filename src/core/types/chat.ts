@@ -4,6 +4,7 @@ export interface ProductAttachment {
   price: number
   imageUrl: string
   variant?: string
+  slug?: string
 }
 
 export interface ChatRoomRecord {
