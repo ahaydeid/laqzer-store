@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Avatar from '@/components/ui/Avatar'
 import { StoreSettings } from '@/core/types/store'
 import { Category } from '@/core/types/category'
-import { Product } from '@/core/types/product'
+import { Product, getProductSlug } from '@/core/types/product'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { usePathname } from 'next/navigation'
@@ -218,7 +218,7 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
                       {desktopResults.map((product) => (
                         <Link
                           key={product.id}
-                          href={`/product/${product.slug || product.id}`}
+                          href={`/product/${getProductSlug(product)}`}
                           onClick={() => {
                             setShowResults(false)
                             setSearchInput('')
@@ -469,7 +469,7 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
                     {mobileResults.map((product) => (
                       <Link
                         key={product.id}
-                        href={`/product/${product.slug || product.id}`}
+                        href={`/product/${getProductSlug(product)}`}
                         onClick={() => {
                           setShowMobileResults(false)
                           setMobileSearchInput('')

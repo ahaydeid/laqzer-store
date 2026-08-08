@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect, useMemo } from 'react'
+import React, { useState, useRef, useMemo } from 'react'
 import { FiEye, FiEdit2, FiCheck, FiUpload, FiImage } from 'react-icons/fi'
 import { PopupAdConfig } from '@/core/types/popup'
 import Toggle from '@/components/ui/Toggle'
@@ -86,7 +86,7 @@ export default function PopupTab({ onTestShowPreview }: PopupTabProps) {
           ctx.drawImage(img, 0, 0, width, height)
 
           // Coba kompresi dengan quality awal 0.8
-          let quality = 0.8
+          const quality = 0.8
           
           const attemptCompress = (q: number) => {
             canvas.toBlob(
@@ -141,8 +141,9 @@ export default function PopupTab({ onTestShowPreview }: PopupTabProps) {
       const publicUrl = await popupService.uploadBannerImage(processedFile)
       setDraft(prev => ({ ...prev, imageUrl: publicUrl }))
       setPreviewImageUrl(publicUrl)
-    } catch (err: any) {
-      Swal.fire({ icon: 'error', title: 'Gagal Upload', text: err?.message, confirmButtonColor: '#0369a1' })
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      Swal.fire({ icon: 'error', title: 'Gagal Upload', text: msg, confirmButtonColor: '#0369a1' })
       setPreviewImageUrl(config?.imageUrl || '')
     } finally {
       setIsUploading(false)
@@ -171,8 +172,9 @@ export default function PopupTab({ onTestShowPreview }: PopupTabProps) {
       setPreviewImageUrl('')
       Swal.fire({ icon: 'success', title: 'Tersimpan', text: 'Konfigurasi popup berhasil diperbarui.', confirmButtonColor: '#0369a1' })
       mutate('popup-config')
-    } catch (err: any) {
-      Swal.fire({ icon: 'error', title: 'Gagal', text: err?.message, confirmButtonColor: '#0369a1' })
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      Swal.fire({ icon: 'error', title: 'Gagal', text: msg, confirmButtonColor: '#0369a1' })
     } finally {
       setIsSaving(false)
     }
@@ -267,7 +269,7 @@ export default function PopupTab({ onTestShowPreview }: PopupTabProps) {
                   <label className="block font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5">Link Tujuan Redirect</label>
                   <input type="text" value={draft.targetUrl}
                     onChange={e => setDraft({ ...draft, targetUrl: e.target.value })}
-                    placeholder="Contoh: /product/id"
+                    placeholder="Contoh: /product/slug-produk"
                     className="w-full rounded border border-zinc-200 dark:border-zinc-800 bg-transparent px-3.5 py-2.5 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-sky-500 font-medium" />
                 </div>
               </div>

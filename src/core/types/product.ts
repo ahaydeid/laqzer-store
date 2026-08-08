@@ -37,3 +37,11 @@ export function slugifyProductName(name: string, id?: string): string {
   return baseSlug
 }
 
+/**
+ * Helper function to retrieve the pure URL slug for a product object.
+ */
+export function getProductSlug(product: { name: string; id: string; slug?: string }): string {
+  if (product.slug && product.slug.trim()) return product.slug
+  return slugifyProductName(product.name, product.id)
+}
+

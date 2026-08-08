@@ -6,7 +6,7 @@ import { FaHeart } from 'react-icons/fa'
 import Link from 'next/link'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseWishlistService } from '@/services/supabase/wishlist.service'
-import { Product } from '@/core/types/product'
+import { Product, getProductSlug } from '@/core/types/product'
 import Swal from 'sweetalert2'
 import { playSwalSound } from '@/utils/sound'
 import useSWR from 'swr'
@@ -173,7 +173,7 @@ export function FavoritContainer() {
                 )}
 
                 {/* Image */}
-                <Link href={`/product/${product.slug || product.id}`}>
+                <Link href={`/product/${getProductSlug(product)}`}>
                   <div className="aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -187,7 +187,7 @@ export function FavoritContainer() {
 
                 {/* Info */}
                 <div className="p-3 space-y-1">
-                  <Link href={`/product/${product.slug || product.id}`}>
+                  <Link href={`/product/${getProductSlug(product)}`}>
                     <h3 className="text-xs font-semibold text-zinc-900 dark:text-white line-clamp-2 hover:text-rose-600 dark:hover:text-rose-400 transition-colors leading-snug">
                       {product.name}
                     </h3>

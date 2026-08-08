@@ -9,6 +9,7 @@ import { OrderRecord, OrderStatus } from '@/core/types/order'
 import useSWR from 'swr'
 import { playSwalSound } from '@/utils/sound'
 import Link from 'next/link'
+import { slugifyProductName } from '@/core/types/product'
 
 type TabType = 'semua' | 'unpaid' | 'processing' | 'shipped' | 'completed' | 'cancelled'
 
@@ -352,7 +353,10 @@ export function PurchaseContainer() {
               <div className="space-y-3">
                 {(order.items || []).map((item) => (
                   <div key={item.id} className="flex gap-3">
-                    <div className="w-14 h-14 rounded bg-zinc-100 dark:bg-zinc-900 overflow-hidden shrink-0 border border-zinc-200/50 dark:border-zinc-800">
+                    <Link
+                      href={`/product/${slugifyProductName(item.productName, item.productId)}`}
+                      className="w-14 h-14 rounded bg-zinc-100 dark:bg-zinc-900 overflow-hidden shrink-0 border border-zinc-200/50 dark:border-zinc-800 hover:opacity-90 transition-opacity"
+                    >
                       {item.productImage ? (
                         /* eslint-disable-next-line @next/next/no-img-element */
                         <img
@@ -365,11 +369,14 @@ export function PurchaseContainer() {
                           <FiPackage className="w-5 h-5" />
                         </div>
                       )}
-                    </div>
+                    </Link>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-zinc-900 dark:text-white truncate">
+                      <Link
+                        href={`/product/${slugifyProductName(item.productName, item.productId)}`}
+                        className="text-sm font-semibold text-zinc-900 hover:text-rose-600 dark:text-white dark:hover:text-rose-400 truncate block transition-colors"
+                      >
                         {item.productName}
-                      </h4>
+                      </Link>
                       {item.variantLabel && (
                         <p className="text-xs text-zinc-400 mt-0.5">{item.variantLabel}</p>
                       )}

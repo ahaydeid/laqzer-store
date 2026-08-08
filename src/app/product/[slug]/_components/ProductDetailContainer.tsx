@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart, FiHeart, FiCheck } from 'react-icons/fi'
 import { FaWhatsapp, FaFacebook, FaInstagram, FaTiktok, FaLink, FaHeart } from 'react-icons/fa'
-import { Product } from '@/core/types/product'
+import { Product, getProductSlug } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/components/providers/AuthProvider'
@@ -968,7 +968,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               return (
                 <Link
                   key={p.id}
-                  href={`/product/${p.slug || p.id}`}
+                  href={`/product/${getProductSlug(p)}`}
                   className="group flex flex-col rounded md:rounded-xl bg-white overflow-hidden hover:shadow-md transition-all duration-300 border border-zinc-100 dark:border-zinc-800/60 dark:bg-zinc-900/40"
                 >
                   {/* Image */}

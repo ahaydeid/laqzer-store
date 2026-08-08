@@ -7,6 +7,7 @@ import Link from "next/link";
 import Avatar from "@/components/ui/Avatar";
 import { SupabaseChatService } from "@/services/supabase/chat.service";
 import { ChatMessageRecord } from "@/core/types/chat";
+import { slugifyProductName } from "@/core/types/product";
 import { useAuth } from "@/components/providers/AuthProvider";
 
 export interface ChatItem {
@@ -39,7 +40,6 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
   // Load chat room detail & messages from Supabase
   useEffect(() => {
     let isMounted = true;
-    setLoadingMessages(true);
 
     Promise.all([
       chatService.getRoomMessages(chatId),
@@ -174,7 +174,7 @@ export const ChatDetailPanel: React.FC<ChatDetailPanelProps> = ({ chatId, mode =
                 {/* Kartu Produk (jika ada) */}
                 {msg.productMetadata && (
                   <Link
-                    href={`/product/${msg.productMetadata.id}`}
+                    href={`/product/${msg.productMetadata.slug || slugifyProductName(msg.productMetadata.name, msg.productMetadata.id)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mb-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-2.5 flex gap-3 w-[260px] text-left hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"

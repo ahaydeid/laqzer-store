@@ -9,6 +9,7 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseChatService } from '@/services/supabase/chat.service'
 import { ChatMessageRecord, ProductAttachment } from '@/core/types/chat'
 import { SupabaseProfileService } from '@/services/supabase/profile.service'
+import { slugifyProductName } from '@/core/types/product'
 import { SupabaseWelcomeMessageService } from '@/services/supabase/welcome-message.service'
 import Swal from 'sweetalert2'
 
@@ -91,7 +92,9 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
           const profile = await profileService.getProfile(user.id)
           if (profile?.fullName) buyerName = profile.fullName
           if (profile?.avatarUrl) buyerAvatar = profile.avatarUrl
-        } catch (_) {}
+        } catch {
+          // silent
+        }
       }
 
       const room = await chatService.getOrCreateRoom(user?.id, { 
@@ -129,7 +132,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
     return () => {
       isMounted = false
     }
-  }, [isChatOpen, user, chatService, profileService, settings.name])
+  }, [isChatOpen, user, chatService, profileService, welcomeService, settings.name])
 
   // Subskripsi Supabase Realtime Listener
   useEffect(() => {
@@ -202,7 +205,9 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
             const profile = await profileService.getProfile(user.id)
             if (profile?.fullName) buyerName = profile.fullName
             if (profile?.avatarUrl) buyerAvatar = profile.avatarUrl
-          } catch (_) {}
+          } catch {
+            // silent
+          }
         }
 
         const room = await chatService.getOrCreateRoom(user?.id, { 
@@ -301,7 +306,7 @@ export function ChatWidget({ settings }: ChatWidgetProps) {
                 {/* Kartu Produk (jika ada) */}
                 {msg.productMetadata && (
                   <Link
-                    href={`/product/${msg.productMetadata.id}`}
+                    href={`/product/${msg.productMetadata.slug || slugifyProductName(msg.productMetadata.name, msg.productMetadata.id)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mb-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded p-2.5 flex gap-3 w-[260px] text-left hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"

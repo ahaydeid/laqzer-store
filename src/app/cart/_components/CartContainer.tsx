@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { FiPlus, FiMinus, FiShoppingBag, FiArrowLeft, FiChevronDown } from 'react-icons/fi'
+import { slugifyProductName } from '@/core/types/product'
 import Swal from 'sweetalert2'
 
 export function CartContainer() {
@@ -171,7 +172,7 @@ export function CartContainer() {
                 <td className="py-5 px-4 align-middle">
                   <div className="flex gap-4">
                     <Link
-                      href={`/product/${item.productId}`}
+                      href={`/product/${slugifyProductName(item.name, item.productId)}`}
                       className="block shrink-0 transition-opacity hover:opacity-90"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -183,7 +184,7 @@ export function CartContainer() {
                     </Link>
                     <div className="flex flex-col justify-center min-w-0 max-w-[200px] lg:max-w-[400px]">
                       <Link
-                        href={`/product/${item.productId}`}
+                        href={`/product/${slugifyProductName(item.name, item.productId)}`}
                         className="text-sm font-semibold text-zinc-900 hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300 truncate transition-colors"
                       >
                         {item.name}
