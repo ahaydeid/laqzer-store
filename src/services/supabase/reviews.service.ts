@@ -208,22 +208,16 @@ export class SupabaseReviewsService {
   }): Promise<void> {
     const supabase = this.getClient()
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('product_reviews')
       .update({
         rating: params.rating,
         comment: params.comment ? params.comment.trim() : null,
       })
       .eq('id', params.reviewId)
-      .select()
 
     if (error) {
-      console.error('Error updating review:', error)
       throw new Error(error.message || 'Gagal memperbarui ulasan')
-    }
-
-    if (!data || data.length === 0) {
-      throw new Error('Gagal memperbarui ulasan. Pastikan Anda telah menjalankan query SQL RLS Update (Migration 24) di Supabase.')
     }
   }
 }

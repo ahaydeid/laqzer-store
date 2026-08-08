@@ -231,4 +231,25 @@ export class SupabaseProductService implements IProductService {
 
     return true
   }
+
+  /**
+   * Hitung total kuantitas unit produk yang terjual dari tabel order_items (bukan jumlah transaksi).
+   */
+  async getProductSoldCount(productId: string): Promise<number> {
+    const supabase = this.getClient()
+    try {
+      const { data, error } = await supabase
+        .from('order_items')
+        .select('quantity')
+        .eq('product_id', productId)
+
+      if (error || !data) return 0
+
+      return data.reduce((total: number, row: { quantity?: number }) => {
+        return total + Number(row.quantity || 0)
+      }, 0)
+    } catch {
+      return 0
+    }
+  }
 }

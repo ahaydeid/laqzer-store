@@ -11,6 +11,7 @@ import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseWishlistService } from '@/services/supabase/wishlist.service'
 import { SupabaseReviewsService } from '@/services/supabase/reviews.service'
+import { SupabaseProductService } from '@/services/supabase/product.service'
 import { ProductReview, ReviewEligibility } from '@/core/types/review'
 import { ReviewFormModal } from './ReviewFormModal'
 import Swal from 'sweetalert2'
@@ -27,13 +28,15 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const { requireAuth, user } = useAuth()
   const wishlistService = useMemo(() => new SupabaseWishlistService(), [])
   const reviewsService = useMemo(() => new SupabaseReviewsService(), [])
+  const productService = useMemo(() => new SupabaseProductService(), [])
 
-  // State untuk Ulasan Real & Kelayakan Beri Ulasan
+  // State untuk Ulasan Real & Kelayakan Beri Ulasan & Total Unit Terjual
   const [reviews, setReviews] = useState<ProductReview[]>([])
   const [loadingReviews, setLoadingReviews] = useState<boolean>(true)
   const [eligibility, setEligibility] = useState<ReviewEligibility>({ isEligible: false, eligibleOrders: [] })
   const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false)
   const [editingReview, setEditingReview] = useState<ProductReview | null>(null)
+  const [soldCount, setSoldCount] = useState<number>(product.soldCount || 0)
 
   const [reloadKey, setReloadKey] = useState(0)
 
@@ -47,11 +50,13 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
       userId
         ? reviewsService.checkEligibility(userId, productId)
         : Promise.resolve({ isEligible: false, eligibleOrders: [] }),
+      productService.getProductSoldCount(productId),
     ])
-      .then(([fetchedReviews, userEligibility]) => {
+      .then(([fetchedReviews, userEligibility, count]) => {
         if (!isMounted) return
         setReviews(fetchedReviews)
         setEligibility(userEligibility)
+        setSoldCount(count)
         setLoadingReviews(false)
       })
       .catch(() => {
@@ -62,7 +67,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
     return () => {
       isMounted = false
     }
-  }, [product.id, user?.id, reviewsService, reloadKey])
+  }, [product.id, user?.id, reviewsService, productService, reloadKey])
 
   const handleReviewSubmitted = () => {
     setReloadKey((prev) => prev + 1)
@@ -575,7 +580,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                 <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">penilaian</span>
               </div>
               <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-bold text-zinc-900 dark:text-white">{product.soldCount}</span>
+                <span className="text-xs font-bold text-zinc-900 dark:text-white">{soldCount}</span>
                 <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">terjual</span>
               </div>
               <button
@@ -739,7 +744,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                 <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">penilaian</span>
               </div>
               <div className="flex flex-col gap-0.5">
-                <span className="text-sm font-bold text-zinc-900 dark:text-white">{product.soldCount}</span>
+                <span className="text-sm font-bold text-zinc-900 dark:text-white">{soldCount}</span>
                 <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">terjual</span>
               </div>
               <button
@@ -1091,7 +1096,6 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
 
       {/* Form Modal untuk Tulis / Edit Ulasan Real */}
       <ReviewFormModal
-        key={editingReview ? editingReview.id : 'new-review'}
         isOpen={isReviewModalOpen}
         onClose={() => {
           setIsReviewModalOpen(false)
