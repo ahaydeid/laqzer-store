@@ -15,6 +15,7 @@ import { SupabaseProductService } from './supabase/product.service'
 import { SupabaseCategoryService } from './supabase/category.service'
 import { SupabaseCartService } from './supabase/cart.service'
 import { SupabaseCampaignService } from './supabase/campaign.service'
+import { SupabaseReviewsService } from './supabase/reviews.service'
 
 type ProviderType = 'mock' | 'supabase'
 
@@ -42,6 +43,7 @@ export interface AppServices {
   categories: ICategoryService
   cart: ICartService
   campaigns: ICampaignService
+  reviews: SupabaseReviewsService
 }
 
 /**
@@ -64,6 +66,7 @@ export function getServices(supabaseClient?: SupabaseClient): AppServices {
         : new MockCategoryService(),
     cart: new SupabaseCartService(),
     campaigns: new SupabaseCampaignService(),
+    reviews: new SupabaseReviewsService(supabaseClient),
   }
 }
 

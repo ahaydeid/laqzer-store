@@ -3,13 +3,16 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart, FiHeart, FiCheck } from 'react-icons/fi'
-import { FaWhatsapp, FaFacebook, FaInstagram, FaTiktok, FaLink, FaHeart } from 'react-icons/fa'
+import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart, FiHeart, FiCheck, FiCheckCircle, FiLoader } from 'react-icons/fi'
+import { FaWhatsapp, FaFacebook, FaInstagram, FaTiktok, FaLink, FaHeart, FaStar } from 'react-icons/fa'
 import { Product, getProductSlug } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { SupabaseWishlistService } from '@/services/supabase/wishlist.service'
+import { SupabaseReviewsService } from '@/services/supabase/reviews.service'
+import { ProductReview, ReviewEligibility } from '@/core/types/review'
+import { ReviewFormModal } from './ReviewFormModal'
 import Swal from 'sweetalert2'
 
 interface ProductDetailContainerProps {
@@ -23,6 +26,52 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const { addToCart, toggleAllCheck } = useCart()
   const { requireAuth, user } = useAuth()
   const wishlistService = useMemo(() => new SupabaseWishlistService(), [])
+  const reviewsService = useMemo(() => new SupabaseReviewsService(), [])
+
+  // State untuk Ulasan Real & Kelayakan Beri Ulasan
+  const [reviews, setReviews] = useState<ProductReview[]>([])
+  const [loadingReviews, setLoadingReviews] = useState<boolean>(true)
+  const [eligibility, setEligibility] = useState<ReviewEligibility>({ isEligible: false, eligibleOrders: [] })
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false)
+
+  const [reloadKey, setReloadKey] = useState(0)
+
+  useEffect(() => {
+    let isMounted = true
+    const productId = product.id
+    const userId = user?.id
+
+    Promise.all([
+      reviewsService.getProductReviews(productId),
+      userId
+        ? reviewsService.checkEligibility(userId, productId)
+        : Promise.resolve({ isEligible: false, eligibleOrders: [] }),
+    ])
+      .then(([fetchedReviews, userEligibility]) => {
+        if (!isMounted) return
+        setReviews(fetchedReviews)
+        setEligibility(userEligibility)
+        setLoadingReviews(false)
+      })
+      .catch(() => {
+        if (!isMounted) return
+        setLoadingReviews(false)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [product.id, user?.id, reviewsService, reloadKey])
+
+  const handleReviewSubmitted = () => {
+    setReloadKey((prev) => prev + 1)
+  }
+
+  const avgRating = useMemo(() => {
+    if (reviews.length === 0) return product.rating || 5.0
+    const total = reviews.reduce((sum, r) => sum + r.rating, 0)
+    return Number((total / reviews.length).toFixed(1))
+  }, [reviews, product.rating])
   
   // Use real product images, falling back to single imageUrl
   const galleryImages = product.images && product.images.length > 0
@@ -813,7 +862,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                 : 'border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
             }`}
           >
-            Penilaian (3)
+            Penilaian ({reviews.length})
           </button>
         </div>
 
@@ -833,121 +882,122 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
             </div>
           ) : (
             <div className="py-2 space-y-6">
-              {/* Overall Rating Score Card */}
-              <div className="flex items-center gap-6 bg-white dark:bg-zinc-950 p-6 rounded-xl border border-zinc-100 dark:border-zinc-850/80">
-                <div className="text-center shrink-0">
-                  <span className="text-5xl font-extrabold text-zinc-950 dark:text-white">
-                    {product.rating ? product.rating.toFixed(1) : "4.9"}
-                  </span>
-                  <span className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1.5">
-                    dari 5
-                  </span>
-                </div>
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <FiStar key={s} className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                    ))}
+              {/* Overall Rating Score Card & Write Review Action */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white dark:bg-zinc-950 p-6 rounded-xl border border-zinc-100 dark:border-zinc-850/80 shadow-xs">
+                <div className="flex items-center gap-6">
+                  <div className="text-center shrink-0">
+                    <span className="text-5xl font-extrabold text-zinc-950 dark:text-white">
+                      {avgRating.toFixed(1)}
+                    </span>
+                    <span className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1.5">
+                      dari 5
+                    </span>
                   </div>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
-                    Dari 3 ulasan
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <FaStar
+                          key={s}
+                          className={`h-5 w-5 ${
+                            s <= Math.round(avgRating)
+                              ? 'text-yellow-400'
+                              : 'text-zinc-200 dark:text-zinc-700'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
+                      Dari {reviews.length} ulasan pembeli
+                    </p>
+                  </div>
+                </div>
+
+                {/* Write Review Button (Shown if Eligible) */}
+                {eligibility.isEligible && (
+                  <button
+                    onClick={() => setIsReviewModalOpen(true)}
+                    className="py-3 px-5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 self-start md:self-auto"
+                  >
+                    <FiMessageSquare className="h-4 w-4" />
+                    <span>Tulis Ulasan (Order #{eligibility.eligibleOrders[0]?.orderNumber})</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Real Reviews List */}
+              {loadingReviews ? (
+                <div className="flex items-center justify-center py-12 text-zinc-400 gap-2 text-xs font-semibold">
+                  <FiLoader className="h-5 w-5 animate-spin" /> Memuat ulasan...
+                </div>
+              ) : reviews.length === 0 ? (
+                <div className="text-center py-12 px-4 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-100 dark:border-zinc-850/80">
+                  <FiStar className="h-10 w-10 text-zinc-300 dark:text-zinc-700 mx-auto mb-2" />
+                  <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                    Belum ada ulasan untuk produk ini
+                  </p>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
+                    Jadilah pembeli pertama yang memberikan ulasan setelah menyelesaikan pembelian.
                   </p>
                 </div>
-              </div>
-
-              {/* Reviews List */}
-              <div className="space-y-6 divide-y divide-zinc-200/65 dark:divide-zinc-850">
-                {/* Review 1 */}
-                <div className="pt-5 first:pt-0 flex gap-4">
-                  {/* Avatar */}
-                  <div className="h-10 w-10 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200/50 dark:border-zinc-700/50">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent("Budi S.")}`} 
-                      alt="Budi S." 
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  {/* Content */}
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h5 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Budi S.</h5>
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Varian: Hitam • 2 minggu lalu</p>
+              ) : (
+                <div className="space-y-6 divide-y divide-zinc-200/65 dark:divide-zinc-850">
+                  {reviews.map((rev) => (
+                    <div key={rev.id} className="pt-5 first:pt-0 flex gap-4">
+                      {/* Avatar */}
+                      <div className="h-10 w-10 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200/50 dark:border-zinc-700/50">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                          src={rev.userAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(rev.userName)}`} 
+                          alt={rev.userName} 
+                          className="h-full w-full object-cover"
+                        />
                       </div>
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <FiStar key={s} className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        ))}
+                      {/* Content */}
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h5 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{rev.userName}</h5>
+                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-md">
+                                <FiCheckCircle className="h-3 w-3" /> Pembelian Terverifikasi #{rev.orderNumber}
+                              </span>
+                            </div>
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                              {rev.variantLabel ? `Varian: ${rev.variantLabel} • ` : ''}
+                              {new Date(rev.createdAt).toLocaleDateString('id-ID', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                              })}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-0.5 shrink-0">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <FaStar
+                                key={s}
+                                className={`h-4 w-4 ${
+                                  s <= rev.rating ? 'text-yellow-400' : 'text-zinc-200 dark:text-zinc-700'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Comment text (Optional) */}
+                        {rev.comment ? (
+                          <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
+                            {rev.comment}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-zinc-400 dark:text-zinc-500 italic">
+                            (Pengguna memberikan penilaian bintang tanpa menulis komentar)
+                          </p>
+                        )}
                       </div>
                     </div>
-                    <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
-                      Kualitas produk sangat bagus, bahan tebal dan halus. Pengemasan rapi dan pengiriman super cepat. Terima kasih!
-                    </p>
-                  </div>
+                  ))}
                 </div>
-
-                {/* Review 2 */}
-                <div className="pt-5 flex gap-4">
-                  {/* Avatar */}
-                  <div className="h-10 w-10 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200/50 dark:border-zinc-700/50">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent("Dewi K.")}`} 
-                      alt="Dewi K." 
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  {/* Content */}
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h5 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Dewi K.</h5>
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Varian: Putih • 1 bulan lalu</p>
-                      </div>
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <FiStar key={s} className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
-                      Bagus sekali kemejanya, pas di badan. Jahitannya rapi dan bahannya dingin saat dipakai. Recommended seller!
-                    </p>
-                  </div>
-                </div>
-
-                {/* Review 3 */}
-                <div className="pt-5 flex gap-4">
-                  {/* Avatar */}
-                  <div className="h-10 w-10 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200/50 dark:border-zinc-700/50">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent("Ahmad F.")}`} 
-                      alt="Ahmad F." 
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  {/* Content */}
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h5 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Ahmad F.</h5>
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Varian: Hitam • 1 bulan lalu</p>
-                      </div>
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        {[1, 2, 3, 4].map((s) => (
-                          <FiStar key={s} className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        ))}
-                        <FiStar className="h-4 w-4 text-zinc-200 dark:text-zinc-800" />
-                      </div>
-                    </div>
-                    <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
-                      Bahan adem, ukuran pas sesuai deskripsi. Cuma pengiriman kurir JNE agak telat sehari dari biasanya, tapi overall oke banget.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           )}
         </div>
@@ -1030,6 +1080,16 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
         </div>
       )}
 
+      {/* Form Modal untuk Tulis Ulasan Real */}
+      <ReviewFormModal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        productId={product.id}
+        productName={product.name}
+        productImageUrl={product.imageUrl}
+        eligibleOrders={eligibility.eligibleOrders}
+        onReviewSubmitted={handleReviewSubmitted}
+      />
     </div>
   )
 }
