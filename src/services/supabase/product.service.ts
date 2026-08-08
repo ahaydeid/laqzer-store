@@ -81,6 +81,62 @@ export class SupabaseProductService implements IProductService {
     return payload
   }
 
+  private async enrichProductsWithRealStats(products: Product[]): Promise<Product[]> {
+    if (!products || products.length === 0) return []
+
+    const supabase = this.getClient()
+    const productIds = products.map((p) => p.id)
+
+    try {
+      // 1. Fetch sold counts from order_items
+      const { data: orderItemsData } = await supabase
+        .from('order_items')
+        .select('product_id, quantity')
+        .in('product_id', productIds)
+
+      const soldMap = new Map<string, number>()
+      if (orderItemsData) {
+        for (const item of orderItemsData) {
+          const current = soldMap.get(item.product_id) || 0
+          soldMap.set(item.product_id, current + Number(item.quantity || 0))
+        }
+      }
+
+      // 2. Fetch ratings from product_reviews
+      const { data: reviewsData } = await supabase
+        .from('product_reviews')
+        .select('product_id, rating')
+        .in('product_id', productIds)
+
+      const ratingMap = new Map<string, { total: number; count: number }>()
+      if (reviewsData) {
+        for (const rev of reviewsData) {
+          const current = ratingMap.get(rev.product_id) || { total: 0, count: 0 }
+          ratingMap.set(rev.product_id, {
+            total: current.total + Number(rev.rating || 0),
+            count: current.count + 1,
+          })
+        }
+      }
+
+      return products.map((p) => {
+        const realSold = soldMap.get(p.id) ?? p.soldCount ?? 0
+        const ratingInfo = ratingMap.get(p.id)
+        const realRating = ratingInfo && ratingInfo.count > 0
+          ? Number((ratingInfo.total / ratingInfo.count).toFixed(1))
+          : 0.0
+
+        return {
+          ...p,
+          soldCount: realSold,
+          rating: realRating,
+        }
+      })
+    } catch {
+      return products
+    }
+  }
+
   async getCampaignProducts(): Promise<Product[]> {
     const supabase = this.getClient()
     const { data, error } = await supabase
@@ -94,7 +150,8 @@ export class SupabaseProductService implements IProductService {
       return []
     }
 
-    return (data || []).map((row: Record<string, unknown>) => this.mapToProduct(row))
+    const raw = (data || []).map((row: Record<string, unknown>) => this.mapToProduct(row))
+    return this.enrichProductsWithRealStats(raw)
   }
 
   async getAllProducts(): Promise<Product[]> {
@@ -109,7 +166,8 @@ export class SupabaseProductService implements IProductService {
       return []
     }
 
-    return (data || []).map((row: Record<string, unknown>) => this.mapToProduct(row))
+    const raw = (data || []).map((row: Record<string, unknown>) => this.mapToProduct(row))
+    return this.enrichProductsWithRealStats(raw)
   }
 
   async getProducts(category?: string): Promise<Product[]> {
@@ -130,7 +188,8 @@ export class SupabaseProductService implements IProductService {
       return []
     }
 
-    return (data || []).map((row: Record<string, unknown>) => this.mapToProduct(row))
+    const raw = (data || []).map((row: Record<string, unknown>) => this.mapToProduct(row))
+    return this.enrichProductsWithRealStats(raw)
   }
 
   async getProductById(id: string): Promise<Product | null> {
@@ -146,7 +205,9 @@ export class SupabaseProductService implements IProductService {
       return null
     }
 
-    return this.mapToProduct(data)
+    const raw = this.mapToProduct(data)
+    const [enriched] = await this.enrichProductsWithRealStats([raw])
+    return enriched || raw
   }
 
   async getProductBySlug(slugInput: string): Promise<Product | null> {

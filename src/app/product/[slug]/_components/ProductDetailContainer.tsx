@@ -1057,10 +1057,12 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                     <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
                       <div className="flex items-center gap-0.5 text-yellow-500">
                         <FiStar className="h-3 w-3 fill-current" />
-                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{p.rating}</span>
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                          {p.rating > 0 ? p.rating.toFixed(1) : '0.0'}
+                        </span>
                       </div>
                       <span className="text-zinc-300 dark:text-zinc-700">|</span>
-                      <span>{p.soldCount.toLocaleString('id-ID')}+ Terjual</span>
+                      <span>{p.soldCount.toLocaleString('id-ID')} Terjual</span>
                     </div>
                     <div className="flex flex-wrap items-baseline gap-1.5 pt-0.5">
                       <span className="text-sm font-bold text-zinc-900 dark:text-white">
