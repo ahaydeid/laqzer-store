@@ -19,6 +19,10 @@ CREATE INDEX IF NOT EXISTS idx_product_reviews_user_id ON public.product_reviews
 -- Enable Row Level Security (RLS)
 ALTER TABLE public.product_reviews ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if any to ensure idempotent migration
+DROP POLICY IF EXISTS "Allow public read access to product_reviews" ON public.product_reviews;
+DROP POLICY IF EXISTS "Allow users to insert reviews for completed orders" ON public.product_reviews;
+
 -- Allow public read access for all product reviews
 CREATE POLICY "Allow public read access to product_reviews"
     ON public.product_reviews
