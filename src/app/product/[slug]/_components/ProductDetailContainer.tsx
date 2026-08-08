@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart, FiHeart, FiCheck, FiCheckCircle, FiLoader } from 'react-icons/fi'
+import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart, FiHeart, FiCheck, FiLoader } from 'react-icons/fi'
 import { FaWhatsapp, FaFacebook, FaInstagram, FaTiktok, FaLink, FaHeart, FaStar } from 'react-icons/fa'
 import { Product, getProductSlug } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
@@ -958,9 +958,6 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                           <div>
                             <div className="flex items-center gap-2">
                               <h5 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{rev.userName}</h5>
-                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-md">
-                                <FiCheckCircle className="h-3 w-3" /> Pembelian Terverifikasi #{rev.orderNumber}
-                              </span>
                             </div>
                             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                               {rev.variantLabel ? `Varian: ${rev.variantLabel} • ` : ''}
