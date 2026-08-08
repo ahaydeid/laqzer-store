@@ -1091,6 +1091,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
 
       {/* Form Modal untuk Tulis / Edit Ulasan Real */}
       <ReviewFormModal
+        key={editingReview ? editingReview.id : 'new-review'}
         isOpen={isReviewModalOpen}
         onClose={() => {
           setIsReviewModalOpen(false)
