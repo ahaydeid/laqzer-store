@@ -1,7 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createClient as createBrowserClient } from './client'
 import { ProductReview, ReviewEligibility, EligibleOrderForReview } from '@/core/types/review'
-import { OrderItemRecord } from '@/core/types/order'
 
 export class SupabaseReviewsService {
   private supabaseClient?: SupabaseClient
@@ -78,7 +77,7 @@ export class SupabaseReviewsService {
       // 1. Fetch completed orders for this user
       const { data: completedOrders, error: orderErr } = await supabase
         .from('orders')
-        .select('id, order_number, status, items, created_at')
+        .select('id, order_number, created_at')
         .eq('user_id', userId)
         .eq('status', 'completed')
 
@@ -86,7 +85,21 @@ export class SupabaseReviewsService {
         return { isEligible: false, eligibleOrders: [] }
       }
 
-      // 2. Fetch existing reviews by this user for this product
+      const completedOrderIds = completedOrders.map((o) => o.id)
+      const orderMap = new Map(completedOrders.map((o) => [o.id, o]))
+
+      // 2. Query order_items table for items matching this productId
+      const { data: orderItems, error: itemsErr } = await supabase
+        .from('order_items')
+        .select('order_id, product_id, variant_label')
+        .in('order_id', completedOrderIds)
+        .eq('product_id', productId)
+
+      if (itemsErr || !orderItems || orderItems.length === 0) {
+        return { isEligible: false, eligibleOrders: [] }
+      }
+
+      // 3. Fetch existing reviews by this user for this product
       const { data: existingReviews } = await supabase
         .from('product_reviews')
         .select('order_id')
@@ -95,21 +108,19 @@ export class SupabaseReviewsService {
 
       const reviewedOrderIds = new Set((existingReviews || []).map((r) => r.order_id))
 
-      // 3. Find completed orders containing this product that have not been reviewed yet
+      // 4. Build list of eligible orders (order_items not yet reviewed)
       const eligibleOrders: EligibleOrderForReview[] = []
 
-      for (const order of completedOrders) {
-        if (reviewedOrderIds.has(order.id)) continue
+      for (const item of orderItems) {
+        if (reviewedOrderIds.has(item.order_id)) continue
 
-        const items = (order.items || []) as OrderItemRecord[]
-        const targetItem = items.find((item) => item.productId === productId)
-
-        if (targetItem) {
+        const orderInfo = orderMap.get(item.order_id)
+        if (orderInfo) {
           eligibleOrders.push({
-            orderId: order.id,
-            orderNumber: order.order_number,
-            variantLabel: targetItem.variantLabel,
-            completedAt: order.created_at,
+            orderId: orderInfo.id,
+            orderNumber: orderInfo.order_number,
+            variantLabel: item.variant_label || undefined,
+            completedAt: orderInfo.created_at,
           })
         }
       }
