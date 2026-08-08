@@ -930,7 +930,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                   <FiLoader className="h-5 w-5 animate-spin" /> Memuat ulasan...
                 </div>
               ) : reviews.length === 0 ? (
-                <div className="text-center py-12 px-4 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-100 dark:border-zinc-850/80">
+                <div className="text-center py-12 px-4">
                   <FiStar className="h-10 w-10 text-zinc-300 dark:text-zinc-700 mx-auto mb-2" />
                   <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                     Belum ada ulasan untuk produk ini
