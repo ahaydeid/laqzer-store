@@ -109,11 +109,11 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
         timer: 2000,
         showConfirmButton: false,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       Swal.fire({
         title: 'Gagal!',
-        text: err.message || 'Gagal memperbarui stok di Supabase',
+        text: err instanceof Error ? err.message : 'Gagal memperbarui stok di Supabase',
         icon: 'error',
       });
     }
@@ -145,11 +145,11 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
             timer: 2000,
             showConfirmButton: false,
           });
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error(err);
           Swal.fire({
             title: 'Gagal!',
-            text: err.message || 'Gagal menghapus produk dari Supabase',
+            text: err instanceof Error ? err.message : 'Gagal menghapus produk dari Supabase',
             icon: 'error',
           });
         }
@@ -192,11 +192,11 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
         setProducts(prev => [created, ...prev]);
         triggerRevalidation();
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       Swal.fire({
         title: 'Gagal!',
-        text: err.message || 'Gagal menyimpan produk ke Supabase',
+        text: err instanceof Error ? err.message : 'Gagal menyimpan produk ke Supabase',
         icon: 'error',
       });
     }
