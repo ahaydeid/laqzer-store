@@ -20,9 +20,10 @@ interface ProductDetailContainerProps {
   product: Product
   settings: StoreSettings
   relatedProducts?: Product[]
+  initialReviews?: ProductReview[]
 }
 
-export function ProductDetailContainer({ product, settings, relatedProducts = [] }: ProductDetailContainerProps) {
+export function ProductDetailContainer({ product, settings, relatedProducts = [], initialReviews = [] }: ProductDetailContainerProps) {
   const router = useRouter()
   const { addToCart, toggleAllCheck } = useCart()
   const { requireAuth, user } = useAuth()
@@ -31,7 +32,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const productService = useMemo(() => new SupabaseProductService(), [])
 
   // State untuk Ulasan Real & Kelayakan Beri Ulasan & Total Unit Terjual
-  const [reviews, setReviews] = useState<ProductReview[]>([])
+  const [reviews, setReviews] = useState<ProductReview[]>(initialReviews)
   const [loadingReviews, setLoadingReviews] = useState<boolean>(true)
   const [eligibility, setEligibility] = useState<ReviewEligibility>({ isEligible: false, eligibleOrders: [] })
   const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false)

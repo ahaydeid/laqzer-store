@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getServices } from '@/services'
 import { unstable_cache } from 'next/cache'
+import { SupabaseReviewsService } from '@/services/supabase/reviews.service'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ProductDetailContainer } from './_components/ProductDetailContainer'
@@ -39,6 +40,15 @@ const getCachedProductBySlug = (slug: string) =>
     () => services.products.getProductBySlug(slug),
     ['product', slug],
     { revalidate: 60, tags: ['products', `product-${slug}`] }
+  )()
+
+// Cache ulasan produk per product ID selama 60 detik
+// Client component tetap re-fetch setelah user submit ulasan (reloadKey)
+const getCachedProductReviews = (productId: string) =>
+  unstable_cache(
+    () => new SupabaseReviewsService().getProductReviews(productId),
+    ['product-reviews', productId],
+    { revalidate: 60, tags: [`product-reviews-${productId}`] }
   )()
 
 /**
@@ -106,6 +116,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     getCachedProducts(),
   ])
 
+  // Fetch ulasan awal server-side agar tidak flash dari 0 di client
+  const initialReviews = product
+    ? await getCachedProductReviews(product.id)
+    : []
+
   // If the product does not exist, trigger the 404 page
   if (!product) {
     notFound()
@@ -123,6 +138,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             product={product}
             settings={storeSettings}
             relatedProducts={allProducts.filter((p) => p.id !== product!.id).slice(0, 8)}
+            initialReviews={initialReviews}
           />
         </main>
       </div>
