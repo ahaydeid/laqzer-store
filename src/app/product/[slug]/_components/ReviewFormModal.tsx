@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { FiStar, FiLoader, FiCheckCircle } from 'react-icons/fi'
+import { FiStar, FiLoader } from 'react-icons/fi'
 import { FaStar } from 'react-icons/fa'
 import { EligibleOrderForReview, ProductReview } from '@/core/types/review'
 import { SupabaseReviewsService } from '@/services/supabase/reviews.service'
@@ -172,9 +172,6 @@ export function ReviewFormModal({
                 Varian: {selectedOrder.variantLabel}
               </p>
             )}
-            <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-1">
-              <FiCheckCircle className="h-3 w-3" /> Transaksi Terverifikasi #{selectedOrder?.orderNumber || ''}
-            </span>
           </div>
         </div>
 
