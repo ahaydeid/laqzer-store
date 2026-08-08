@@ -49,8 +49,8 @@ export class SupabaseProductService implements IProductService {
       imageUrl: data.image_url as string,
       images: Array.isArray(data.images) ? (data.images as string[]) : [],
       category: data.category as string,
-      rating: data.rating !== null && data.rating !== undefined ? Number(data.rating) : 5.0,
-      soldCount: data.sold_count ? Number(data.sold_count) : 0,
+      rating: 0.0, // akan di-override oleh enrichProductsWithRealStats dari product_reviews
+      soldCount: 0, // akan di-override oleh enrichProductsWithRealStats dari order_items
       stock: Number(data.stock || 0),
       soldProgress: data.sold_progress ? Number(data.sold_progress) : 0,
       isCampaign: Boolean(data.is_campaign),
@@ -69,8 +69,6 @@ export class SupabaseProductService implements IProductService {
     if (product.imageUrl !== undefined) payload.image_url = product.imageUrl
     if (product.images !== undefined) payload.images = product.images
     if (product.category !== undefined) payload.category = product.category
-    if (product.rating !== undefined) payload.rating = product.rating
-    if (product.soldCount !== undefined) payload.sold_count = product.soldCount
     if (product.stock !== undefined) payload.stock = product.stock
     if (product.soldProgress !== undefined) payload.sold_progress = product.soldProgress
     if (product.isCampaign !== undefined) payload.is_campaign = product.isCampaign
