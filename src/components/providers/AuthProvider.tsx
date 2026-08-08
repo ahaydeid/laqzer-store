@@ -46,24 +46,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         'Pembeli'
 
       try {
-        // 1. Upsert data ke profiles
-        await supabase.from('profiles').upsert(
-          {
+        // 1. Cek apakah profil sudah ada di tabel profiles
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .eq('id', currentUser.id)
+          .maybeSingle()
+
+        let activeName = fullName
+        let activeAvatar = avatarUrl
+
+        if (!existingProfile) {
+          // Buat profil awal hanya jika pengguna belum memiliki record di profiles
+          await supabase.from('profiles').insert({
             id: currentUser.id,
             email: currentUser.email,
             full_name: fullName,
             avatar_url: avatarUrl,
-          },
-          { onConflict: 'id' }
-        )
+          })
+        } else {
+          activeName = (existingProfile.full_name as string) || fullName
+          activeAvatar = (existingProfile.avatar_url as string) || avatarUrl
+        }
 
-        // 2. Update data di chat_rooms
-        if (avatarUrl) {
+        // 2. Update data di chat_rooms sesuai profil aktif
+        if (activeAvatar) {
           await supabase
             .from('chat_rooms')
             .update({
-              user_name: fullName,
-              user_avatar_url: avatarUrl,
+              user_name: activeName,
+              user_avatar_url: activeAvatar,
               updated_at: new Date().toISOString(),
             })
             .eq('user_id', currentUser.id)
