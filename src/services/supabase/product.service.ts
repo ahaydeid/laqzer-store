@@ -149,43 +149,32 @@ export class SupabaseProductService implements IProductService {
     return this.mapToProduct(data)
   }
 
-  async getProductBySlug(slug: string): Promise<Product | null> {
-    const supabase = this.getClient()
-
-    // 1. If parameter is a full UUID format, attempt direct lookup by ID first
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
-    if (isUuid) {
-      const byId = await this.getProductById(slug)
-      if (byId) return byId
-    }
-
-    // 2. Attempt lookup by slug column in database (if column exists)
-    try {
-      const { data } = await supabase
-        .from('products')
-        .select('*')
-        .eq('slug', slug)
-        .maybeSingle()
-
-      if (data) return this.mapToProduct(data)
-    } catch {
-      // Ignore error if slug column does not exist in DB yet
-    }
-
-    // 3. Attempt lookup by direct ID
-    const byIdDirect = await this.getProductById(slug)
-    if (byIdDirect) return byIdDirect
-
-    // 4. Fetch all catalog products and match by slugifyProductName or ID
+  async getProductBySlug(slugInput: string): Promise<Product | null> {
+    const slug = decodeURIComponent(slugInput).trim()
+    
+    // Fetch catalog products from Supabase
     const allProducts = await this.getAllProducts()
-    const match = allProducts.find(
-      (p) =>
-        (p.slug && p.slug === slug) ||
-        slugifyProductName(p.name, p.id) === slug ||
-        p.id === slug
-    )
+    if (!allProducts || allProducts.length === 0) return null
 
-    return match || null
+    // 1. Direct match by ID, custom slug, or slugifyProductName(name, id)
+    const exactMatch = allProducts.find(
+      (p) =>
+        p.id === slug ||
+        p.slug === slug ||
+        slugifyProductName(p.name, p.id) === slug ||
+        slugifyProductName(p.name) === slug
+    )
+    if (exactMatch) return exactMatch
+
+    // 2. Match by short ID prefix at the end of the slug (e.g., '0190cf6e')
+    const parts = slug.split('-')
+    const lastPart = parts[parts.length - 1]
+    if (lastPart && lastPart.length >= 8) {
+      const shortIdMatch = allProducts.find((p) => p.id.startsWith(lastPart))
+      if (shortIdMatch) return shortIdMatch
+    }
+
+    return null
   }
 
   async createProduct(productData: Partial<Product>): Promise<Product> {
