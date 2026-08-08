@@ -95,9 +95,9 @@ export function ReviewFormModal({
         Swal.fire({
           icon: 'success',
           title: 'Ulasan Berhasil Diperbarui!',
-          text: 'Penilaian dan ulasan Anda telah diperbarui.',
           confirmButtonColor: '#e11d48',
-          timer: 2000,
+          timer: 1500,
+          showConfirmButton: false,
         })
       } else {
         if (!selectedOrder) {
@@ -124,9 +124,9 @@ export function ReviewFormModal({
         Swal.fire({
           icon: 'success',
           title: 'Ulasan Berhasil Dikirim!',
-          text: 'Terima kasih atas ulasan dan penilaian Anda.',
           confirmButtonColor: '#e11d48',
-          timer: 2000,
+          timer: 1500,
+          showConfirmButton: false,
         })
       }
 
