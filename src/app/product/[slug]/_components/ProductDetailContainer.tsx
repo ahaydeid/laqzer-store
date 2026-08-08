@@ -883,7 +883,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
           ) : (
             <div className="py-2 space-y-6">
               {/* Overall Rating Score Card & Write Review Action */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white dark:bg-zinc-950 p-6 rounded-xl border border-zinc-100 dark:border-zinc-850/80 shadow-xs">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white dark:bg-zinc-950 p-6 rounded-xl dark:border-zinc-850/80">
                 <div className="flex items-center gap-6">
                   <div className="text-center shrink-0">
                     <span className="text-5xl font-extrabold text-zinc-950 dark:text-white">
@@ -916,7 +916,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                 {eligibility.isEligible && (
                   <button
                     onClick={() => setIsReviewModalOpen(true)}
-                    className="py-3 px-5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 self-start md:self-auto"
+                    className="py-2 px-4 bg-rose-600 hover:bg-rose-700 text-white font-medium text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 self-start md:self-auto"
                   >
                     <FiMessageSquare className="h-4 w-4" />
                     <span>Tulis Ulasan</span>
