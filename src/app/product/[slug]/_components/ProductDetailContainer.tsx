@@ -968,7 +968,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               return (
                 <Link
                   key={p.id}
-                  href={`/product/${p.id}`}
+                  href={`/product/${p.slug || p.id}`}
                   className="group flex flex-col rounded md:rounded-xl bg-white overflow-hidden hover:shadow-md transition-all duration-300 border border-zinc-100 dark:border-zinc-800/60 dark:bg-zinc-900/40"
                 >
                   {/* Image */}

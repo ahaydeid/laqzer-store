@@ -51,15 +51,15 @@ export function PurchaseContainer() {
   const getStatusBadge = (status: OrderStatus) => {
     switch (status) {
       case 'unpaid':
-        return <span className="text-sm text-amber-600 dark:text-amber-400 font-medium">Belum Bayar</span>
+        return <span className="text-sm text-amber-600 dark:text-amber-400 font-normal">Belum Bayar</span>
       case 'processing':
-        return <span className="text-sm text-sky-600 dark:text-sky-400 font-medium">Sedang Diproses</span>
+        return <span className="text-sm text-sky-600 dark:text-sky-400 font-normal">Sedang Diproses</span>
       case 'shipped':
-        return <span className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">Dikirim</span>
+        return <span className="text-sm text-indigo-600 dark:text-indigo-400 font-normal">Dikirim</span>
       case 'completed':
-        return <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">Selesai</span>
+        return <span className="text-sm text-emerald-600 dark:text-emerald-400 font-normal">Selesai</span>
       case 'cancelled':
-        return <span className="text-sm text-rose-600 dark:text-rose-400 font-medium">Dibatalkan</span>
+        return <span className="text-sm text-rose-600 dark:text-rose-400 font-normal">Dibatalkan</span>
     }
   }
 

@@ -21,6 +21,11 @@ export interface IProductService {
   getProductById(id: string): Promise<Product | null>
 
   /**
+   * Fetches a single product by its URL slug.
+   */
+  getProductBySlug(slug: string): Promise<Product | null>
+
+  /**
    * Fetches ALL products regardless of is_campaign flag. Used in admin selectors.
    */
   getAllProducts(): Promise<Product[]>

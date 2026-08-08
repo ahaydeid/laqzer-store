@@ -17,4 +17,23 @@ export interface Product {
   isCampaign: boolean
   variants?: string[] // Product variants e.g., ['S', 'M', 'L'] or ['Merah', 'Hitam']
   weight: number // Weight in grams (default 500)
+  slug?: string // URL-friendly product slug
 }
+
+/**
+ * Utility function to convert a product name into a URL slug.
+ */
+export function slugifyProductName(name: string, id?: string): string {
+  const baseSlug = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s-]+/g, '-')
+  
+  if (id) {
+    const shortId = id.split('-')[0]
+    return `${baseSlug}-${shortId}`
+  }
+  return baseSlug
+}
+

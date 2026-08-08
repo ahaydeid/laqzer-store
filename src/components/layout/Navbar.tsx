@@ -218,7 +218,7 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
                       {desktopResults.map((product) => (
                         <Link
                           key={product.id}
-                          href={`/product/${product.id}`}
+                          href={`/product/${product.slug || product.id}`}
                           onClick={() => {
                             setShowResults(false)
                             setSearchInput('')
@@ -469,7 +469,7 @@ export function Navbar({ settings, categories, products = [] }: NavbarProps) {
                     {mobileResults.map((product) => (
                       <Link
                         key={product.id}
-                        href={`/product/${product.id}`}
+                        href={`/product/${product.slug || product.id}`}
                         onClick={() => {
                           setShowMobileResults(false)
                           setMobileSearchInput('')

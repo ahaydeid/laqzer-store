@@ -75,7 +75,7 @@ export function ProductSection({ products }: ProductSectionProps) {
               className="group relative flex flex-col rounded md:rounded-xl bg-white overflow-hidden hover:shadow-md transition-all duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/40"
             >
               {/* Product link wrapper */}
-              <Link href={`/product/${product.id}`} className="flex flex-col flex-1">
+              <Link href={`/product/${product.slug || product.id}`} className="flex flex-col flex-1">
                 {/* Product Image */}
                 <div className="relative aspect-square w-full overflow-hidden bg-zinc-50 dark:bg-zinc-900">
                   {/* eslint-disable-next-line @next/next/no-img-element */}

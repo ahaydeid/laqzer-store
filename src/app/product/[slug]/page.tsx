@@ -6,16 +6,16 @@ import { Footer } from '@/components/layout/Footer'
 import { ProductDetailContainer } from './_components/ProductDetailContainer'
 
 interface ProductPageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
 }
 
 /**
  * Generate metadata dynamically for the product page (SEO Optimization)
  */
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { id } = await params
+  const { slug } = await params
   const services = getServices()
-  const product = await services.products.getProductById(id)
+  const product = await services.products.getProductBySlug(slug)
 
   if (!product) {
     return {
@@ -64,12 +64,12 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
  * Server Page Component for Product Details (Next.js 16 App Router)
  */
 export default async function ProductDetailPage({ params }: ProductPageProps) {
-  const { id } = await params
+  const { slug } = await params
   const services = getServices()
 
   // Fetch product data, store settings, categories, and all products concurrently
   const [product, storeSettings, categories, allProducts] = await Promise.all([
-    services.products.getProductById(id),
+    services.products.getProductBySlug(slug),
     services.store.getSettings(),
     services.categories.getCategories(),
     services.products.getProducts(),

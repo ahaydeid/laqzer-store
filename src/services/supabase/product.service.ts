@@ -1,6 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { IProductService } from '@/core/interfaces/product.interface'
-import { Product } from '@/core/types/product'
+import { Product, slugifyProductName } from '@/core/types/product'
 import { createClient as createBrowserClient } from './client'
 import { uploadBase64ToProductStorage } from './storage.service'
 
@@ -38,28 +38,30 @@ export class SupabaseProductService implements IProductService {
     return updatedData
   }
 
-  private mapToProduct(data: any): Product {
+  private mapToProduct(data: Record<string, unknown>): Product {
+    const defaultSlug = (data.slug as string) || slugifyProductName(data.name as string, data.id as string)
     return {
-      id: data.id,
-      name: data.name,
-      description: data.description || '',
+      id: data.id as string,
+      name: data.name as string,
+      description: (data.description as string) || '',
       price: Number(data.price),
       originalPrice: data.original_price ? Number(data.original_price) : undefined,
-      imageUrl: data.image_url,
-      images: Array.isArray(data.images) ? data.images : [],
-      category: data.category,
+      imageUrl: data.image_url as string,
+      images: Array.isArray(data.images) ? (data.images as string[]) : [],
+      category: data.category as string,
       rating: data.rating !== null && data.rating !== undefined ? Number(data.rating) : 5.0,
       soldCount: data.sold_count ? Number(data.sold_count) : 0,
       stock: Number(data.stock || 0),
       soldProgress: data.sold_progress ? Number(data.sold_progress) : 0,
       isCampaign: Boolean(data.is_campaign),
-      variants: Array.isArray(data.variants) ? data.variants : [],
+      variants: Array.isArray(data.variants) ? (data.variants as string[]) : [],
       weight: data.weight !== null && data.weight !== undefined ? Number(data.weight) : 500,
+      slug: defaultSlug,
     }
   }
 
-  private mapToDbPayload(product: Partial<Product>): any {
-    const payload: any = {}
+  private mapToDbPayload(product: Partial<Product>): Record<string, unknown> {
+    const payload: Record<string, unknown> = {}
     if (product.name !== undefined) payload.name = product.name
     if (product.description !== undefined) payload.description = product.description
     if (product.price !== undefined) payload.price = product.price
@@ -74,6 +76,8 @@ export class SupabaseProductService implements IProductService {
     if (product.isCampaign !== undefined) payload.is_campaign = product.isCampaign
     if (product.variants !== undefined) payload.variants = product.variants
     if (product.weight !== undefined) payload.weight = product.weight
+    if (product.slug !== undefined) payload.slug = product.slug
+    else if (product.name) payload.slug = slugifyProductName(product.name, product.id)
     return payload
   }
 
@@ -90,7 +94,7 @@ export class SupabaseProductService implements IProductService {
       return []
     }
 
-    return (data || []).map((row: any) => this.mapToProduct(row))
+    return (data || []).map((row: Record<string, unknown>) => this.mapToProduct(row))
   }
 
   async getAllProducts(): Promise<Product[]> {
@@ -105,7 +109,7 @@ export class SupabaseProductService implements IProductService {
       return []
     }
 
-    return (data || []).map((row: any) => this.mapToProduct(row))
+    return (data || []).map((row: Record<string, unknown>) => this.mapToProduct(row))
   }
 
   async getProducts(category?: string): Promise<Product[]> {
@@ -126,7 +130,7 @@ export class SupabaseProductService implements IProductService {
       return []
     }
 
-    return (data || []).map((row: any) => this.mapToProduct(row))
+    return (data || []).map((row: Record<string, unknown>) => this.mapToProduct(row))
   }
 
   async getProductById(id: string): Promise<Product | null> {
@@ -143,6 +147,23 @@ export class SupabaseProductService implements IProductService {
     }
 
     return this.mapToProduct(data)
+  }
+
+  async getProductBySlug(slug: string): Promise<Product | null> {
+    const supabase = this.getClient()
+    // First attempt to query by slug
+    const { data } = await supabase
+      .from('products')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle()
+
+    if (data) {
+      return this.mapToProduct(data)
+    }
+
+    // Fallback: If not found by slug, try querying by id
+    return this.getProductById(slug)
   }
 
   async createProduct(productData: Partial<Product>): Promise<Product> {
