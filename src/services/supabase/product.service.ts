@@ -120,7 +120,7 @@ export class SupabaseProductService implements IProductService {
       }
 
       return products.map((p) => {
-        const realSold = soldMap.get(p.id) ?? p.soldCount ?? 0
+        const realSold = soldMap.get(p.id) || 0
         const ratingInfo = ratingMap.get(p.id)
         const realRating = ratingInfo && ratingInfo.count > 0
           ? Number((ratingInfo.total / ratingInfo.count).toFixed(1))
