@@ -151,19 +151,52 @@ export class SupabaseProductService implements IProductService {
 
   async getProductBySlug(slug: string): Promise<Product | null> {
     const supabase = this.getClient()
-    // First attempt to query by slug
-    const { data } = await supabase
-      .from('products')
-      .select('*')
-      .eq('slug', slug)
-      .maybeSingle()
 
-    if (data) {
-      return this.mapToProduct(data)
+    // 1. If parameter is a full UUID format, attempt direct lookup by ID first
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
+    if (isUuid) {
+      const byId = await this.getProductById(slug)
+      if (byId) return byId
     }
 
-    // Fallback: If not found by slug, try querying by id
-    return this.getProductById(slug)
+    // 2. Attempt lookup by slug column in database
+    try {
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('slug', slug)
+        .maybeSingle()
+
+      if (data) return this.mapToProduct(data)
+    } catch {
+      // Ignore error if slug column does not exist in DB yet
+    }
+
+    // 3. Fallback: attempt lookup by direct ID
+    const byIdDirect = await this.getProductById(slug)
+    if (byIdDirect) return byIdDirect
+
+    // 4. Fallback: extract short ID prefix from end of slug (e.g., '0190cf6e' from 'name-0190cf6e')
+    const parts = slug.split('-')
+    const lastPart = parts[parts.length - 1]
+    if (lastPart && lastPart.length >= 8) {
+      const { data: candidates } = await supabase
+        .from('products')
+        .select('*')
+        .ilike('id', `${lastPart}%`)
+
+      if (candidates && candidates.length > 0) {
+        return this.mapToProduct(candidates[0])
+      }
+    }
+
+    // 5. Final fallback: fetch catalog products and match by slugifyProductName
+    const allProducts = await this.getAllProducts()
+    const match = allProducts.find(
+      (p) => (p.slug && p.slug === slug) || slugifyProductName(p.name, p.id) === slug || p.id === slug
+    )
+
+    return match || null
   }
 
   async createProduct(productData: Partial<Product>): Promise<Product> {
