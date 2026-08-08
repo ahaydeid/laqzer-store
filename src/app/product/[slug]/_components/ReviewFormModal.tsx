@@ -233,14 +233,14 @@ export function ReviewFormModal({
         {/* Optional Review Comment Text */}
         <div className="space-y-1.5">
           <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-            Ulasan Tulis <span className="text-zinc-400 font-normal">(Opsional)</span>
+            Ulasan <span className="text-zinc-400 font-normal">(Opsional)</span>
           </label>
           <textarea
             rows={4}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Bagikan pengalaman penggunaan produk ini..."
-            className="w-full text-xs bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
+            className="w-full text-xs bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-rose-500 resize-none"
           />
         </div>
 

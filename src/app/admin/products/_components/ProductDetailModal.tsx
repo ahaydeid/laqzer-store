@@ -64,8 +64,8 @@ export function ProductDetailModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Detail Rincian Produk"
-      size="2xl"
+      title="Detail Produk"
+      size="4xl"
       footer={footer}
     >
       <div className="p-5 space-y-6">
@@ -171,7 +171,7 @@ export function ProductDetailModal({
           </div>
 
           <div className="rounded bg-zinc-50 dark:bg-zinc-900/50 p-3.5">
-            <div className="text-amber-500 text-xs mb-1 font-medium">
+            <div className="text-zinc-500 text-xs mb-1 font-medium">
               Rating Produk
             </div>
             <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200">

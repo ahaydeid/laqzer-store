@@ -268,7 +268,7 @@ export function ProductFormModal({
       isOpen={isOpen}
       onClose={handleClose}
       title={isEdit ? 'Edit Detail Produk' : 'Tambah Produk Baru'}
-      size="2xl"
+      size="7xl"
       footer={footer}
     >
       <div className="p-5 space-y-5">
