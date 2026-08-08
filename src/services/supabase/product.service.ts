@@ -159,7 +159,7 @@ export class SupabaseProductService implements IProductService {
       if (byId) return byId
     }
 
-    // 2. Attempt lookup by slug column in database
+    // 2. Attempt lookup by slug column in database (if column exists)
     try {
       const { data } = await supabase
         .from('products')
@@ -172,28 +172,17 @@ export class SupabaseProductService implements IProductService {
       // Ignore error if slug column does not exist in DB yet
     }
 
-    // 3. Fallback: attempt lookup by direct ID
+    // 3. Attempt lookup by direct ID
     const byIdDirect = await this.getProductById(slug)
     if (byIdDirect) return byIdDirect
 
-    // 4. Fallback: extract short ID prefix from end of slug (e.g., '0190cf6e' from 'name-0190cf6e')
-    const parts = slug.split('-')
-    const lastPart = parts[parts.length - 1]
-    if (lastPart && lastPart.length >= 8) {
-      const { data: candidates } = await supabase
-        .from('products')
-        .select('*')
-        .ilike('id', `${lastPart}%`)
-
-      if (candidates && candidates.length > 0) {
-        return this.mapToProduct(candidates[0])
-      }
-    }
-
-    // 5. Final fallback: fetch catalog products and match by slugifyProductName
+    // 4. Fetch all catalog products and match by slugifyProductName or ID
     const allProducts = await this.getAllProducts()
     const match = allProducts.find(
-      (p) => (p.slug && p.slug === slug) || slugifyProductName(p.name, p.id) === slug || p.id === slug
+      (p) =>
+        (p.slug && p.slug === slug) ||
+        slugifyProductName(p.name, p.id) === slug ||
+        p.id === slug
     )
 
     return match || null
