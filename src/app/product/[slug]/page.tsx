@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getServices } from '@/services'
+import { unstable_cache } from 'next/cache'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ProductDetailContainer } from './_components/ProductDetailContainer'
@@ -9,13 +10,43 @@ interface ProductPageProps {
   params: Promise<{ slug: string }>
 }
 
+const services = getServices()
+
+// Cache settings & categories lama — jarang berubah (sinkron dengan homepage)
+const getCachedSettings = unstable_cache(
+  () => services.store.getSettings(),
+  ['store-settings'],
+  { revalidate: 3600 }
+)
+
+const getCachedCategories = unstable_cache(
+  () => services.categories.getCategories(),
+  ['categories'],
+  { revalidate: 3600 }
+)
+
+// Cache semua produk selama 60 detik — sinkron dengan homepage (tag: 'products')
+const getCachedProducts = unstable_cache(
+  () => services.products.getProducts(),
+  ['products'],
+  { revalidate: 60, tags: ['products'] }
+)
+
+// Cache detail produk per slug selama 60 detik
+// Tag 'products' agar ikut di-revalidate saat admin update produk
+const getCachedProductBySlug = (slug: string) =>
+  unstable_cache(
+    () => services.products.getProductBySlug(slug),
+    ['product', slug],
+    { revalidate: 60, tags: ['products', `product-${slug}`] }
+  )()
+
 /**
  * Generate metadata dynamically for the product page (SEO Optimization)
  */
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params
-  const services = getServices()
-  const product = await services.products.getProductBySlug(slug)
+  const product = await getCachedProductBySlug(slug)
 
   if (!product) {
     return {
@@ -62,17 +93,17 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 /**
  * Server Page Component for Product Details (Next.js 16 App Router)
+ * Semua fetch menggunakan unstable_cache — tidak hit Supabase setiap request.
  */
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { slug } = await params
-  const services = getServices()
 
-  // Fetch product data, store settings, categories, and all products concurrently
+  // Fetch semua data dari cache secara paralel
   const [product, storeSettings, categories, allProducts] = await Promise.all([
-    services.products.getProductBySlug(slug),
-    services.store.getSettings(),
-    services.categories.getCategories(),
-    services.products.getProducts(),
+    getCachedProductBySlug(slug),
+    getCachedSettings(),
+    getCachedCategories(),
+    getCachedProducts(),
   ])
 
   // If the product does not exist, trigger the 404 page
