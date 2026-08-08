@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart, FiHeart, FiCheck, FiLoader } from 'react-icons/fi'
+import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiStar, FiMessageSquare, FiShoppingCart, FiHeart, FiCheck, FiLoader, FiEdit2 } from 'react-icons/fi'
 import { FaWhatsapp, FaFacebook, FaInstagram, FaTiktok, FaLink, FaHeart, FaStar } from 'react-icons/fa'
 import { Product, getProductSlug } from '@/core/types/product'
 import { StoreSettings } from '@/core/types/store'
@@ -33,6 +33,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const [loadingReviews, setLoadingReviews] = useState<boolean>(true)
   const [eligibility, setEligibility] = useState<ReviewEligibility>({ isEligible: false, eligibleOrders: [] })
   const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false)
+  const [editingReview, setEditingReview] = useState<ProductReview | null>(null)
 
   const [reloadKey, setReloadKey] = useState(0)
 
@@ -958,6 +959,17 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                           <div>
                             <div className="flex items-center gap-2">
                               <h5 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{rev.userName}</h5>
+                              {user?.id === rev.userId && (
+                                <button
+                                  onClick={() => {
+                                    setEditingReview(rev)
+                                    setIsReviewModalOpen(true)
+                                  }}
+                                  className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 flex items-center gap-1 cursor-pointer transition-colors"
+                                >
+                                  <FiEdit2 className="h-3 w-3" /> Edit Ulasan
+                                </button>
+                              )}
                             </div>
                             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                               {rev.variantLabel ? `Varian: ${rev.variantLabel} • ` : ''}
@@ -1077,14 +1089,18 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
         </div>
       )}
 
-      {/* Form Modal untuk Tulis Ulasan Real */}
+      {/* Form Modal untuk Tulis / Edit Ulasan Real */}
       <ReviewFormModal
         isOpen={isReviewModalOpen}
-        onClose={() => setIsReviewModalOpen(false)}
+        onClose={() => {
+          setIsReviewModalOpen(false)
+          setEditingReview(null)
+        }}
         productId={product.id}
         productName={product.name}
         productImageUrl={product.imageUrl}
         eligibleOrders={eligibility.eligibleOrders}
+        initialReview={editingReview}
         onReviewSubmitted={handleReviewSubmitted}
       />
     </div>

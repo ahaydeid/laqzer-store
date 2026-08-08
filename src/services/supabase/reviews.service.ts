@@ -197,4 +197,27 @@ export class SupabaseReviewsService {
       createdAt: data.created_at,
     }
   }
+
+  /**
+   * Update an existing product review submitted by the user.
+   */
+  async updateReview(params: {
+    reviewId: string
+    rating: number
+    comment?: string
+  }): Promise<void> {
+    const supabase = this.getClient()
+
+    const { error } = await supabase
+      .from('product_reviews')
+      .update({
+        rating: params.rating,
+        comment: params.comment ? params.comment.trim() : null,
+      })
+      .eq('id', params.reviewId)
+
+    if (error) {
+      throw new Error(error.message || 'Gagal memperbarui ulasan')
+    }
+  }
 }

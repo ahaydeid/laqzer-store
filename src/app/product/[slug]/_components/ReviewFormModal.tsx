@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { FiStar, FiLoader, FiCheckCircle } from 'react-icons/fi'
 import { FaStar } from 'react-icons/fa'
-import { EligibleOrderForReview } from '@/core/types/review'
+import { EligibleOrderForReview, ProductReview } from '@/core/types/review'
 import { SupabaseReviewsService } from '@/services/supabase/reviews.service'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { Modal } from '@/components/ui/Modal'
@@ -16,6 +16,7 @@ interface ReviewFormModalProps {
   productName: string
   productImageUrl: string
   eligibleOrders: EligibleOrderForReview[]
+  initialReview?: ProductReview | null
   onReviewSubmitted: () => void
 }
 
@@ -26,22 +27,37 @@ export function ReviewFormModal({
   productName,
   productImageUrl,
   eligibleOrders,
+  initialReview,
   onReviewSubmitted,
 }: ReviewFormModalProps) {
   const { user } = useAuth()
   const reviewsService = useMemo(() => new SupabaseReviewsService(), [])
 
+  const [prevReview, setPrevReview] = useState<ProductReview | null | undefined>(initialReview)
   const [selectedOrderId, setSelectedOrderId] = useState<string>(
     eligibleOrders[0]?.orderId || ''
   )
-  const [rating, setRating] = useState<number>(0)
+  const [rating, setRating] = useState<number>(initialReview ? initialReview.rating : 0)
   const [hoverRating, setHoverRating] = useState<number>(0)
-  const [comment, setComment] = useState<string>('')
+  const [comment, setComment] = useState<string>(initialReview ? initialReview.comment || '' : '')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
+  if (prevReview !== initialReview) {
+    setPrevReview(initialReview)
+    setRating(initialReview ? initialReview.rating : 0)
+    setComment(initialReview ? initialReview.comment || '' : '')
+  }
 
   if (!isOpen) return null
 
-  const selectedOrder = eligibleOrders.find((o) => o.orderId === selectedOrderId) || eligibleOrders[0]
+  const isEditing = Boolean(initialReview)
+  const selectedOrder = isEditing
+    ? {
+        orderId: initialReview!.orderId,
+        orderNumber: initialReview!.orderNumber,
+        variantLabel: initialReview!.variantLabel,
+      }
+    : eligibleOrders.find((o) => o.orderId === selectedOrderId) || eligibleOrders[0]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -66,36 +82,53 @@ export function ReviewFormModal({
       return
     }
 
-    if (!selectedOrder) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Transaksi Tidak Ditemukan',
-        text: 'Tidak ada transaksi selesai yang valid untuk produk ini.',
-        confirmButtonColor: '#e11d48',
-      })
-      return
-    }
-
     setIsSubmitting(true)
 
     try {
-      await reviewsService.createReview({
-        orderId: selectedOrder.orderId,
-        orderNumber: selectedOrder.orderNumber,
-        productId,
-        userId: user.id,
-        rating,
-        comment: comment.trim() ? comment.trim() : undefined,
-        variantLabel: selectedOrder.variantLabel,
-      })
+      if (isEditing && initialReview) {
+        await reviewsService.updateReview({
+          reviewId: initialReview.id,
+          rating,
+          comment: comment.trim() ? comment.trim() : undefined,
+        })
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Ulasan Berhasil Dikirim!',
-        text: 'Terima kasih atas ulasan dan penilaian Anda.',
-        confirmButtonColor: '#e11d48',
-        timer: 2000,
-      })
+        Swal.fire({
+          icon: 'success',
+          title: 'Ulasan Berhasil Diperbarui!',
+          text: 'Penilaian dan ulasan Anda telah diperbarui.',
+          confirmButtonColor: '#e11d48',
+          timer: 2000,
+        })
+      } else {
+        if (!selectedOrder) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Transaksi Tidak Ditemukan',
+            text: 'Tidak ada transaksi selesai yang valid untuk produk ini.',
+            confirmButtonColor: '#e11d48',
+          })
+          setIsSubmitting(false)
+          return
+        }
+
+        await reviewsService.createReview({
+          orderId: selectedOrder.orderId,
+          orderNumber: selectedOrder.orderNumber,
+          productId,
+          userId: user.id,
+          rating,
+          comment: comment.trim() ? comment.trim() : undefined,
+          variantLabel: selectedOrder.variantLabel,
+        })
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Ulasan Berhasil Dikirim!',
+          text: 'Terima kasih atas ulasan dan penilaian Anda.',
+          confirmButtonColor: '#e11d48',
+          timer: 2000,
+        })
+      }
 
       onReviewSubmitted()
       onClose()
@@ -103,7 +136,7 @@ export function ReviewFormModal({
       const msg = err instanceof Error ? err.message : String(err)
       Swal.fire({
         icon: 'error',
-        title: 'Gagal Kirim Ulasan',
+        title: 'Gagal Menyimpan Ulasan',
         text: msg || 'Terjadi kesalahan saat menyimpan ulasan.',
         confirmButtonColor: '#e11d48',
       })
@@ -116,7 +149,7 @@ export function ReviewFormModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Beri Penilaian & Ulasan"
+      title={isEditing ? 'Edit Penilaian & Ulasan' : 'Beri Penilaian & Ulasan'}
       size="lg"
       showCloseButton={!isSubmitting}
       closeOnBackdrop={!isSubmitting}
@@ -145,8 +178,8 @@ export function ReviewFormModal({
           </div>
         </div>
 
-        {/* Select Order ID (If multiple eligible orders exist) */}
-        {eligibleOrders.length > 1 && (
+        {/* Select Order ID (Only shown if creating & multiple eligible orders exist) */}
+        {!isEditing && eligibleOrders.length > 1 && (
           <div className="space-y-1.5">
             <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
               Pilih Nomor Transaksi
@@ -209,7 +242,7 @@ export function ReviewFormModal({
             rows={4}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Bagikan pengalaman penggunaan produk ini (opsional)..."
+            placeholder="Bagikan pengalaman penggunaan produk ini..."
             className="w-full text-xs bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
           />
         </div>
@@ -231,8 +264,10 @@ export function ReviewFormModal({
           >
             {isSubmitting ? (
               <>
-                <FiLoader className="h-4 w-4 animate-spin" /> Mengirim...
+                <FiLoader className="h-4 w-4 animate-spin" /> {isEditing ? 'Memperbarui...' : 'Mengirim...'}
               </>
+            ) : isEditing ? (
+              'Simpan Perubahan'
             ) : (
               'Kirim Penilaian'
             )}
