@@ -1,9 +1,26 @@
--- Migration 22: Convert products.id and ALL dependent foreign keys (wishlists, cart_items, campaigns, order_items) from TEXT to UUID
+-- Migration 22: Convert products.id and ALL dependent foreign keys from TEXT to UUID
 
--- 1. Drop ALL foreign key constraints pointing to public.products(id)
-ALTER TABLE public.wishlists DROP CONSTRAINT IF EXISTS fk_wishlists_products;
-ALTER TABLE public.cart_items DROP CONSTRAINT IF EXISTS cart_items_product_id_fkey;
-ALTER TABLE public.campaigns DROP CONSTRAINT IF EXISTS campaigns_product_id_fkey;
+-- 1. Automatically detect and drop ALL foreign key constraints pointing to public.products(id)
+DO $$ 
+DECLARE 
+    r RECORD;
+BEGIN
+    FOR r IN (
+        SELECT tc.table_schema, tc.table_name, tc.constraint_name 
+        FROM information_schema.table_constraints AS tc 
+        JOIN information_schema.key_column_usage AS kcu
+          ON tc.constraint_name = kcu.constraint_name
+          AND tc.table_schema = kcu.table_schema
+        JOIN information_schema.constraint_column_usage AS ccu
+          ON ccu.constraint_name = tc.constraint_name
+          AND ccu.table_schema = tc.table_schema
+        WHERE tc.constraint_type = 'FOREIGN KEY' 
+          AND ccu.table_name = 'products'
+          AND ccu.column_name = 'id'
+    ) LOOP
+        EXECUTE 'ALTER TABLE ' || quote_ident(r.table_schema) || '.' || quote_ident(r.table_name) || ' DROP CONSTRAINT IF EXISTS ' || quote_ident(r.constraint_name);
+    END LOOP;
+END $$;
 
 -- 2. Convert ALL dependent product_id columns from TEXT to UUID
 ALTER TABLE public.wishlists ALTER COLUMN product_id TYPE UUID USING product_id::uuid;
