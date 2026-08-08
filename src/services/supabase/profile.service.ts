@@ -6,22 +6,22 @@ export class SupabaseProfileService {
     return createClient()
   }
 
-  private mapToUserProfile(row: any): UserProfile {
+  private mapToUserProfile(row: Record<string, unknown>): UserProfile {
     return {
-      id: row.id,
-      email: row.email,
-      fullName: row.full_name || undefined,
-      avatarUrl: row.avatar_url || undefined,
-      phone: row.phone || undefined,
-      gender: row.gender || undefined,
-      birthDate: row.birth_date || undefined,
-      address: row.address || undefined,
-      province: row.province || undefined,
-      city: row.city || undefined,
-      subdistrict: row.subdistrict || undefined,
-      subdistrictId: row.subdistrict_id || undefined,
-      postalCode: row.postal_code || undefined,
-      createdAt: row.created_at,
+      id: row.id as string,
+      email: row.email as string,
+      fullName: (row.full_name as string) || undefined,
+      avatarUrl: (row.avatar_url as string) || undefined,
+      phone: (row.phone as string) || undefined,
+      gender: (row.gender as string) || undefined,
+      birthDate: (row.birth_date as string) || undefined,
+      address: (row.address as string) || undefined,
+      province: (row.province as string) || undefined,
+      city: (row.city as string) || undefined,
+      subdistrict: (row.subdistrict as string) || undefined,
+      subdistrictId: (row.subdistrict_id as string) || undefined,
+      postalCode: (row.postal_code as string) || undefined,
+      createdAt: row.created_at as string,
     }
   }
 
@@ -39,26 +39,26 @@ export class SupabaseProfileService {
     }
 
     if (!data) return null
-    return this.mapToUserProfile(data)
+    return this.mapToUserProfile(data as Record<string, unknown>)
   }
 
   async updateProfile(userId: string, data: Partial<UserProfile>): Promise<void> {
     const supabase = this.getClient()
     
     // Siapkan payload dengan penamaan database (snake_case)
-    const payload: any = { id: userId }
+    const payload: Record<string, unknown> = { id: userId }
     if (data.email !== undefined) payload.email = data.email
     if (data.fullName !== undefined) payload.full_name = data.fullName
-    if (data.avatarUrl !== undefined) payload.avatar_url = data.avatarUrl
-    if (data.phone !== undefined) payload.phone = data.phone
-    if (data.gender !== undefined) payload.gender = data.gender
-    if (data.birthDate !== undefined) payload.birth_date = data.birthDate
-    if (data.address !== undefined) payload.address = data.address
-    if (data.province !== undefined) payload.province = data.province
-    if (data.city !== undefined) payload.city = data.city
-    if (data.subdistrict !== undefined) payload.subdistrict = data.subdistrict
-    if (data.subdistrictId !== undefined) payload.subdistrict_id = data.subdistrictId
-    if (data.postalCode !== undefined) payload.postal_code = data.postalCode
+    if (data.avatarUrl !== undefined) payload.avatar_url = data.avatarUrl || null
+    if (data.phone !== undefined) payload.phone = data.phone || null
+    if (data.gender !== undefined) payload.gender = data.gender || null
+    if (data.birthDate !== undefined) payload.birth_date = data.birthDate || null
+    if (data.address !== undefined) payload.address = data.address || null
+    if (data.province !== undefined) payload.province = data.province || null
+    if (data.city !== undefined) payload.city = data.city || null
+    if (data.subdistrict !== undefined) payload.subdistrict = data.subdistrict || null
+    if (data.subdistrictId !== undefined) payload.subdistrict_id = data.subdistrictId || null
+    if (data.postalCode !== undefined) payload.postal_code = data.postalCode || null
 
     payload.updated_at = new Date().toISOString()
 

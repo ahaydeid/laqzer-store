@@ -58,8 +58,9 @@ export function UserProfileContainer() {
   useEffect(() => {
     if (!user) return
 
-    setLoading(true)
+    let isMounted = true
     profileService.getProfile(user.id).then(prof => {
+      if (!isMounted) return
       const defaultProf: UserProfile = prof || {
         id: user.id,
         email: user.email || '',
@@ -82,24 +83,27 @@ export function UserProfileContainer() {
 
       if (defaultProf.subdistrict) {
         setSearchQuery(`${defaultProf.subdistrict}, ${defaultProf.city}, ${defaultProf.province}`)
+        setIsLocationSelected(true)
       } else {
         setSearchQuery('')
+        setIsLocationSelected(false)
       }
       
-      setLoading(false)
+      if (isMounted) setLoading(false)
     }).catch(err => {
       console.error('Gagal memuat profil user:', err)
-      setLoading(false)
+      if (isMounted) setLoading(false)
     })
+
+    return () => {
+      isMounted = false
+    }
   }, [user, profileService])
 
   // 2. Autocomplete search logic (debounced + client cache)
   useEffect(() => {
     // Jangan fetch jika lokasi sudah dipilih — tunggu user mengetik lagi
-    if (isLocationSelected) return
-
-    if (!isEditing || searchQuery.length < 3) {
-      setSearchResults([])
+    if (isLocationSelected || !isEditing || searchQuery.length < 3) {
       return
     }
 
@@ -114,7 +118,9 @@ export function UserProfileContainer() {
           setShowDropdown(true)
           return // 0 API call
         }
-      } catch (_) {}
+      } catch {
+        // Abaikan error cache
+      }
 
       // ── Hit server jika cache miss ─────────────────────────────
       setSearching(true)
@@ -127,7 +133,9 @@ export function UserProfileContainer() {
           setSearching(false)
           // Simpan ke sessionStorage untuk query yang sama berikutnya
           if (results.length > 0) {
-            try { sessionStorage.setItem(cacheKey, JSON.stringify(results)) } catch (_) {}
+            try { sessionStorage.setItem(cacheKey, JSON.stringify(results)) } catch {
+              // Abaikan storage quota error
+            }
           }
         })
         .catch(err => {
@@ -187,8 +195,10 @@ export function UserProfileContainer() {
 
       if (initialProfile.subdistrict) {
         setSearchQuery(`${initialProfile.subdistrict}, ${initialProfile.city}, ${initialProfile.province}`)
+        setIsLocationSelected(true)
       } else {
         setSearchQuery('')
+        setIsLocationSelected(false)
       }
     }
     setIsEditing(false)
@@ -198,18 +208,6 @@ export function UserProfileContainer() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
-
-    // Validasi: Lokasi harus dipilih via autocomplete
-    if (!subdistrictId || !city || !province) {
-      playSwalSound('confirm')
-      Swal.fire({
-        title: 'Lokasi Belum Valid',
-        text: 'Silakan cari dan pilih Kecamatan / Kota Anda dari daftar hasil pencarian.',
-        icon: 'warning',
-        confirmButtonColor: '#e11d48',
-      })
-      return
-    }
 
     // Konfirmasi dialog sebelum menyimpan
     playSwalSound('confirm')
@@ -238,7 +236,7 @@ export function UserProfileContainer() {
       province,
       city,
       subdistrict,
-      subdistrictId, // Satu-satunya ID yang digunakan untuk menghitung ongkir
+      subdistrictId,
       postalCode,
     }
 
@@ -260,11 +258,11 @@ export function UserProfileContainer() {
         text: 'Data profil dan alamat pengiriman Anda berhasil disimpan.',
         confirmButtonColor: '#e11d48',
       })
-    } catch (err: any) {
+    } catch (err: unknown) {
       Swal.fire({
         icon: 'error',
         title: 'Gagal Menyimpan',
-        text: err?.message || 'Terjadi kesalahan.',
+        text: err instanceof Error ? err.message : 'Terjadi kesalahan.',
         confirmButtonColor: '#e11d48',
       })
     } finally {
