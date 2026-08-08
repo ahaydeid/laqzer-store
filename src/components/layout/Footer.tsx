@@ -26,7 +26,7 @@ export function Footer({ settings }: FooterProps) {
             {/* Misi */}
             <div className="lg:col-span-2 space-y-2">
               <h3 className="text-white text-sm font-semibold uppercase tracking-wider">Misi</h3>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs sm:text-sm text-zinc-400">
+              <ul className="space-y-2 text-xs sm:text-sm text-zinc-400">
                 <li className="flex items-start gap-2">
                   <span className="text-rose-400 font-bold shrink-0">•</span>
                   <span>Menghadirkan fashion dengan gaya cute dan Korean Style yang trendy namun tetap timeless.</span>
