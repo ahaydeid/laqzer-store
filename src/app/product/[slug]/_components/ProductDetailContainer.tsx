@@ -919,7 +919,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                     className="py-3 px-5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 self-start md:self-auto"
                   >
                     <FiMessageSquare className="h-4 w-4" />
-                    <span>Tulis Ulasan (Order #{eligibility.eligibleOrders[0]?.orderNumber})</span>
+                    <span>Tulis Ulasan</span>
                   </button>
                 )}
               </div>
