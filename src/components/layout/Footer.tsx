@@ -28,27 +28,27 @@ export function Footer({ settings }: FooterProps) {
               <h3 className="text-white text-sm font-semibold uppercase tracking-wider">Misi</h3>
               <ul className="space-y-2 text-xs sm:text-sm text-zinc-400">
                 <li className="flex items-start gap-2">
-                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span className="text-white font-bold shrink-0">•</span>
                   <span>Menghadirkan fashion dengan gaya cute dan Korean Style yang trendy namun tetap timeless.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span className="text-white font-bold shrink-0">•</span>
                   <span>Mengutamakan kenyamanan dan kualitas dengan menggunakan bahan premium.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span className="text-white font-bold shrink-0">•</span>
                   <span>Menciptakan desain yang kreatif dan inovatif sesuai dengan karakter konsumen.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span className="text-white font-bold shrink-0">•</span>
                   <span>Memahami kebutuhan konsumen dalam aktivitas sehari-hari.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span className="text-white font-bold shrink-0">•</span>
                   <span>Mengikuti perkembangan tren fashion dunia tanpa mengesampingkan karakter Laqzer.indonesia.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-rose-400 font-bold shrink-0">•</span>
+                  <span className="text-white font-bold shrink-0">•</span>
                   <span>Menggabungkan estetika, kualitas, dan kenyamanan dalam setiap produk.</span>
                 </li>
               </ul>
