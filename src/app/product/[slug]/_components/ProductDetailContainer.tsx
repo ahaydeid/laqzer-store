@@ -571,12 +571,12 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center justify-center gap-1 text-xs font-bold text-zinc-900 dark:text-white">
                   <FiStar className="h-3.5 w-3.5 text-yellow-500 fill-current" />
-                  <span>{product.rating}</span>
+                  <span>{reviews.length > 0 ? avgRating.toFixed(1) : '0.0'}</span>
                 </div>
                 <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">rating</span>
               </div>
               <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-bold text-zinc-900 dark:text-white">0</span>
+                <span className="text-xs font-bold text-zinc-900 dark:text-white">{reviews.length}</span>
                 <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">penilaian</span>
               </div>
               <div className="flex flex-col gap-0.5">
@@ -735,12 +735,12 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center justify-center gap-1 text-sm font-bold text-zinc-900 dark:text-white">
                   <FiStar className="h-4 w-4 text-yellow-500 fill-current" />
-                  <span>{product.rating}</span>
+                  <span>{reviews.length > 0 ? avgRating.toFixed(1) : '0.0'}</span>
                 </div>
                 <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">rating</span>
               </div>
               <div className="flex flex-col gap-0.5">
-                <span className="text-sm font-bold text-zinc-900 dark:text-white">0</span>
+                <span className="text-sm font-bold text-zinc-900 dark:text-white">{reviews.length}</span>
                 <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">penilaian</span>
               </div>
               <div className="flex flex-col gap-0.5">
