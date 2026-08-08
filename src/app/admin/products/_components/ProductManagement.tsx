@@ -323,8 +323,8 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
                         alt={product.name}
                         className="h-9 w-9 rounded-lg object-cover bg-zinc-50 dark:bg-zinc-900 flex-shrink-0"
                       />
-                      <div className="flex flex-col">
-                        <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-medium text-zinc-900 dark:text-zinc-100 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={product.name}>
                           {product.name}
                         </span>
                         {product.isCampaign && (
