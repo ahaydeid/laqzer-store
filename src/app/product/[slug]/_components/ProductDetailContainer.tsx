@@ -972,12 +972,12 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                               )}
                             </div>
                             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                              {rev.variantLabel ? `Varian: ${rev.variantLabel} • ` : ''}
                               {new Date(rev.createdAt).toLocaleDateString('id-ID', {
                                 day: 'numeric',
                                 month: 'short',
                                 year: 'numeric',
                               })}
+                              {rev.variantLabel ? ` | Varian: ${rev.variantLabel}` : ''}
                             </p>
                           </div>
                           <div className="flex items-center gap-0.5 shrink-0">
