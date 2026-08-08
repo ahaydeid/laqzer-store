@@ -569,15 +569,15 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
             {/* 3. Rating Box (4 Columns: Rating, Penilaian, Terjual, Favorit) */}
             <div className="grid grid-cols-4 divide-x divide-zinc-100 dark:divide-zinc-900 border-y border-zinc-100 dark:border-zinc-900 py-2 text-center bg-transparent">
               <div className="flex flex-col gap-0.5">
-                <div className="flex items-center justify-center gap-1 text-xs font-bold text-zinc-900 dark:text-white leading-none">
+                <div className="flex items-center justify-center gap-1 text-xs font-bold text-zinc-900 dark:text-white">
                   <FiStar
-                    className={`h-3.5 w-3.5 shrink-0 fill-current ${
+                    className={`h-3.5 w-3.5 shrink-0 fill-current -translate-y-[0.5px] ${
                       reviews.length > 0 && avgRating > 0
                         ? 'text-yellow-500'
                         : 'text-zinc-300 dark:text-zinc-600'
                     }`}
                   />
-                  <span className="leading-none">{reviews.length > 0 ? avgRating.toFixed(1) : '0.0'}</span>
+                  <span>{reviews.length > 0 ? avgRating.toFixed(1) : '0.0'}</span>
                 </div>
                 <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">rating</span>
               </div>
@@ -739,15 +739,15 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
             {/* Rating Stats Box (4 Columns: Rating, Penilaian, Terjual, Favorit) */}
             <div className="grid grid-cols-4 divide-x divide-zinc-100 dark:divide-zinc-900 border-y border-zinc-100 dark:border-zinc-900 py-3 text-center bg-transparent">
               <div className="flex flex-col gap-0.5">
-                <div className="flex items-center justify-center gap-1 text-sm font-bold text-zinc-900 dark:text-white leading-none">
+                <div className="flex items-center justify-center gap-1 text-sm font-bold text-zinc-900 dark:text-white">
                   <FiStar
-                    className={`h-4 w-4 shrink-0 fill-current ${
+                    className={`h-4 w-4 shrink-0 fill-current -translate-y-[0.5px] ${
                       reviews.length > 0 && avgRating > 0
                         ? 'text-yellow-500'
                         : 'text-zinc-300 dark:text-zinc-600'
                     }`}
                   />
-                  <span className="leading-none">{reviews.length > 0 ? avgRating.toFixed(1) : '0.0'}</span>
+                  <span>{reviews.length > 0 ? avgRating.toFixed(1) : '0.0'}</span>
                 </div>
                 <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">rating</span>
               </div>
@@ -1067,15 +1067,15 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                       {p.name}
                     </h4>
                     <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
-                      <div className="flex items-center gap-1 leading-none">
+                      <div className="flex items-center gap-1">
                         <FiStar
-                          className={`h-3 w-3 shrink-0 fill-current ${
+                          className={`h-3 w-3 shrink-0 fill-current -translate-y-[0.5px] ${
                             p.rating > 0
                               ? 'text-yellow-500'
                               : 'text-zinc-300 dark:text-zinc-600'
                           }`}
                         />
-                        <span className="font-semibold text-zinc-700 dark:text-zinc-300 leading-none">
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">
                           {p.rating > 0 ? p.rating.toFixed(1) : '0.0'}
                         </span>
                       </div>

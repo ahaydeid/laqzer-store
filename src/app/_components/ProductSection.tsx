@@ -102,15 +102,15 @@ export function ProductSection({ products }: ProductSectionProps) {
 
                     {/* Rating and Sold Count */}
                     <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
-                      <div className="flex items-center gap-1 leading-none">
+                      <div className="flex items-center gap-1">
                         <FiStar
-                          className={`h-3 w-3 shrink-0 fill-current ${
+                          className={`h-3 w-3 shrink-0 fill-current -translate-y-[0.5px] ${
                             product.rating > 0
                               ? 'text-yellow-500'
                               : 'text-zinc-300 dark:text-zinc-600'
                           }`}
                         />
-                        <span className="font-semibold text-zinc-700 dark:text-zinc-300 leading-none">
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">
                           {product.rating > 0 ? product.rating.toFixed(1) : '0.0'}
                         </span>
                       </div>
