@@ -451,7 +451,7 @@ export function UserProfileContainer() {
         <div className="space-y-4">
           <div className="border-b border-zinc-100 dark:border-zinc-800 pb-3">
             <h2 className="font-bold text-zinc-900 dark:text-white">
-              Alamat Pengiriman (Siap RajaOngkir)
+              Alamat Pengiriman
             </h2>
           </div>
 
