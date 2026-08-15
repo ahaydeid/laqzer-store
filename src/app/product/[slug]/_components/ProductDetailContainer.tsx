@@ -405,8 +405,17 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               </button>
 
               {/* Thumbnails Container */}
-              <div className="relative py-3 px-1">
-                <div className="flex items-center justify-center gap-3.5 overflow-x-auto no-scrollbar py-1">
+              <div className="relative overflow-hidden py-3">
+                {/* Left Gradient Overlay */}
+                <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent dark:from-zinc-950 pointer-events-none z-10" />
+
+                {/* Translating Track */}
+                <div 
+                  className="flex items-center gap-3 transition-transform duration-300 ease-out py-1"
+                  style={{ 
+                    transform: `translateX(calc(50% - 28px - ${activeImageIdx * 68}px))` 
+                  }}
+                >
                   {galleryImages.map((img, idx) => (
                     <button
                       key={idx}
@@ -414,7 +423,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                       className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 transition-all flex-shrink-0 cursor-pointer outline-none focus:outline-none ${
                         activeImageIdx === idx 
                           ? 'ring-2 ring-sky-500 border-transparent scale-105 shadow-xs' 
-                          : 'border border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700 opacity-70 hover:opacity-100'
+                          : 'border border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700 opacity-60 hover:opacity-100'
                       }`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -422,6 +431,9 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                     </button>
                   ))}
                 </div>
+
+                {/* Right Gradient Overlay */}
+                <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent dark:from-zinc-950 pointer-events-none z-10" />
               </div>
 
               {/* Right Chevron Button */}
