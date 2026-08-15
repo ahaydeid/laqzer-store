@@ -85,17 +85,22 @@ function ChatContent() {
       <div className={`h-full md:grid ${isCollapsed ? "md:grid-cols-[80px_1fr]" : "md:grid-cols-[380px_1fr]"} transition-all duration-300 overflow-hidden bg-white dark:bg-zinc-900/40`}>
         {/* Left Column: Chat List */}
         <div className="flex flex-col md:h-full md:overflow-hidden md:border-r md:border-zinc-200 dark:md:border-zinc-800 bg-white dark:bg-zinc-900 transition-all duration-300">
-          <div className={`flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 ${isCollapsed ? "px-2" : "px-4"} pt-4 pb-3 mb-2 relative shrink-0 transition-all duration-300`}>
-            <h1 className={`font-bold text-zinc-900 dark:text-zinc-50 truncate ${isCollapsed ? "text-sm" : "text-xl"}`}>Pesan</h1>
+          <div className={`flex items-center border-b border-zinc-100 dark:border-zinc-800 ${isCollapsed ? "justify-center px-2" : "justify-between px-4"} pt-4 pb-3 mb-2 relative shrink-0 transition-all duration-300`}>
+            {!isCollapsed && (
+              <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Pesan</h1>
+            )}
+
             <div className="flex items-center gap-1">
-              <button 
-                aria-label="Cari" 
-                className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer" 
-                onClick={() => setSearchMode((v) => !v)}
-                title="Cari"
-              >
-                <FiSearch className="w-5 h-5" />
-              </button>
+              {!isCollapsed && (
+                <button 
+                  aria-label="Cari" 
+                  className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer" 
+                  onClick={() => setSearchMode((v) => !v)}
+                  title="Cari"
+                >
+                  <FiSearch className="w-5 h-5" />
+                </button>
+              )}
               <button
                 aria-label={isCollapsed ? "Perluas Sidebar" : "Kecilkan Sidebar"}
                 title={isCollapsed ? "Perluas Sidebar" : "Kecilkan Sidebar"}
@@ -106,7 +111,7 @@ function ChatContent() {
               </button>
             </div>
 
-            {searchMode && (
+            {!isCollapsed && searchMode && (
               <div ref={searchBoxRef} className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg p-2 z-50">
                 <input 
                   type="text" 
