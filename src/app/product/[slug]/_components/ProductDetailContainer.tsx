@@ -411,10 +411,10 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                     <button
                       key={idx}
                       onClick={() => setActiveImageIdx(idx)}
-                      className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all flex-shrink-0 cursor-pointer ${
+                      className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 transition-all flex-shrink-0 cursor-pointer outline-none focus:outline-none ${
                         activeImageIdx === idx 
-                          ? 'border-sky-500 ring-2 ring-sky-500/30 scale-105' 
-                          : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700 opacity-70 hover:opacity-100'
+                          ? 'ring-2 ring-sky-500 border-transparent scale-105 shadow-xs' 
+                          : 'border border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700 opacity-70 hover:opacity-100'
                       }`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
