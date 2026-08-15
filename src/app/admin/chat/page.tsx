@@ -93,7 +93,7 @@ function ChatContent() {
   };
 
   return (
-    <div className="-mx-6 -my-6 md:-mx-8 md:-my-8 h-screen p-4 overflow-hidden">
+    <div className="-mx-6 -my-6 md:-mx-8 md:-my-8 h-screen p-0 md:p-4 overflow-hidden">
       <div className={`h-full md:grid ${isCollapsed ? "md:grid-cols-[80px_1fr]" : "md:grid-cols-[380px_1fr]"} transition-all duration-300 overflow-hidden bg-white dark:bg-zinc-900/40`}>
         {/* Left Column: Chat List */}
         <div className="flex flex-col md:h-full md:overflow-hidden md:border-r md:border-zinc-200 dark:md:border-zinc-800 bg-white dark:bg-zinc-900 transition-all duration-300">

@@ -29,7 +29,7 @@ export default function ChatDetailPage() {
   }, [draftText, id, router]);
 
   return (
-    <div className="h-screen w-full md:hidden">
+    <div className="-mx-6 -my-6 md:-mx-8 md:-my-8 h-screen overflow-hidden md:hidden">
       <ChatDetailPanel chatId={id} mode="page" onBack={() => router.push("/admin/chat")} />
     </div>
   );
