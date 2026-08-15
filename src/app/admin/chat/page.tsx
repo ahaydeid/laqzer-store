@@ -104,7 +104,7 @@ function ChatContent() {
               <button
                 aria-label={isCollapsed ? "Perluas Sidebar" : "Kecilkan Sidebar"}
                 title={isCollapsed ? "Perluas Sidebar" : "Kecilkan Sidebar"}
-                className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer"
+                className="hidden md:inline-flex p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer"
                 onClick={() => setIsCollapsed((v) => !v)}
               >
                 <FiMenu className="w-5 h-5" />
