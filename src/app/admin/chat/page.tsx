@@ -66,6 +66,18 @@ function ChatContent() {
     chat.userName.toLowerCase().includes(query.toLowerCase())
   );
 
+  // Otomatis reset status collapse ke false di layar mobile (<768px)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsCollapsed(false);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const handleSelectChat = async (chatId: string) => {
     // Clear admin unread count in DB
     try {
