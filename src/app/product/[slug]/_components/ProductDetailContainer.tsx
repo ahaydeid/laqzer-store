@@ -409,9 +409,12 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                 {/* Left Gradient Overlay */}
                 <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent dark:from-zinc-950 pointer-events-none z-10" />
 
+                {/* Fixed Central Active Ring (Stationary in Center) */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[58px] h-[58px] rounded-lg ring-2 ring-sky-500 pointer-events-none z-20" />
+
                 {/* Translating Track */}
                 <div 
-                  className="flex items-center gap-3 transition-transform duration-300 ease-out py-1"
+                  className="flex items-center gap-3 transition-transform duration-300 ease-out py-1.5"
                   style={{ 
                     transform: `translateX(calc(50% - 28px - ${activeImageIdx * 68}px))` 
                   }}
@@ -422,8 +425,8 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
                       onClick={() => setActiveImageIdx(idx)}
                       className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 transition-all flex-shrink-0 cursor-pointer outline-none focus:outline-none ${
                         activeImageIdx === idx 
-                          ? 'ring-2 ring-sky-500 border-transparent scale-105 shadow-xs' 
-                          : 'border border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700 opacity-60 hover:opacity-100'
+                          ? 'opacity-100 scale-100 border border-transparent' 
+                          : 'border border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700 opacity-50 hover:opacity-90 scale-95'
                       }`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
