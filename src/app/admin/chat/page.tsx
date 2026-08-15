@@ -4,7 +4,7 @@ import Avatar from "@/components/ui/Avatar";
 
 import { useEffect, useState, useRef, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FiMessageSquare, FiSearch, FiLoader, FiChevronLeft } from "react-icons/fi";
+import { FiMessageSquare, FiSearch, FiLoader, FiMenu } from "react-icons/fi";
 import { ChatDetailPanel } from "./ChatComponents";
 import { SupabaseChatService } from "@/services/supabase/chat.service";
 import { ChatRoomRecord } from "@/core/types/chat";
@@ -107,7 +107,7 @@ function ChatContent() {
                 className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer"
                 onClick={() => setIsCollapsed((v) => !v)}
               >
-                <FiChevronLeft className={`w-5 h-5 transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`} />
+                <FiMenu className="w-5 h-5" />
               </button>
             </div>
 
