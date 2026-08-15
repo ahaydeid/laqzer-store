@@ -241,11 +241,26 @@ export class SupabaseProductService implements IProductService {
     const processedData = await this.processImagesUpload(productData)
     const dbPayload = this.mapToDbPayload(processedData)
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('products')
       .insert(dbPayload)
       .select('*')
       .single()
+
+    if (error && 'slug' in dbPayload && (error.message?.includes('slug') || error.code === 'PGRST204')) {
+      console.warn('`slug` column missing in Supabase schema cache. Retrying insert without `slug` payload property.')
+      const payloadWithoutSlug = { ...dbPayload }
+      delete payloadWithoutSlug.slug
+
+      const retryResult = await supabase
+        .from('products')
+        .insert(payloadWithoutSlug)
+        .select('*')
+        .single()
+
+      data = retryResult.data
+      error = retryResult.error
+    }
 
     if (error) {
       console.error('Error creating product in Supabase:', error)
@@ -261,12 +276,28 @@ export class SupabaseProductService implements IProductService {
     const dbPayload = this.mapToDbPayload(processedData)
     dbPayload.updated_at = new Date().toISOString()
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('products')
       .update(dbPayload)
       .eq('id', id)
       .select('*')
       .single()
+
+    if (error && 'slug' in dbPayload && (error.message?.includes('slug') || error.code === 'PGRST204')) {
+      console.warn('`slug` column missing in Supabase schema cache. Retrying update without `slug` payload property.')
+      const payloadWithoutSlug = { ...dbPayload }
+      delete payloadWithoutSlug.slug
+
+      const retryResult = await supabase
+        .from('products')
+        .update(payloadWithoutSlug)
+        .eq('id', id)
+        .select('*')
+        .single()
+
+      data = retryResult.data
+      error = retryResult.error
+    }
 
     if (error) {
       console.error('Error updating product in Supabase:', error)
