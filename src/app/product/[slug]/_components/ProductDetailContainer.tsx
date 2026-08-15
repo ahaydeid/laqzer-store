@@ -87,8 +87,7 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
 
   const productVariants = product.variants && product.variants.length > 0 ? product.variants : []
 
-  const [virtualIdx, setVirtualIdx] = useState(0) // start at index 0 (first copy)
-  const [isTransitioning, setIsTransitioning] = useState(true)
+  const [activeImageIdx, setActiveImageIdx] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState(productVariants[0] ?? '')
   const [quantity] = useState(1)
   const [activeTab, setActiveTab] = useState('desc') // 'desc' | 'reviews'
@@ -99,36 +98,18 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
   const [showAddSuccess, setShowAddSuccess] = useState(false)
   const [animateAddSuccess, setAnimateAddSuccess] = useState(false)
 
-  const activeImageIdx = (virtualIdx % galleryImages.length + galleryImages.length) % galleryImages.length
-
   const hasDiscount = product.isCampaign && product.originalPrice && product.originalPrice > product.price
   const discountPercentage = hasDiscount 
     ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
     : 0
 
   const handlePrevImage = () => {
-    if (virtualIdx > 0) {
-      setIsTransitioning(true)
-      setVirtualIdx((prev) => prev - 1)
-    }
+    setActiveImageIdx((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1))
   }
 
   const handleNextImage = () => {
-    setIsTransitioning(true)
-    setVirtualIdx((prev) => prev + 1)
+    setActiveImageIdx((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0))
   }
-
-  // Handle seamless index wrap-around at the end of the sliding transition (right end only)
-  useEffect(() => {
-    const len = galleryImages.length
-    if (virtualIdx >= len * 2) {
-      const timer = setTimeout(() => {
-        setIsTransitioning(false)
-        setVirtualIdx(virtualIdx - len)
-      }, 300)
-      return () => clearTimeout(timer)
-    }
-  }, [virtualIdx, galleryImages.length])
 
   // Handle copy timer reset
   useEffect(() => {
@@ -411,65 +392,48 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
 
         {/* Row 2, Col 1: Gallery Thumbnails, Share Section & External CTAs */}
         <div className="flex flex-col gap-3 md:col-start-1 md:row-start-2 mt-2 md:mt-0">
-          {/* Gallery Thumbnail Carousel (Centered Sliding Track with Gradient Overlays) */}
-          <div className="flex-shrink-0 relative w-full max-w-[280px] sm:max-w-[380px] mx-auto px-8">
-            {/* Left Chevron Button */}
-            <button
-              onClick={handlePrevImage}
-              disabled={virtualIdx === 0}
-              className="absolute left-1 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-zinc-100 bg-white/90 text-zinc-600 hover:text-zinc-900 z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none"
-            >
-              <FiChevronLeft className="h-6 w-6" />
-            </button>
-
-            {/* Sliding Track Viewport with boundary-aligned gradient overlays */}
-            <div className="relative overflow-hidden py-1">
-              {/* Left Gradient Overlay */}
-              <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white to-transparent dark:from-zinc-950 pointer-events-none z-10" />
-
-              {/* Translating Track */}
-              <div 
-                className={`flex items-center gap-3 ${isTransitioning ? 'transition-transform duration-300 ease-out' : ''}`}
-                style={{ 
-                  // Dynamically centers the active thumbnail using the virtual index
-                  // Item width is 56px (w-14) + gap-3 is 12px = 68px.
-                  transform: `translateX(calc(50% - 28px - ${virtualIdx * 68}px))` 
-                }}
+          {/* Gallery Thumbnail Carousel */}
+          {galleryImages.length > 1 && (
+            <div className="flex-shrink-0 relative w-full max-w-[280px] sm:max-w-[380px] mx-auto px-8">
+              {/* Left Chevron Button */}
+              <button
+                onClick={handlePrevImage}
+                className="absolute left-1 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-zinc-100 bg-white/90 text-zinc-600 hover:text-zinc-900 z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                title="Gambar sebelumnya"
               >
-                {[...galleryImages, ...galleryImages, ...galleryImages].map((img, idx) => {
-                  const actualIdx = idx % galleryImages.length
-                  return (
+                <FiChevronLeft className="h-6 w-6" />
+              </button>
+
+              {/* Thumbnails Container */}
+              <div className="relative overflow-hidden py-1">
+                <div className="flex items-center justify-center gap-3 overflow-x-auto no-scrollbar">
+                  {galleryImages.map((img, idx) => (
                     <button
                       key={idx}
-                      onClick={() => {
-                        setIsTransitioning(true)
-                        setVirtualIdx(idx)
-                      }}
-                      className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all flex-shrink-0 ${
-                        activeImageIdx === actualIdx 
-                          ? 'border-sky-500 ring-1 ring-sky-500/30 scale-110' 
-                          : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
+                      onClick={() => setActiveImageIdx(idx)}
+                      className={`relative aspect-square w-14 rounded-lg overflow-hidden bg-zinc-50 border transition-all flex-shrink-0 cursor-pointer ${
+                        activeImageIdx === idx 
+                          ? 'border-sky-500 ring-2 ring-sky-500/30 scale-105' 
+                          : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700 opacity-70 hover:opacity-100'
                       }`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={img} alt="" className="h-full w-full object-cover" />
                     </button>
-                  )
-                })}
+                  ))}
+                </div>
               </div>
 
-              {/* Right Gradient Overlay */}
-              <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent dark:from-zinc-950 pointer-events-none z-10" />
+              {/* Right Chevron Button */}
+              <button
+                onClick={handleNextImage}
+                className="absolute right-1 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-zinc-100 bg-white/90 text-zinc-600 hover:text-zinc-900 shadow-xs z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                title="Gambar berikutnya"
+              >
+                <FiChevronRight className="h-6 w-6" />
+              </button>
             </div>
-
-            {/* Right Chevron Button */}
-            <button
-              onClick={handleNextImage}
-              className="absolute right-1 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-zinc-100 bg-white/90 text-zinc-600 hover:text-zinc-900 shadow-xs z-20 transition-all active:scale-90 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-            >
-              <FiChevronRight className="h-6 w-6" />
-            </button>
-          </div>
+          )}
 
           {/* Share Section (Desktop Only) */}
           <div className="hidden md:flex md:flex-row md:items-center gap-3 py-3 border-t border-zinc-100 dark:border-zinc-900 justify-start w-full">

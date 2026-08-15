@@ -114,10 +114,12 @@ export function ProductFormModal({
         const resultDataUrl = await readFileAsDataURL(compressedFile)
 
         setImages((prev) => {
-          if (prev.length < 10) {
-            return [...prev, resultDataUrl]
+          const hasOnlyTemplateImages = prev.length > 0 && prev.every((img) => img.includes('images.unsplash.com'))
+          const cleanPrev = hasOnlyTemplateImages ? [] : prev
+          if (cleanPrev.length < 10) {
+            return [...cleanPrev, resultDataUrl]
           }
-          return prev
+          return cleanPrev
         })
       } catch (err) {
         console.error('Failed to compress image:', err)
@@ -140,6 +142,11 @@ export function ProductFormModal({
 
     if (!formData.name.trim() || !formData.price || !formData.stock || !formData.description.trim()) {
       setError('Harap lengkapi semua field utama yang berbintang (*).')
+      return
+    }
+
+    if (images.length === 0) {
+      setError('Harap unggah minimal 1 foto produk.')
       return
     }
 
@@ -167,7 +174,7 @@ export function ProductFormModal({
       return
     }
 
-    const mainImageUrl = images[0] || 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=600'
+    const mainImageUrl = images[0]
 
     setIsSubmitting(true)
 
@@ -181,7 +188,7 @@ export function ProductFormModal({
         stock: stockNum,
         weight: weightNum,
         imageUrl: mainImageUrl,
-        images: images.length > 0 ? images : [mainImageUrl],
+        images: images,
         description: formData.description.trim(),
         variants: hasVariants ? cleanVariants : [],
       })
