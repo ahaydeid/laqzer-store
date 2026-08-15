@@ -405,8 +405,8 @@ export function ProductDetailContainer({ product, settings, relatedProducts = []
               </button>
 
               {/* Thumbnails Container */}
-              <div className="relative overflow-hidden py-1.5">
-                <div className="flex items-center justify-center gap-3 overflow-x-auto overflow-y-hidden no-scrollbar">
+              <div className="relative py-3 px-1">
+                <div className="flex items-center justify-center gap-3.5 overflow-x-auto no-scrollbar py-1">
                   {galleryImages.map((img, idx) => (
                     <button
                       key={idx}
