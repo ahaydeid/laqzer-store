@@ -52,14 +52,13 @@ export function ProductTable({ products, onDelete }: ProductTableProps) {
             <TableHeaderCell scope="col">Kategori</TableHeaderCell>
             <TableHeaderCell scope="col">Harga</TableHeaderCell>
             <TableHeaderCell scope="col">Stok</TableHeaderCell>
-            <TableHeaderCell scope="col" className="text-center sticky right-0 z-20 bg-white dark:bg-zinc-900 border-l border-zinc-100 dark:border-zinc-800/60 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.05)]">Aksi</TableHeaderCell>
+            <TableHeaderCell scope="col" className="text-center">Aksi</TableHeaderCell>
           </tr>
         </TableHead>
         <TableBody>
           {products.map((product, index) => (
             <TableRow 
               key={product.id} 
-              className="group"
             >
               {/* No */}
               <TableCell className="text-zinc-500 dark:text-zinc-400 text-xs w-12 font-medium text-center">
@@ -105,7 +104,7 @@ export function ProductTable({ products, onDelete }: ProductTableProps) {
               </TableCell>
 
               {/* Aksi */}
-              <TableCell className="text-center sticky right-0 z-10 bg-white dark:bg-zinc-900 group-even:bg-zinc-50 dark:group-even:bg-zinc-900/90 group-hover:bg-zinc-100/80 dark:group-hover:bg-zinc-800/80 border-l border-zinc-100 dark:border-zinc-800/60 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.05)]">
+              <TableCell className="text-center">
                 <div className="flex items-center justify-center gap-2">
                   <ActionButton
                     variant="edit"
