@@ -298,7 +298,7 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
               <TableHeaderCell scope="col" className="max-w-[220px] w-[220px]">Produk</TableHeaderCell>
               <TableHeaderCell scope="col">Kategori</TableHeaderCell>
               <TableHeaderCell scope="col">Harga</TableHeaderCell>
-              <TableHeaderCell scope="col" className="w-64">Stok</TableHeaderCell>
+              <TableHeaderCell scope="col" className="whitespace-nowrap">Stok</TableHeaderCell>
               <TableHeaderCell scope="col" className="text-center w-32 sticky right-0 z-20 bg-white dark:bg-zinc-900 border-l border-zinc-100 dark:border-zinc-800/60 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.05)]">Aksi</TableHeaderCell>
             </tr>
           </TableHead>
@@ -351,7 +351,7 @@ export function ProductManagement({ initialProducts, categories = DEFAULT_CATEGO
                   </TableCell>
 
                   {/* Stok (Unified Column) */}
-                  <TableCell>
+                  <TableCell className="whitespace-nowrap">
                     {isEditing ? (
                       <div className="flex items-center gap-2">
                         {/* Adjuster */}
